@@ -538,7 +538,7 @@ function loadClubs() {
   // Show loading state
   const tbody = document.getElementById("clubsTableBody");
   tbody.innerHTML =
-    '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500"><span data-i18n="message.loading">Loading...</span></td></tr>';
+    '<tr><td colspan="12" class="px-6 py-4 text-center text-gray-500"><span data-i18n="message.loading">Loading...</span></td></tr>';
 
   // Fetch clubs
   fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`)
@@ -549,7 +549,7 @@ function loadClubs() {
         updateStats(data.stats || {});
       } else {
         tbody.innerHTML =
-          '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">' +
+          '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">' +
           (data.message || "Error loading clubs") +
           "</td></tr>";
       }
@@ -557,7 +557,7 @@ function loadClubs() {
     .catch((error) => {
       console.error("Error loading clubs:", error);
       tbody.innerHTML =
-        '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">Error loading clubs</td></tr>';
+        '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">Error loading clubs</td></tr>';
     });
 }
 
@@ -569,7 +569,7 @@ function displayClubs(clubs) {
 
   if (clubs.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
+      '<tr><td colspan="12" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
 
     // Update translations for dynamically added content
     if (window.i18n && typeof window.i18n.updateContent === "function") {
@@ -583,6 +583,33 @@ function displayClubs(clubs) {
   clubs.forEach((club) => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-gray-50";
+
+    // Calculate next reorganization due date
+    let nextReorgDate = "";
+    if (club.last_reorg_date) {
+      const lastDate = new Date(club.last_reorg_date);
+      const lastMonth = lastDate.getMonth() + 1; // 1-12
+      const lastYear = lastDate.getFullYear();
+
+      let nextYear = lastYear;
+      let nextMonth = lastMonth;
+      let nextDay = lastDate.getDate();
+
+      if (lastMonth >= 7) {
+        // If reorg is in July or later, next due is 2 years later, January 1st
+        nextYear = lastYear + 2;
+        nextMonth = 1;
+        nextDay = 1;
+      } else {
+        // If reorg is Jan-June, next due is 1 year later, same month/day
+        nextYear = lastYear + 1;
+      }
+
+      nextReorgDate = formatDate(
+        new Date(nextYear, nextMonth - 1, nextDay).toISOString().split("T")[0],
+      );
+    }
+
     tr.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(club.reg_number)}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(club.registration_date)}</td>
@@ -591,6 +618,10 @@ function displayClubs(clubs) {
             <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.gn_division_name || "")}</td>
             <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_name || "")}</td>
             <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_address || "")}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.secretary_name || "")}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.secretary_address || "")}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${club.last_reorg_date ? formatDate(club.last_reorg_date) : "-"}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${nextReorgDate || "-"}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <div class="flex items-center gap-3">
                     <a href="club-details.php?id=${club.id}" 
@@ -780,7 +811,7 @@ function exportToExcel() {
   params.append("language", language);
 
   // Show loading state
-  const btn = event.target.closest('button');
+  const btn = event.target.closest("button");
   const originalText = btn.textContent;
   btn.disabled = true;
   btn.textContent = "Exporting...";
@@ -788,7 +819,7 @@ function exportToExcel() {
   try {
     // Create download link and trigger download
     const downloadUrl = `/sports-v2/api/export-clubs-excel.php?${params.toString()}`;
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = downloadUrl;
     link.download = `clubs_export_${new Date().toISOString().split("T")[0]}.csv`;
     document.body.appendChild(link);
@@ -811,9 +842,9 @@ function exportToExcel() {
  */
 function exportToPDF() {
   // Check if required libraries are loaded
-  if (typeof html2pdf === 'undefined') {
-    alert('PDF export library is loading. Please try again in a moment.');
-    console.error('html2pdf library not loaded');
+  if (typeof html2pdf === "undefined") {
+    alert("PDF export library is loading. Please try again in a moment.");
+    console.error("html2pdf library not loaded");
     return;
   }
 

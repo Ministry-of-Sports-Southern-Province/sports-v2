@@ -176,12 +176,16 @@ include '../includes/header.php';
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.gn_division"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_address"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_name"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_address"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.last_reorg_date"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.next_reorg_due_date"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.actions"></th>
                     </tr>
                 </thead>
                 <tbody id="clubsTableBody" class="bg-white divide-y divide-gray-200">
                     <tr>
-                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="12" class="px-6 py-8 text-center text-gray-500">
                             <span data-i18n="message.loading"></span>
                         </td>
                     </tr>

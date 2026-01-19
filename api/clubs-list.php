@@ -31,6 +31,7 @@ try {
                 c.chairman_address,
                 c.chairman_phone,
                 c.secretary_name,
+                c.secretary_address,
                 d.name as district_name,
                 dv.name as division_name,
                 gn.name as gn_division_name,
