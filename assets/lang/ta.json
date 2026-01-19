@@ -203,5 +203,13 @@
   "chart.clubs": "சங்கங்கள்",
   "chart.active": "செயல்பாட்டு",
   "chart.expired": "முடிந்தது",
-  "chart.registrations": "பதிவுகள்"
+  "chart.registrations": "பதிவுகள்",
+  "message.invalid_date": "தயவுசெய்து தேதியை உள்ளிடவும்",
+  "message.confirm_delete_reorg": "மறுசீரமைப்பு தேதியை நீக்க விரும்புகிறீர்களா?",
+  "status.active": "செயல்பாட்டு",
+  "status.expired": "முடிந்தது",
+  "footer.certificate_note": "இந்தச் சான்றிதழ் தெற்கு மாகாணத் கீளாடு அமைச்சகத்தால் வெளியிடப்பட்டது",
+  "header.department_name": "தெற்கு மாகாணத் கீளாடு அமைச்சகம்",
+  "header.department_name_en": "Southern Province Sports Department",
+  "header.certificate_title": "சங்க பதிவு சான்றிதழ்"
 }

@@ -203,5 +203,13 @@
   "chart.clubs": "සමාජ",
   "chart.active": "ක්‍රියාශීල",
   "chart.expired": "කල් ඉඳිණි",
-  "chart.registrations": "ලියාපදිංචි කිරීම්"
+  "chart.registrations": "ලියාපදිංචි කිරීම්",
+  "message.invalid_date": "කරුණාකර දිනය ඇතුල් කරන්න",
+  "message.confirm_delete_reorg": "අවසාන ප්රතිසංවිධාන දිනය ඉවත් කිරීමට අවශ්යද?",
+  "status.active": "සක්‍රීය",
+  "status.expired": "කල් ඉකුත්",
+  "footer.certificate_note": "මෙම ප්රමාණ පත්රය දකුණු පළාත් ක්රීඩා අමාත්යාංශය විසින් නිකුත් කරන ලදී",
+  "header.department_name": "දකුණු පළාත් ක්රීඩා අමාත්යාංශය",
+  "header.department_name_en": "Southern Province Sports Department",
+  "header.certificate_title": "ක්රීඩා සමාජ ලියාපදිංචි ප්රමාණ පත්රය"
 }
