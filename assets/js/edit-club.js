@@ -16,7 +16,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   currentClubId = urlParams.get("id");
 
   if (!currentClubId) {
-    alert("Club ID is required");
+    alert(
+      window.i18n
+        ? window.i18n.t("message.invalid_club_id_required")
+        : "Club ID is required",
+    );
     window.location.href = "dashboard.php";
     return;
   }
@@ -49,13 +53,13 @@ async function initializeTomSelect() {
         return;
       }
       fetch(
-        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`
+        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`,
       )
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
             callback(
-              data.data.map((item) => ({ value: item.id, text: item.name }))
+              data.data.map((item) => ({ value: item.id, text: item.name })),
             );
           } else {
             callback();
@@ -102,14 +106,14 @@ async function initializeTomSelect() {
       }
       fetch(
         `../api/locations.php?type=division&search=${encodeURIComponent(
-          query
-        )}&parent_id=${districtId}`
+          query,
+        )}&parent_id=${districtId}`,
       )
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
             callback(
-              data.data.map((item) => ({ value: item.id, text: item.name }))
+              data.data.map((item) => ({ value: item.id, text: item.name })),
             );
           } else {
             callback();
@@ -140,14 +144,14 @@ async function initializeTomSelect() {
       }
       fetch(
         `../api/locations.php?type=gn_division&search=${encodeURIComponent(
-          query
-        )}&parent_id=${divisionId}`
+          query,
+        )}&parent_id=${divisionId}`,
       )
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
             callback(
-              data.data.map((item) => ({ value: item.id, text: item.name }))
+              data.data.map((item) => ({ value: item.id, text: item.name })),
             );
           } else {
             callback();
@@ -169,7 +173,7 @@ async function initializeTomSelect() {
       onChange: function (values) {
         updateEquipmentQuantityFields(values);
       },
-    }
+    },
   );
 
   // Load all equipment types initially
@@ -284,7 +288,7 @@ async function loadClubData() {
       alert(
         window.i18n
           ? window.i18n.t("message.load_error")
-          : "Failed to load club data"
+          : "Failed to load club data",
       );
       window.location.href = "dashboard.php";
     }
@@ -293,7 +297,7 @@ async function loadClubData() {
     alert(
       window.i18n
         ? window.i18n.t("message.load_error")
-        : "Failed to load club data"
+        : "Failed to load club data",
     );
     window.location.href = "dashboard.php";
   }
@@ -330,7 +334,7 @@ async function populateForm(club) {
     if (club.division_id) {
       try {
         const divResponse = await fetch(
-          `../api/locations.php?type=division&parent_id=${club.district_id}`
+          `../api/locations.php?type=division&parent_id=${club.district_id}`,
         );
         const divData = await divResponse.json();
         if (divData.success) {
@@ -350,7 +354,7 @@ async function populateForm(club) {
       if (club.gn_division_id) {
         try {
           const gnResponse = await fetch(
-            `../api/locations.php?type=gn_division&parent_id=${club.division_id}`
+            `../api/locations.php?type=gn_division&parent_id=${club.division_id}`,
           );
           const gnData = await gnResponse.json();
           if (gnData.success) {
@@ -362,7 +366,7 @@ async function populateForm(club) {
             });
             window.tomSelectInstances.gnDivision.setValue(
               club.gn_division_id,
-              true
+              true,
             );
           }
         } catch (e) {
@@ -409,54 +413,54 @@ function setupFormSubmission() {
       formData.append("club_name", document.getElementById("clubName").value);
       formData.append(
         "reg_number",
-        document.getElementById("regNumberFull").value
+        document.getElementById("regNumberFull").value,
       );
       formData.append(
         "registration_date",
-        document.getElementById("registrationDate").value
+        document.getElementById("registrationDate").value,
       );
       formData.append("date_entry_type", "auto");
 
       // Location
       formData.append(
         "district_id",
-        window.tomSelectInstances.district.getValue()
+        window.tomSelectInstances.district.getValue(),
       );
       formData.append(
         "division_id",
-        window.tomSelectInstances.division.getValue()
+        window.tomSelectInstances.division.getValue(),
       );
       formData.append(
         "gn_division_id",
-        window.tomSelectInstances.gnDivision.getValue() || ""
+        window.tomSelectInstances.gnDivision.getValue() || "",
       );
 
       // Chairman
       formData.append(
         "chairman_name",
-        document.getElementById("chairmanName").value
+        document.getElementById("chairmanName").value,
       );
       formData.append(
         "chairman_address",
-        document.getElementById("chairmanAddress").value
+        document.getElementById("chairmanAddress").value,
       );
       formData.append(
         "chairman_phone",
-        document.getElementById("chairmanPhone").value
+        document.getElementById("chairmanPhone").value,
       );
 
       // Secretary
       formData.append(
         "secretary_name",
-        document.getElementById("secretaryName").value
+        document.getElementById("secretaryName").value,
       );
       formData.append(
         "secretary_address",
-        document.getElementById("secretaryAddress").value
+        document.getElementById("secretaryAddress").value,
       );
       formData.append(
         "secretary_phone",
-        document.getElementById("secretaryPhone").value
+        document.getElementById("secretaryPhone").value,
       );
 
       // Equipment
@@ -501,7 +505,7 @@ function setupFormSubmission() {
           alert(
             window.i18n
               ? window.i18n.t("message.update_success")
-              : "Club updated successfully!"
+              : "Club updated successfully!",
           );
           window.location.href = "dashboard.php";
         } else {
@@ -509,7 +513,7 @@ function setupFormSubmission() {
             data.message ||
               (window.i18n
                 ? window.i18n.t("message.update_error")
-                : "Failed to update club")
+                : "Failed to update club"),
           );
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
@@ -519,7 +523,7 @@ function setupFormSubmission() {
         alert(
           window.i18n
             ? window.i18n.t("message.update_error")
-            : "Failed to update club"
+            : "Failed to update club",
         );
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;

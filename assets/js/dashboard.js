@@ -550,14 +550,16 @@ function loadClubs() {
       } else {
         tbody.innerHTML =
           '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">' +
-          (data.message || "Error loading clubs") +
+          (data.message || window.i18n.t("message.error_loading_clubs")) +
           "</td></tr>";
       }
     })
     .catch((error) => {
       console.error("Error loading clubs:", error);
       tbody.innerHTML =
-        '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">Error loading clubs</td></tr>';
+        '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">' +
+        window.i18n.t("message.error_loading_clubs") +
+        "</td></tr>";
     });
 }
 
@@ -769,7 +771,12 @@ function deleteClub(clubId, clubName) {
         loadStatistics();
       } else {
         // Show error message
-        alert(data.message || "Failed to delete club");
+        alert(
+          data.message ||
+            (window.i18n
+              ? window.i18n.t("message.delete_error")
+              : "Failed to delete club"),
+        );
 
         // Re-enable button
         if (deleteButton) {
@@ -780,7 +787,11 @@ function deleteClub(clubId, clubName) {
     })
     .catch((error) => {
       console.error("Error deleting club:", error);
-      alert("An error occurred while deleting the club");
+      alert(
+        window.i18n
+          ? window.i18n.t("message.error_generic")
+          : "An error occurred while deleting the club",
+      );
 
       // Re-enable button
       if (deleteButton) {
@@ -831,7 +842,11 @@ function exportToExcel() {
     btn.textContent = originalText;
   } catch (error) {
     console.error("Error exporting to Excel:", error);
-    alert("Failed to export data. Please try again.");
+    alert(
+      window.i18n
+        ? window.i18n.t("message.export_error")
+        : "Failed to export data. Please try again.",
+    );
     btn.disabled = false;
     btn.textContent = originalText;
   }
