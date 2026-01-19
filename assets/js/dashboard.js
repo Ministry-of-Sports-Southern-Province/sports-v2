@@ -37,7 +37,7 @@ function loadStatistics() {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-semibold text-gray-600">${escapeHtml(
-                    district.district_name
+                    district.district_name,
                   )}</p>
                   <p class="text-3xl font-bold text-gray-800 mt-2">${
                     district.count
@@ -86,7 +86,7 @@ function createDistrictCharts(districtData) {
   ];
 
   const backgroundColors = districtData.map(
-    (_, index) => colors[index % colors.length]
+    (_, index) => colors[index % colors.length],
   );
 
   // Destroy existing charts if they exist
@@ -268,7 +268,7 @@ function createDistrictCharts(districtData) {
             ctx.fillStyle = "#6b7280";
             const subText = "Total";
             const subTextX = Math.round(
-              (width - ctx.measureText(subText).width) / 2
+              (width - ctx.measureText(subText).width) / 2,
             );
             ctx.fillText(subText, subTextX, textY + 20);
             ctx.save();
@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "input",
       debounce(function () {
         loadClubs();
-      }, 500)
+      }, 500),
     );
 
     // Also support Enter key for immediate search
@@ -387,12 +387,12 @@ function enableSelectSearch(selectElement) {
             selectElement.getAttribute("data-current-search") || "";
           selectElement.setAttribute(
             "data-current-search",
-            currentSearch.slice(0, -1)
+            currentSearch.slice(0, -1),
           );
         } else if (e.key.length === 1) {
           selectElement.setAttribute(
             "data-current-search",
-            searchTerm.toLowerCase()
+            searchTerm.toLowerCase(),
           );
         }
 
@@ -403,7 +403,7 @@ function enableSelectSearch(selectElement) {
           const matchingOption = allOptions.find(
             (opt) =>
               opt.getAttribute("data-search") &&
-              opt.getAttribute("data-search").startsWith(search)
+              opt.getAttribute("data-search").startsWith(search),
           );
 
           if (matchingOption) {
@@ -538,7 +538,7 @@ function loadClubs() {
   // Show loading state
   const tbody = document.getElementById("clubsTableBody");
   tbody.innerHTML =
-    '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500"><span data-i18n="message.loading">Loading...</span></td></tr>';
+    '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500"><span data-i18n="message.loading">Loading...</span></td></tr>';
 
   // Fetch clubs
   fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`)
@@ -549,7 +549,7 @@ function loadClubs() {
         updateStats(data.stats || {});
       } else {
         tbody.innerHTML =
-          '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">' +
+          '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">' +
           (data.message || "Error loading clubs") +
           "</td></tr>";
       }
@@ -557,7 +557,7 @@ function loadClubs() {
     .catch((error) => {
       console.error("Error loading clubs:", error);
       tbody.innerHTML =
-        '<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading clubs</td></tr>';
+        '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">Error loading clubs</td></tr>';
     });
 }
 
@@ -569,7 +569,7 @@ function displayClubs(clubs) {
 
   if (clubs.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
+      '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
 
     // Update translations for dynamically added content
     if (window.i18n && typeof window.i18n.updateContent === "function") {
@@ -584,21 +584,13 @@ function displayClubs(clubs) {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-gray-50";
     tr.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(
-              club.reg_number
-            )}</td>
-            <td class="px-6 py-4 text-sm text-gray-900">${escapeHtml(
-              club.name
-            )}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(
-              club.district_name || ""
-            )}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(
-              club.chairman_name
-            )}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(
-              club.registration_date
-            )}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(club.reg_number)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(club.registration_date)}</td>
+            <td class="px-6 py-4 text-sm text-gray-900">${escapeHtml(club.name)}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.division_name || "")}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.gn_division_name || "")}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_name || "")}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_address || "")}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <div class="flex items-center gap-3">
                     <a href="club-details.php?id=${club.id}" 
@@ -616,9 +608,7 @@ function displayClubs(clubs) {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                     </button>
-                    <button onclick="deleteClub(${club.id}, '${escapeHtml(
-      club.name
-    ).replace(/'/g, "\\'")}')" 
+                    <button onclick="deleteClub(${club.id}, '${escapeHtml(club.name).replace(/'/g, "\\'")}')" 
                             class="text-red-600 hover:text-red-800 transition" 
                             title="Delete">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

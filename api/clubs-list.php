@@ -28,9 +28,12 @@ try {
                 c.registration_date,
                 c.date_entry_type,
                 c.chairman_name,
+                c.chairman_address,
                 c.chairman_phone,
                 c.secretary_name,
                 d.name as district_name,
+                dv.name as division_name,
+                gn.name as gn_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
             FROM clubs c
             LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
@@ -79,13 +82,13 @@ try {
             $reorgDateTime = new DateTime($club['last_reorg_date']);
             $reorgMonth = (int)$reorgDateTime->format('n');
             $reorgYear = (int)$reorgDateTime->format('Y');
-            
+
             if ($reorgMonth > 6) {
                 $club['reorg_due_date'] = ($reorgYear + 2) . '-01-01';
             } else {
                 $club['reorg_due_date'] = date('Y-m-d', strtotime($club['last_reorg_date'] . ' +1 year'));
             }
-            
+
             $club['reorg_status'] = ($club['reorg_due_date'] <= date('Y-m-d')) ? 'expired' : 'active';
         } else {
             $club['reorg_due_date'] = null;

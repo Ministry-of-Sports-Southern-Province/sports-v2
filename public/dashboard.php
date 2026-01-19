@@ -104,7 +104,7 @@ include '../includes/header.php';
     </div>
 
     <!-- Charts Section -->
-    
+
 
     <!-- Action Bar -->
     <div class="mb-6 flex justify-between items-center">
@@ -156,16 +156,18 @@ include '../includes/header.php';
                 <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                     <tr>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.reg_number"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.club_name"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.district"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.registration_date"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.club_name"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.division"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.gn_division"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_address"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.actions"></th>
                     </tr>
                 </thead>
                 <tbody id="clubsTableBody" class="bg-white divide-y divide-gray-200">
                     <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
                             <span data-i18n="message.loading"></span>
                         </td>
                     </tr>
