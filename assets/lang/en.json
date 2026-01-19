@@ -217,5 +217,12 @@
   "footer.certificate_note": "This certificate was issued by the Southern Province Sports Department",
   "header.department_name": "Southern Province Sports Department",
   "header.department_name_en": "Southern Province Sports Department",
-  "header.certificate_title": "Sports Club Registration Certificate"
+  "header.certificate_title": "Sports Club Registration Certificate",
+  "form.filter_division": "Filter by Division",
+  "form.filter_gn_division": "Filter by GN Division",
+  "filter.division": "Division",
+  "filter.gn_division": "Grama Niladhari Division",
+  "filter.all_divisions": "All Divisions",
+  "filter.all_gn_divisions": "All GN Divisions",
+  "button.print": "Print"
 }

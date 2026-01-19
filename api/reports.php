@@ -34,7 +34,6 @@ try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     } elseif ($type === 'registered') {
         $district = $_GET['district'] ?? '';
         $dateRange = $_GET['date_range'] ?? 'all';
@@ -65,11 +64,13 @@ try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     } elseif ($type === 'equipment') {
         $equipment = $_GET['equipment'] ?? '';
+        $district = $_GET['district'] ?? '';
+        $division = $_GET['division'] ?? '';
+        $gnDivision = $_GET['gn_division'] ?? '';
 
-        $sql = "SELECT c.reg_number, c.name, d.name as district, et.name as equipment, ce.quantity
+        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gn_division, et.name as equipment, ce.quantity
                 FROM clubs c
                 LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
                 LEFT JOIN divisions dv ON gn.division_id = dv.id
@@ -85,7 +86,22 @@ try {
             $params['equipment'] = $equipment;
         }
 
-        $sql .= " ORDER BY d.name, c.name, et.name";
+        if ($district) {
+            $sql .= " AND d.name = :district";
+            $params['district'] = $district;
+        }
+
+        if ($division) {
+            $sql .= " AND dv.name = :division";
+            $params['division'] = $division;
+        }
+
+        if ($gnDivision) {
+            $sql .= " AND gn.name = :gn_division";
+            $params['gn_division'] = $gnDivision;
+        }
+
+        $sql .= " ORDER BY d.name, dv.name, gn.name, c.name, et.name";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);

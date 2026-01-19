@@ -211,5 +211,12 @@
   "footer.certificate_note": "මෙම ප්රමාණ පත්රය දකුණු පළාත් ක්රීඩා අමාත්යාංශය විසින් නිකුත් කරන ලදී",
   "header.department_name": "දකුණු පළාත් ක්රීඩා අමාත්යාංශය",
   "header.department_name_en": "Southern Province Sports Department",
-  "header.certificate_title": "ක්රීඩා සමාජ ලියාපදිංචි ප්රමාණ පත්රය"
+  "header.certificate_title": "ක්රීඩා සමාජ ලියාපදිංචි ප්රමාණ පත්රය",
+  "form.filter_division": "කොට්ඨාසය අනුව ෂෙයින්න",
+  "form.filter_gn_division": "ග්රාම නිලධාරී කොට්ඨාසය අනුව ෂෙයින්න",
+  "filter.division": "කොට්ඨාසය",
+  "filter.gn_division": "ග්‍රාම නිලධාරී",
+  "filter.all_divisions": "සියලු කොට්ඨාසයන්",
+  "filter.all_gn_divisions": "සියලු ග්‍රාම නිලධාරී",
+  "button.print": "මුද්රණය කරන්න"
 }

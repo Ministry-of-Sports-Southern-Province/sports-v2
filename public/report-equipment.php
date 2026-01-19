@@ -7,11 +7,11 @@ include '../includes/header.php';
 
 <main class="container mx-auto px-4 py-8">
     <div class="mb-4"><a href="reports.php" class="text-blue-600" data-i18n="button.back">← ආපසු</a></div>
-    
+
     <div class="bg-white rounded-lg shadow p-6 mb-6 no-print">
         <h2 class="text-2xl font-bold mb-6" data-i18n="report.type_equipment">උපකරණ ලැයිස්තුව වාර්තාව</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>
                 <label class="block text-sm font-medium mb-2" data-i18n="report.select_equipment">උපකරණ වර්ගය</label>
                 <select id="equipment" class="w-full px-4 py-2 border rounded">
@@ -22,6 +22,18 @@ include '../includes/header.php';
                 <label class="block text-sm font-medium mb-2" data-i18n="form.district">දිස්ත්රික්කය</label>
                 <select id="district" class="w-full px-4 py-2 border rounded">
                     <option value="" data-i18n="filter.all_districts">සියලු දිස්ත්රික්ක</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2" data-i18n="filter.division">කොට්ඨාසය</label>
+                <select id="division" class="w-full px-4 py-2 border rounded">
+                    <option value="" data-i18n="filter.all_divisions">සියලු කොට්ඨාසයන්</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2" data-i18n="filter.gn_division">ග්‍රාම නිලධාරී</label>
+                <select id="gnDivision" class="w-full px-4 py-2 border rounded">
+                    <option value="" data-i18n="filter.all_gn_divisions">සියලු ග්‍රාම නිලධාරී</option>
                 </select>
             </div>
         </div>
@@ -35,7 +47,13 @@ include '../includes/header.php';
     <div id="reportOutput" class="bg-white rounded-lg shadow p-6"></div>
 </main>
 
-<style>@media print { .no-print { display: none !important; } }</style>
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
 
 <?php
 $scripts = ['../assets/js/report-equipment.js'];

@@ -211,5 +211,12 @@
   "footer.certificate_note": "இந்தச் சான்றிதழ் தெற்கு மாகாணத் கீளாடு அமைச்சகத்தால் வெளியிடப்பட்டது",
   "header.department_name": "தெற்கு மாகாணத் கீளாடு அமைச்சகம்",
   "header.department_name_en": "Southern Province Sports Department",
-  "header.certificate_title": "சங்க பதிவு சான்றிதழ்"
+  "header.certificate_title": "சங்க பதிவு சான்றிதழ்",
+  "form.filter_division": "பிரிவு மூலம் வடிகட்டவும்",
+  "form.filter_gn_division": "கிராம நிலாதாரி பிரிவு மூலம் வடிகட்டவும்",
+  "filter.division": "பிரிவு",
+  "filter.gn_division": "கிராம நிலாதாரி",
+  "filter.all_divisions": "அனைத்து பிரிவுகள்",
+  "filter.all_gn_divisions": "அனைத்து கிராம நிலாதாரி",
+  "button.print": "அச்சு"
 }
