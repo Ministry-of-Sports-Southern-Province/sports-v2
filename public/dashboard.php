@@ -72,10 +72,9 @@ $customStyles = '
         }
 ';
 
-// Additional links for Chart.js and Export libraries
+// Additional links for Chart.js and PDF export library
 $additionalLinks = [
     '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>',
-    '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>',
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>'
 ];
 

@@ -24,6 +24,13 @@ $basePath = $basePath ?? '../';
 <!-- i18n JavaScript (Always included) -->
 <script src="<?php echo $basePath; ?>assets/js/i18n.js"></script>
 
+<!-- Additional Libraries (if any) -->
+<?php if (isset($additionalLinks) && !empty($additionalLinks)): ?>
+    <?php foreach ($additionalLinks as $link): ?>
+        <?php echo $link . "\n    "; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+
 <?php foreach ($scripts as $script): ?>
     <script src="<?php echo htmlspecialchars($script); ?>"></script>
 <?php endforeach; ?>
