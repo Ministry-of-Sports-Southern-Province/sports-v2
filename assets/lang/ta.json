@@ -48,6 +48,8 @@
   "button.add": "சேர்",
   "button.back": "பின்",
   "button.view_details": "விவரங்களைக் காண்க",
+  "button.export_excel": "Excel ஐ ஏற்றுமதி செய்",
+  "button.export_pdf": "PDF ஐ ஏற்றுமதி செய்",
   "button.print": "அச்சிடு",
   "placeholder.search": "தேடு...",
   "placeholder.select": "தேர்ந்தெடு...",

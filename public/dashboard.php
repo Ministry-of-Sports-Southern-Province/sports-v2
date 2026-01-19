@@ -72,9 +72,11 @@ $customStyles = '
         }
 ';
 
-// Additional links for Chart.js
+// Additional links for Chart.js and Export libraries
 $additionalLinks = [
-    '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>'
+    '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>',
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>',
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>'
 ];
 
 // Include header
@@ -110,6 +112,19 @@ include '../includes/header.php';
     <div class="mb-6 flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-800" data-i18n="nav.dashboard"></h2>
         <div class="flex items-center gap-4">
+            <!-- Export Buttons -->
+            <button onclick="exportToExcel()" class="action-btn px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md font-medium flex items-center gap-2" title="Export to Excel">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span data-i18n="button.export_excel">Excel</span>
+            </button>
+            <button onclick="exportToPDF()" class="action-btn px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-md font-medium flex items-center gap-2" title="Export to PDF">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span data-i18n="button.export_pdf">PDF</span>
+            </button>
             <!-- Register Button -->
             <a href="register.php" class="action-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md font-medium" data-i18n="nav.register"></a>
         </div>

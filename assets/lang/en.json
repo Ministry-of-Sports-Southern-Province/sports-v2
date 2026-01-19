@@ -46,6 +46,8 @@
   "button.add": "Add",
   "button.back": "Back",
   "button.view_details": "View Details",
+  "button.export_excel": "Export Excel",
+  "button.export_pdf": "Export PDF",
   "placeholder.search": "Search...",
   "placeholder.select": "Select...",
   "search.title": "Search & Filter Clubs",

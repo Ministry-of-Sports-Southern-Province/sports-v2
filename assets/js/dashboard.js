@@ -758,3 +758,134 @@ function deleteClub(clubId, clubName) {
       }
     });
 }
+/**
+ * Export clubs to Excel
+ */
+function exportToExcel() {
+  const search = document.getElementById("searchInput").value;
+  const districtId = document.getElementById("filterDistrict").value;
+  const divisionId = document.getElementById("filterDivision").value;
+  const gnDivisionId = document.getElementById("filterGnDivision").value;
+  const language = localStorage.getItem("language") || "si";
+
+  // Get translation function
+  const getLabel = (key) => {
+    if (window.i18n && window.i18n.translations[language]) {
+      return window.i18n.translations[language][key] || key;
+    }
+    return key;
+  };
+
+  // Build query parameters
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  if (districtId) params.append("district_id", districtId);
+  if (divisionId) params.append("division_id", divisionId);
+  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+
+  // Fetch filtered data
+  fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success && data.data.length > 0) {
+        // Prepare data for export with translated headers
+        const exportData = data.data.map((club) => ({
+          [getLabel("table.reg_number")]: club.reg_number,
+          [getLabel("table.registration_date")]: formatDate(
+            club.registration_date,
+          ),
+          [getLabel("table.club_name")]: club.name,
+          [getLabel("table.division")]: club.division_name || "",
+          [getLabel("table.gn_division")]: club.gn_division_name || "",
+          [getLabel("table.chairman")]: club.chairman_name || "",
+          [getLabel("table.chairman_address")]: club.chairman_address || "",
+        }));
+
+        // Create workbook
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, getLabel("nav.dashboard"));
+
+        // Set column widths
+        ws["!cols"] = [
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 25 },
+          { wch: 20 },
+          { wch: 25 },
+          { wch: 20 },
+          { wch: 30 },
+        ];
+
+        // Generate filename
+        const filename = `clubs_export_${new Date().toISOString().split("T")[0]}.xlsx`;
+
+        // Download
+        XLSX.writeFile(wb, filename);
+      } else {
+        alert("No data to export");
+      }
+    })
+    .catch((error) => {
+      console.error("Error exporting to Excel:", error);
+      alert("Failed to export data");
+    });
+}
+
+/**
+ * Export clubs to PDF
+ */
+function exportToPDF() {
+  const search = document.getElementById("searchInput").value;
+  const districtId = document.getElementById("filterDistrict").value;
+  const divisionId = document.getElementById("filterDivision").value;
+  const gnDivisionId = document.getElementById("filterGnDivision").value;
+  const language = localStorage.getItem("language") || "si";
+
+  // Build query parameters
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  if (districtId) params.append("district_id", districtId);
+  if (divisionId) params.append("division_id", divisionId);
+  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+  params.append("language", language);
+
+  // Show loading indicator
+  const originalBtn = event.target;
+  const originalText = originalBtn.textContent;
+  originalBtn.disabled = true;
+  originalBtn.textContent = "Generating PDF...";
+
+  // Fetch PDF data from API
+  fetch(`/sports-v2/api/export-clubs-pdf.php?${params.toString()}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success && data.data.html) {
+        // PDF options
+        const options = {
+          margin: [10, 10, 10, 10],
+          filename: `clubs_report_${new Date().toISOString().split("T")[0]}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, letterRendering: true },
+          jsPDF: { orientation: "landscape", unit: "mm", format: "a4" },
+        };
+
+        // Generate PDF from HTML
+        html2pdf().set(options).from(data.data.html).save();
+
+        // Reset button
+        originalBtn.disabled = false;
+        originalBtn.textContent = originalText;
+      } else {
+        alert(data.message || "Failed to generate PDF data");
+        originalBtn.disabled = false;
+        originalBtn.textContent = originalText;
+      }
+    })
+    .catch((error) => {
+      console.error("Error exporting to PDF:", error);
+      alert("Failed to export data. Please try again.");
+      originalBtn.disabled = false;
+      originalBtn.textContent = originalText;
+    });
+}
