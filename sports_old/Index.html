@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sports Club Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="CSS/log.css" />
+  <style>
+    body {
+      background:
+        url("img/bg.jpg") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      backdrop-filter: blur(8px);
+      font-family: "Arial", sans-serif;
+    }
+
+    .navbar {
+      background-color: rgba(108, 175, 234, 0.8);
+      padding: 10px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #010101;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navbar-brand img {
+      margin-right: 10px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+
+    }
+
+    .container-header {
+      text-align: center;
+      margin-top: -12rem;
+      margin-bottom: 5rem;
+    }
+
+    .container-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f0f0f0;
+    }
+
+    .container-category {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 50px; /* Adjust spacing between buttons */
+      padding: 20px;
+      width: 80%;
+      margin-top:-50px;
+    }
+
+    .container-category button {
+      flex: 1 1 calc(33.33% - 50px); /* Three buttons per row, minus the gap */
+      max-width: 250px; /* Limit the width of buttons */
+      background: linear-gradient(135deg, #7c91c2, #2575fc, #033ea5);
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 25px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%; /* Ensure buttons are responsive */
+      height: 150px;
+    }
+
+
+    .container-category button:hover {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      transform: scale(1.1);
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
+      text-decoration: none;
+    }
+
+    .container-category button a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+
+    }
+
+    .container-category button a:hover {
+      text-decoration: underline;
+    }
+
+    .container-category img {
+      width: 55px;
+      height: 55px;
+      position: relative;
+      margin-right: 10px;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid justify-content-center">
+      <a class="navbar-brand">
+        <img src="img/logo.png" alt="Logo" width="50" height="50" />
+        Ministry of Sports - Southern Province
+      </a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="container-header">
+      <h2>ලියාපදිංචි/ප්‍රතිසංවිධාන ක්‍රීඩා සමාජ ලේඛනය</h2>
+    </div>
+
+    <div class="container-category">
+      <button onclick="navigateTo('Form.html')">
+        <img src="img/person.png" alt="" />
+        Enter Details
+      </button>
+      <button onclick="navigateTo('view.html')">
+        <img src="img/test.png" alt="" />
+        View Details
+      </button>
+      <button onclick="navigateTo('view-edit.html')">
+        <img src="img/ledger.png" alt="" />
+        Edit Details
+      </button>
+      <button onclick="navigateTo('reorg.html')">
+        <img src="img/ledger.png" alt="" />
+        Club Reorganization
+      </button>
+      <button onclick="navigateTo('equipments.html')">
+        <img src="img/sports.png" alt="" />
+        Equipments
+      </button>
+      <button onclick="navigateTo('Summary.html')">
+        <img src="img/salary.png" alt="" />
+        Summary
+      </button>
+    </div>
+  </div>
+  <script>
+    function navigateTo(url) {
+      window.location.href = url;
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

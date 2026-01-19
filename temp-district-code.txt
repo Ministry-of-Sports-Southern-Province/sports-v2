@@ -1,0 +1,11 @@
+﻿// Update district counts
+        stats.clubs_by_district.forEach(district => {
+          const districtName = district.district_name.toLowerCase();
+          if (districtName.includes('galle') || districtName.includes('ගලල')) {
+            document.getElementById("statGalle").textContent = district.count;
+          } else if (districtName.includes('matara') || districtName.includes('මතර')) {
+            document.getElementById("statMatara").textContent = district.count;
+          } else if (districtName.includes('hambantota') || districtName.includes('හමබනතට')) {
+            document.getElementById("statHambantota").textContent = district.count;
+          }
+        });

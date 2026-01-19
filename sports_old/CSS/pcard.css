@@ -1,0 +1,141 @@
+
+body{
+    padding: 20px;
+    margin: 0;
+    background: white;
+}
+.topb{
+    width: 100%;
+    height: 100px;
+
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 20px 10px;
+}
+.search{
+    position: relative;
+    width: 200px;
+    margin: 10px 10px;
+ 
+}
+.search label{
+    position: relative;
+    width: 100%;
+}
+.search label input{
+    position: relative;
+    width: 100%;
+    height: 25px;
+    border-radius: 40px;
+    padding: 5px 20px;
+    padding-left: 35px;
+    font-size: 16px;
+    border: 1px solid black;
+    outline: none;
+}
+.search label i{
+    position: absolute;
+    top:2px;
+    left: 12px;
+    font-size: 1.2rcm;
+}
+
+.pcon{
+    position: relative;
+    top: 10px;
+   
+}
+.profile-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    padding: 20px;
+}
+
+.profile-card {
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #cac9c9;
+    border-radius: 10px;
+}
+
+.profile-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  
+}
+
+.large-card {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    display: none;
+    background-color: white;
+    border: 0px solid #000;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.image-container {
+   
+    top: 10px;
+    left: 20px;
+    width: 80px;
+    height: 75px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #000;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.edit-button {
+    /* position: absolute;
+    bottom: 10px;
+    right: 10px; */
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left:70px;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
+.boxs{
+    display: flex;
+    gap: 10px;
+    height: 75px;
+    justify-content: center;
+    
+}
+.txt-container{
+    display: flex;
+    height: 75px;
+    align-items: center;
+    flex-direction: column;
+ }
+.na1{
+    font-size: 12px;
+}
+.po1{
+    font-size: 12px;
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View</title>
+    <link rel="stylesheet" href="Assests/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="CSS/table.css">
+    <style>
+         .table-scroll {
+            max-height: 400px; 
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            display: block;
+        }
+
+        table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: white;
+        }
+
+        .table td.address-column {
+            width: 500px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .home-button {
+            text-decoration: none;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+
+        .home-icon {
+            width: 30px;
+            height: 30px;
+        }
+        .tooltip-inner {
+            max-width: 500px; 
+            white-space: normal;
+        }
+        .print-button button{
+            width: 50px;
+            height: 40px;
+            border-radius: 10px;
+            background-color:cornflowerblue;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+    
+        }
+        .print-button button[class*="btn-"]:hover:not(:disabled){
+            background-color: #52505e;
+            border-color: #e0e0e7;
+        }
+
+        .print-img{
+            width: 40px;
+            height: 40px;
+        }
+    @media print {
+        
+        .row {
+            display: none;
+        }
+        .table-scroll {
+            margin-top: -80px !important;
+            max-width: 100%;
+        }
+        .edit-button,
+        .delete-button,
+        .print-button {
+            display: none; 
+        }
+    
+    }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="filterId">
+        <div class="p-5 col-12 col-md-12 position-relative">
+            <div class="row">
+                <div class="col-lg-2">
+                    <input type="text" id="search_term" class="form-control" placeholder="Search by Club Name or Registration ID">
+                </div>
+                <div class="col-lg-2">
+                    <input type="text" id="reg_date" class="form-control" placeholder="ලියාපදිංචි දිනය" onfocus="this.type='month'" onblur="this.type='text'">
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-select" list="dist-list" id="dist" name="dist" placeholder="දිස්ත්‍රික්කය" required>
+                    <datalist id="dist-list">
+                        <option value="ගාල්ල">
+                        <option value="මාතර">
+                        <option value="හම්බන්තොට">
+                    </datalist>
+                    </div>
+                <div class="col-lg-2">
+                    <input class="form-select" list="divi-list" id="divi" name="divi" required placeholder="කොට්ඨාසය">
+                    <datalist id="divi-list">
+                    </datalist>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <button class="btn btn-primary w-10" id="btn-search" onclick="advancedSearch();">Search</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="table-scroll">
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th>ලියාපදිංචි අංකය</th>
+                    <th>ලියාපදිංචි දිනය</th>
+                    <th>ක්‍රීඩා සමාජයේ නම</th>
+                    <th>ප්‍රා.ලේ. කොට්ඨාශය</th>
+                    <th>ග්‍රාම නිලධාරී වසම</th>
+                    <th>සභාපතිගේ නම හා ලිපිනය</th>
+                    <th>ලේකම්ගේ නම හා ලිපිනය</th>
+                    <th>ප්‍රතිසංවිධාන දිනය</th>
+                </tr>
+            </thead>
+            <tbody id="data-table1">
+                <!-- Data will load here -->
+            </tbody>
+        </table>
+        <div class="print-button col-12 col-lg-6">
+            <button type="button" class="btn btn-secondary mt-2 mx-2" id="print-btn" onclick="window.print();"><img
+                    src="img/print.png" alt="icon" style="width:24px; height:24px;"></button>
+        </div>
+    </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                    loadTableData();
+
+                    function loadTableData() {
+                        fetch("php/fetch_data.php")
+                            .then(response => response.json())
+                            .then(data => {
+                                const tableBody = document.getElementById("data-table1");
+                                tableBody.innerHTML = "";
+                                if (data.length > 0) {
+                                    data.forEach(row => {
+                                        const tr = document.createElement("tr");
+                                        tr.innerHTML = `<td>${row.reg_id}</td>
+                                        <td>${row.reg_date}</td>
+                                        <td>${row.club_name}</td>
+                                        <td>${row.division || "N/A"}</td>
+                                        <td>${row.village || "N/A"}</td>
+                                        <td>${row.chair_name}</td>
+                                        <td>${row.sec_name}</td>
+                                        <td>${row.reco_date}</td>`;
+                                        tableBody.appendChild(tr);
+                                    });
+                                } else {
+                                    tableBody.innerHTML = `<tr><td colspan="6">No data available</td></tr>`;
+                                }
+                            })
+                            .catch(error => console.error("Error loading data:", error));
+                    }
+                });
+
+                document.getElementById('dist').addEventListener('input', function () {
+                        const district = this.value;
+                        const diviInput = document.getElementById('divi');
+                        const diviList = document.getElementById('divi-list');
+
+                        if (district) {
+                            fetch(`php/fetch_divi.php?district=${district}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    diviList.innerHTML = '';
+                                    data.forEach(item => {
+                                        const option = document.createElement('option');
+                                        option.value = item.name;
+                                        diviList.appendChild(option);
+                                    });
+                                })
+                                .catch(error => console.error('Error loading divis:', error));
+                        } else {
+                            diviList.innerHTML = '';
+                        }
+                    });
+        </script>
+        <script src="Js/check.js"></script>
+        <script src="Assests/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

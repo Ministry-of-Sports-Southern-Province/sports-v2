@@ -1,0 +1,47 @@
+.nav-logo{
+    margin-left: 20px;
+    width: 50px;
+    height: 50px;
+}
+.nav-container{
+    position: absolute;
+    font-size: 22px;
+    margin-top: 15px;
+    margin-left: 5px;
+    font-weight: 700;
+}
+.nav-list li{
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;  
+}
+.container{
+    margin-top: 20px;
+}
+.container-header h2{
+    font-size: 25px;
+    text-align: center;
+    margin-top: 5rem;
+    color:rgb(34, 31, 31);
+}
+.container-category{
+    width: 80%;
+    padding: 45px 40px;
+    align-items: center;
+    justify-content: center;
+}
+.nav-list button{
+    width: 20rem;
+    height: 10rem;
+    gap: 10px;
+    margin-right: 8rem;
+    margin-bottom: 5rem;
+    border-radius: 3rem;
+}
+.nav-list a{
+    font-size: 20px;
+    color: blue;
+    font-style: none;
+    text-decoration: none;
+    font-weight: 600;
+}

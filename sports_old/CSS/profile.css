@@ -1,0 +1,77 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    }
+    *,::before,::after{
+        box-sizing: border-box;
+    }
+    html{
+        scroll-behavior: smooth;
+    }
+
+.edit-container{
+    display: flex;  
+ 
+}
+.edit-container-header{
+    margin: 100px 150px;
+}
+.edit-container-header img{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+.edit-container-header h3{
+    font-size: 25px;
+    margin-top: 20px;
+    font-weight: 500;
+}
+.edit-container-header h3 span{
+    font-size: 20px;
+    font-weight: 500;
+    
+}
+.edit-container-details{
+    margin-top: 20px;
+    font-weight: 500;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.edit-container-details p{
+    margin-bottom: 30px;
+    gap: 20px;
+}
+.btn-group{
+    position: absolute;
+    margin-left: 80%;
+    margin-top: 2%;
+    height: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    
+}
+.btn-group [class*="btn-"]{
+ background-color: #1b1733;
+ color: white;
+ padding: 1em 2.5em;
+ border: 4px solid #676670;
+ border-radius: 30px;
+ cursor: pointer;
+ -webkit-transition: background-color .3s,border-color .3s ease-out;
+ transition: background-color .3s,border-color .3s ease-out;
+}
+.btn-group [class*="btn-"]:disabled{
+    background-color:#b0b0c0;
+    border: #e0e0e7;
+    cursor: text;
+   }
+.btn-group [class*="btn-"]:hover:not(:disabled){
+    background-color: #52505e;
+    border-color: #e0e0e7;
+}
+
+
+
+

@@ -1,0 +1,16 @@
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .frame-content {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 100%;    
+        }
+        .fr1{
+         z-index: 1;
+        }
+        .fr2{
+            z-index: 0;
+        }

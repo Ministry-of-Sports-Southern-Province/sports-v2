@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Summary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="CSS/log.css" />
+  <style>
+    .summary-body {
+      padding: 30px;
+    }
+
+    .summary-head {
+      align-items: center;
+      justify-content: center;
+
+    }
+
+    .summary-head h2 {
+      font-size: 30px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .table-head {
+      margin-top: 4rem;
+      display: flex;
+
+    }
+
+    .table-head select {
+      width: 12rem;
+      height: 2rem;
+
+    }
+
+    .table-head select option {
+      font-size: 18px;
+
+    }
+
+    .table-head input {
+      margin-left: 3rem;
+
+    }
+
+    .table-head button {
+      margin-left: 2rem;
+      width: 6rem;
+      border-radius: 30px;
+      color: #fff;
+      background-color: rgb(16, 46, 218);
+      border: none;
+      outline: none;
+    }
+
+    .table-scroll {
+      width: auto;
+      max-height: 400px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      display: grid;
+      margin-top: 20px;
+
+    }
+
+    table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: white;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+
+    .table td.address-column {
+      width: 800px;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    table caption {
+      caption-side: top;
+      margin-bottom: 10px;
+    }
+
+    @media print {
+
+      .row {
+        display: none;
+      }
+
+      /* .table-scroll {
+            margin-top: -80px !important;
+            max-width: 100%;
+        } */
+      .table-head,
+      .print-button {
+        display: none;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="summary-body">
+    <div class="summary-head">
+      <h2>ලියාපදිංචි/ප්‍රතිසංවිධාන ක්‍රීඩා සමාජ ලේඛනය</h2>
+    </div>
+    <div class="table-head">
+
+      <select name="district" id="district">
+        <option value="Select District">Select District</option>
+        <option value="ගාල්ල">ගාල්ල</option>
+        <option value="මාතර">මාතර</option>
+        <option value="හම්බන්තොට">හම්බන්තොට</option>
+      </select>
+
+      <input type="text" placeholder="Enter Year" id="Year">
+
+      <button>Select</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="table mt-5">
+        <caption id="table-caption" class="text-center fs-4 fw-bold"></caption>
+        <thead>
+          <tr>
+            <th>අනු අංකය</th>
+            <th>ප්‍රාදේශීය ලේකම් කොට්ඨාසය</th>
+            <th>ලියාපදිංචි ක්‍රීඩා සමාජ සංඛ්‍යාව</th>
+            <th id="reco-year-header">වර්ෂයට ප්‍රතිසංවිධාන ක්‍රීඩා සමාජ සංඛ්‍යාව</th>
+            <th id="reg-year-header">ට ලියාපදිංචි ක්‍රීඩා සමාජ සංඛ්‍යාව</th>
+          </tr>
+        </thead>
+        <tbody id="data-table1">
+          <!-- Data load here -->
+        </tbody>
+      </table>
+    </div>
+    <div class="print-button col-12 col-lg-6">
+      <button type="button" class="btn btn-primary mt-2 mx-2" id="print-btn"><img src="img/print.png" alt="icon"
+          style="width:24px; height:24px;"></button>
+      <button class="btn btn-success mt-2 mx-2" id="excel-btn"><img src="img/ecxel.png" alt="icon"
+          style="width:24px; height:24px;"></button>
+    </div>
+  </div>
+  <script>
+    document.querySelector('button').addEventListener('click', () => {
+      const district = document.getElementById('district').value;
+      const year = document.getElementById('Year').value;
+
+      if (district === 'Select District' || !year) {
+        alert('Please select a district and enter a year.');
+        return;
+      }
+
+      const tableCaption = document.getElementById('table-caption');
+      tableCaption.textContent = `${district} දිස්ත්‍රික්කය`;
+
+      document.getElementById('reco-year-header').textContent = `${year} වර්ෂයට ප්‍රතිසංවිධාන ක්‍රීඩා සමාජ සංඛ්‍යාව`;
+      document.getElementById('reg-year-header').textContent = `${year} ට ලියාපදිංචි ක්‍රීඩා සමාජ සංඛ්‍යාව`;
+
+      fetch(`php/fetch_summary.php?district=${district}&year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('data-table1');
+          tableBody.innerHTML = '';
+
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+
+          // Initialize totals
+          let totalClubs = 0;
+          let totalRecoInYear = 0;
+          let totalRegInYear = 0;
+
+          // Populate table rows and calculate totals
+          data.forEach((row, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${row.division}</td>
+          <td>${row.total_clubs}</td>
+          <td>${row.reco_in_year}</td>
+          <td>${row.reg_in_year}</td>
+        `;
+            tableBody.appendChild(tr);
+
+            // Add to totals
+            totalClubs += parseInt(row.total_clubs, 10);
+            totalRecoInYear += parseInt(row.reco_in_year, 10);
+            totalRegInYear += parseInt(row.reg_in_year, 10);
+          });
+
+          // Add a row for totals
+          const totalRow = document.createElement('tr');
+          totalRow.style.fontWeight = 'bold'; // Make the totals row bold
+          totalRow.innerHTML = `
+        <td colspan="2" style="text-align: right;">Total:</td>
+        <td>${totalClubs}</td>
+        <td>${totalRecoInYear}</td>
+        <td>${totalRegInYear}</td>
+      `;
+          tableBody.appendChild(totalRow);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    });
+
+    document.getElementById('print-btn').addEventListener('click', () => {
+      const tableScroll = document.querySelector('.table-scroll');
+      const originalMaxHeight = tableScroll.style.maxHeight;
+      tableScroll.style.maxHeight = 'none';
+      tableScroll.style.overflow = 'visible';
+
+      window.print();
+
+      tableScroll.style.maxHeight = originalMaxHeight;
+      tableScroll.style.overflowY = 'auto';
+    });
+
+    document.getElementById('excel-btn').addEventListener('click', () => {
+      const table = document.querySelector('.table-scroll table');
+      const rows = Array.from(table.rows);
+
+      const data = rows.map(row =>
+        Array.from(row.cells).slice(1).map(cell => cell.innerText.trim())
+      );
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+      XLSX.writeFile(wb, 'TableData.xlsx');
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</body>
+
+</html>

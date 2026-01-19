@@ -1,0 +1,609 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Reorganization</title>
+    <link rel="stylesheet" href="Assests/bootstrap/css/bootstrap.min.css" />
+                                
+    <style>
+        .table-scroll {
+            max-height: 500px; 
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            display: block;
+        }
+
+        table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: white;
+        }
+
+        .home-button {
+            text-decoration: none;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+
+        .home-icon {
+            width: 30px;
+            height: 30px;
+            margin-top: -40px;
+            margin-right: 10px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-section h5 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Sinhala font support and text wrapping */
+        .filter-section label,
+        .filter-section .form-control,
+        .filter-section .form-select,
+        .filter-section option {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .filter-section .form-label {
+            min-height: 2.5em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Ensure dropdowns and datalists show full Sinhala text */
+        .filter-section .form-control,
+        .filter-section .form-select {
+            height: auto;
+            min-height: 38px;
+            padding: 8px 12px;
+        }
+
+        /* Fix for datalist options in Sinhala */
+        datalist option {
+            font-size: 0.9rem;
+            padding: 5px;
+        }
+
+        .btn-primary-custom {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #0056b3;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .title-section img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .title-section h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .modal-dialog {
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .alert-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            color: #004085;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-reorganized {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-edit-reorg {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-edit-reorg:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-add-reorg {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-add-reorg:hover {
+            background-color: #218838;
+        }
+
+        .btn-delete-reorg {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete-reorg:hover {
+            background-color: #c82333;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-4">
+        <!-- Title Section -->
+        <div class="title-section">
+            <img src="img/ledger.png" alt="Reorganization Icon">
+            <h2>නැවත ප්‍රතිසංවිධාන ලේඛනය</h2>
+            <a href="index.html" class="home-button" title="Home" style="position: absolute; right: 20px;">
+                <img src="Assests/img/home-icon.png" alt="Home" class="home-icon">
+            </a>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h5>සෙවීමේ පරිශීලක සාධනය</h5>
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6">
+                    <label for="search_club" class="form-label">ක්‍රීඩා සමාජයේ නම හෝ ලියාපදිංචි අංකය</label>
+                    <input type="text" id="search_club" class="form-control" placeholder="තොරතුරු ඇතුල් කරන්න">
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label for="filter_district" class="form-label">දිස්ත්‍රික්කය</label>
+                    <input class="form-control" list="dist-list" id="filter_district" placeholder="විකල්පයක් තෝරන්න">
+                    <datalist id="dist-list">
+                        <option value="ගාල්ල">
+                        <option value="මාතර">
+                        <option value="හම්බන්තොට">
+                    </datalist>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label for="filter_division" class="form-label">කොට්ඨාසය</label>
+                    <input class="form-control" list="divi-list" id="filter_division" placeholder="විකල්පයක් තෝරන්න">
+                    <datalist id="divi-list"></datalist>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <label for="filter_status" class="form-label">තත්ත්වය</label>
+                    <select id="filter_status" class="form-select">
+                        <option value="all">සියලු</option>
+                        <option value="expired">කල් ඉකුත්</option>
+                        <option value="active">සක්‍රීය</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-6 d-flex align-items-end">
+                    <button class="btn btn-primary-custom w-100" onclick="filterData()">සෙවීම</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Alert -->
+        <div class="alert-info">
+            💡 <strong>තොරතුරු:</strong> ක්‍රීඩා සමාජයන් නැවත ප්‍රතිසංවිධාන කිරීම සඳහා කතුවැඩිය තෝරා නව ප්‍රතිසංවිධාන දිනය එකතු කරන්න හෝ පෙර දිනය යාවත්කාල කරන්න.
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-scroll">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%">#</th>
+                        <th style="width: 12%">ලියාපදිංචි අංකය</th>
+                        <th style="width: 20%">ක්‍රීඩා සමාජයේ නම</th>
+                        <th style="width: 15%">දිස්ත්‍රික්කය</th>
+                        <th style="width: 15%">කොට්ඨාසය</th>
+                        <th style="width: 15%">අවසාන ප්‍රතිසංවිධාන දිනය</th>
+                        <th style="width: 10%">තත්ත්වය</th>
+                        <th style="width: 18%">පියවර</th>
+                    </tr>
+                </thead>
+                <tbody id="reorg-table">
+                    <!-- Data will load here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+    </div>
+
+    <!-- Modal for Adding/Editing Reorganization -->
+    <div class="modal fade" id="reorgModal" tabindex="-1" aria-labelledby="reorgModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reorgModalLabel">ප්‍රතිසංවිධාන දිනය එකතු කරන්න</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal_reg_id" class="form-label">ලියාපදිංචි අංකය</label>
+                        <input type="text" class="form-control" id="modal_reg_id" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal_club_name" class="form-label">ක්‍රීඩා සමාජයේ නම</label>
+                        <input type="text" class="form-control" id="modal_club_name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal_reorg_date" class="form-label">ප්‍රතිසංවිධාන දිනය <span style="color: red;">*</span></label>
+                        <input type="date" class="form-control" id="modal_reorg_date" required>
+                    </div>
+                    <small class="text-muted">දිනය පෙර දිනයට වඩා ඉතිරි කර තිබිය යුතුය</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">අවලංගු කරන්න</button>
+                    <button type="button" class="btn btn-primary" onclick="saveReorgDate()">සුරකින්න</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmLabel">ඉවත් කිරීම තහවුරු කරන්න</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ඔබ විසින් මෙම ප්‍රතිසංවිධාන ඉවත් කිරීමට අවශ්‍යද? මෙම ක්‍රියාව අවලංගු කළ නොහැක.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">අවලංගු කරන්න</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteReorg()">ඉවත් කරන්න</button>
+                </div>
+            </div>
+        </div>
+
+                <!-- History Modal -->
+                <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="historyModalLabel">ප්‍රතිසංවිධාන ඉතිහාසය</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>ලියාපදිංචි අංකය:</strong> <span id="history_reg_id"></span></p>
+                                <p><strong>කණ්ඩායමේ නම:</strong> <span id="history_club_name"></span></p>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr><th>#</th><th>ප්‍රතිසංවිධාන දිනය</th><th>පියවර</th></tr>
+                                        </thead>
+                                        <tbody id="history-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="export_csv_btn" class="btn btn-outline-primary">Export Excel (CSV)</button>
+                                <button id="export_pdf_btn" class="btn btn-outline-secondary">Export PDF</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let rawData = []; // keep original fetched data
+        let allData = []; // filtered view
+        let currentDeleteRegId = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllClubs();
+            populateDivisionsOnLoad();
+        });
+
+        // Load all clubs with reorganization data
+        function loadAllClubs() {
+            fetch('php/fetch_reorg_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    rawData = data;
+                    allData = rawData.slice();
+                    displayTable();
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    alert('දත්ත පූරණ කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.');
+                });
+        }
+
+        // Display table
+        function displayTable() {
+            const tableBody = document.getElementById('reorg-table');
+            tableBody.innerHTML = '';
+
+            if (allData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center">දත්ත නොමැත</td></tr>';
+                return;
+            }
+
+            allData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                const rowNumber = index + 1;
+                // Use status from backend: 'expired' or 'active'
+                const status = row.status === 'expired' ? 'කල් ඉකුත්' : 'සක්‍රීය';
+                const statusClass = row.status === 'expired' ? 'status-pending' : 'status-reorganized';
+                const due = row.reorg_due_date || 'N/A';
+
+                // Only allow reorganization action when expired
+                const actionButton = row.status === 'expired'
+                    ? `<button class="btn-add-reorg" onclick="openReorgModal('${row.reg_id}', '${row.club_name}')">ප්‍රතිසංවිධාන කරන්න</button>`
+                    : `<button class="btn-edit-reorg" disabled>සක්‍රීය</button>`;
+
+                // Show delete if there is any previous reorg date
+                const deleteBtn = row.last_reorg_date ? `<button class="btn-delete-reorg" onclick="openDeleteConfirm('${row.reg_id}')">ඉවත්</button>` : '';
+
+                tr.innerHTML = `
+                    <td>${rowNumber}</td>
+                    <td><small>${row.reg_id}</small></td>
+                    <td>${row.club_name || 'N/A'}</td>
+                    <td>${row.district || 'N/A'}</td>
+                    <td>${row.division || 'N/A'}</td>
+                    <td>${row.last_reorg_date || 'N/A'}</td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                                ${actionButton}
+                                <button class="btn-edit-reorg" onclick="openHistoryPage('${(row.reg_id||'').replace(/'/g, "\\'")}')">ඉතිහාසය</button>
+                                ${deleteBtn}
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Open history modal and load history
+        function openHistoryModal(regId, clubName) {
+            document.getElementById('history_reg_id').textContent = regId;
+            document.getElementById('history_club_name').textContent = clubName;
+            loadHistory(regId);
+            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+            modal.show();
+        }
+
+        // Open a separate history page in a new tab/window
+        function openHistoryPage(regId) {
+            const url = 'reorg_history.html?reg_id=' + encodeURIComponent(regId);
+            window.open(url, '_blank');
+        }
+
+        function loadHistory(regId) {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '';
+            fetch('php/fetch_reorg_history.php?reg_id=' + encodeURIComponent(regId))
+                .then(r => r.json())
+                .then(data => {
+                    if (!Array.isArray(data)) {
+                        tbody.innerHTML = '<tr><td colspan="3">දෝෂයකි</td></tr>';
+                        return;
+                    }
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">ප්‍රතිසංවිධාන රහිතයි</td></tr>';
+                        return;
+                    }
+                    data.forEach((row, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${idx+1}</td><td>${row.reorg_date || 'N/A'}</td><td><button class="btn-delete-reorg" onclick="openDeleteConfirm('${regId}')">ඉවත්</button></td>`;
+                        tbody.appendChild(tr);
+                    });
+                    document.getElementById('export_csv_btn').onclick = function() {
+                        window.location = 'php/export_reorg_history_csv.php?reg_id=' + encodeURIComponent(regId);
+                    };
+                    document.getElementById('export_pdf_btn').onclick = function() {
+                        window.location = 'php/export_reorg_history_pdf.php?reg_id=' + encodeURIComponent(regId);
+                    };
+                })
+                .catch(err => {
+                    console.error(err);
+                    tbody.innerHTML = '<tr><td colspan="3">දත්ත ආරෝපණය කළ නොහැකි විය</td></tr>';
+                });
+        }
+
+        // Filter data based on search criteria
+        function filterData() {
+            const searchClubRaw = document.getElementById('search_club').value || '';
+            const searchClub = searchClubRaw.trim().toLowerCase();
+            const filterDistrict = document.getElementById('filter_district').value;
+            const filterDivision = document.getElementById('filter_division').value;
+            const filterStatus = document.getElementById('filter_status').value; // 'all' | 'expired' | 'active'
+
+            // Always start filtering from the original fetched data
+            allData = rawData.slice().filter(row => {
+                const clubName = (row.club_name || '').toString().toLowerCase();
+                const regId = (row.reg_id || '').toString().toLowerCase();
+
+                const matchClub = !searchClub || clubName.includes(searchClub) || regId.includes(searchClub);
+                const matchDistrict = !filterDistrict || (row.district || '') === filterDistrict;
+                const matchDivision = !filterDivision || (row.division || '') === filterDivision;
+                const matchStatus = filterStatus === 'all' || (row.status || '') === filterStatus;
+
+                return matchClub && matchDistrict && matchDivision && matchStatus;
+            });
+
+            displayTable();
+        }
+
+        // Populate divisions based on district selection
+        function populateDivisionsOnLoad() {
+            const diviList = document.getElementById('divi-list');
+            const divisions = {
+                'ගාල්ල': ['නගරපොල', 'දෙනිගම', 'කුරුනෙගල', 'බිඩුවේ', 'අතරවැල්ල', 'හිකැකැඩුව', 'මුතුරජェල'],
+                'මාතර': ['අම්බලංතොට', 'බෙලිඅත්', 'ඩිකවෙල්ල', 'හම්බන්තොට', 'කටුණයක', 'කිරින්ද', 'මාතර නගර', 'ටිස්සමහාරාම', 'වැලිස්මුල්ල', 'වලිතර'],
+                'හම්බන්තොට': ['ගල්තිස්බුවා', 'ධනුසිනි', 'ගිරුවතල්ල', 'කෝමටුතුඩුව', 'මිතිඹිල්ල', 'ධනසිරි', 'සුවනරුඉගම']
+            };
+
+            document.getElementById('filter_district').addEventListener('change', function() {
+                const selectedDistrict = this.value;
+                diviList.innerHTML = '';
+                
+                if (divisions[selectedDistrict]) {
+                    divisions[selectedDistrict].forEach(divi => {
+                        const option = document.createElement('option');
+                        option.value = divi;
+                        diviList.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Open modal for adding/editing reorganization date
+        function openReorgModal(regId, clubName) {
+            document.getElementById('modal_reg_id').value = regId;
+            document.getElementById('modal_club_name').value = clubName;
+            document.getElementById('modal_reorg_date').value = '';
+            const modal = new bootstrap.Modal(document.getElementById('reorgModal'));
+            modal.show();
+        }
+
+        // Save reorganization date
+        function saveReorgDate() {
+            const regId = document.getElementById('modal_reg_id').value;
+            const reorgDate = document.getElementById('modal_reorg_date').value;
+
+            if (!reorgDate) {
+                alert('කරුණාකර ප්‍රතිසංවිධාන දිනය ඇතුල් කරන්න.');
+                return;
+            }
+
+            fetch('php/save_reorg_date.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reg_id: regId,
+                    reorg_date: reorgDate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('ප්‍රතිසංවිධාන දිනය සාර්ථකව සුරකින්න ලදී.');
+                    bootstrap.Modal.getInstance(document.getElementById('reorgModal')).hide();
+                    loadAllClubs();
+                } else {
+                    alert('දෝෂයකි: ' + (data.message || 'නොදන්න දෝෂයකි'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('දෙවෙන්න සෙවිය නොහැකි විය.');
+            });
+        }
+
+        // Open delete confirmation modal
+        function openDeleteConfirm(regId) {
+            currentDeleteRegId = regId;
+            const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            modal.show();
+        }
+
+        // Confirm and delete reorganization record
+        function confirmDeleteReorg() {
+            if (!currentDeleteRegId) return;
+
+            fetch('php/delete_reorg_date.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reg_id: currentDeleteRegId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('ප්‍රතිසංවිධාන ඉවත් කරන්න ලදී.');
+                    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+                    loadAllClubs();
+                } else {
+                    alert('දෝෂයකි: ' + (data.message || 'නොදන්න දෝෂයකි'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('ඉවත් කිරීම අසාර්ථක විය.');
+            });
+        }
+    </script>
+</body>
+
+</html>

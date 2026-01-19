@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+    <link rel="stylesheet" href="Assests/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="CSS/table.css">
+    <style>
+         .table-scroll {
+            max-height: 400px; 
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            display: block;
+        }
+
+        table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: white;
+        }
+
+        .table td.address-column {
+            width: 500px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .home-button {
+            text-decoration: none;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 5px;
+        }
+
+        .home-icon {
+            width: 30px;
+            height: 30px;
+            margin-top: -40px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex" id="filterId">
+        <div class="p-5 col-12 col-md-12 position-relative">
+            <div class="row">
+                <div class="col-lg-2">
+                    <input type="text" id="search_term" class="form-control" placeholder="Club Name or Registration ID">
+                </div>
+                <!-- <div class="col-lg-2">
+                    <input type="text" id="reg_date" class="form-control" placeholder="ලියාපදිංචි දිනය" onfocus="this.type='month'" onblur="this.type='text'">
+                </div>
+                <div class="col-lg-2">
+                    <input type="text" id="reco_date" class="form-control" placeholder="ප්‍රතිසංවිධාන දිනය" onfocus="this.type='month'" onblur="this.type='text'">
+                </div> -->
+                <div class="col-lg-2">
+                    <input class="form-select" list="dist-list" id="dist" name="dist" placeholder="දිස්ත්‍රික්කය" required>
+                    <datalist id="dist-list">
+                        <option value="ගාල්ල">
+                        <option value="මාතර">
+                        <option value="හම්බන්තොට">
+                    </datalist>
+                </div>
+                <div class="col-lg-2">
+                    <input class="form-select" list="divi-list" id="divi" name="divi" required placeholder="කොට්ඨාසය">
+                    <datalist id="divi-list">
+                    </datalist>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <button class="btn btn-primary w-10" id="btn-search" onclick="advancedSearch();">Search</button>
+                </div>
+                <div class="">
+                    <a href="Index.html" class="home-button" title="Home">
+                        <img src="Assests/img/home-icon.png" alt="Home" class="home-icon">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="table-scroll">
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ලියාපදිංචි අංකය</th>
+                    <th>ක්‍රීඩා සමාජයේ නම</th>
+                    <th>දිස්ත්‍රික්කය</th>
+                    <th>ප්‍රා.ලේ. කොට්ඨාශය</th>
+                    <th>ග්‍රාම නිලධාරී වසම</th>
+                    <th>වොලිබෝල්</th>
+                    <th>වොලිබෝල් නෙට්</th>
+                    <th>නෙට්බෝල්</th>
+                    <th>ෆුට්බෝල්</th>
+                    <th>ටෙනිස් බෝල්</th>
+                    <th>ක්‍රිකට් බැට්</th>
+                    <th>විකට් සෙට්</th>
+                    <th>වෙනත් ක්‍රීඩා උපකරණ</th>
+                </tr>
+            </thead>
+            <tbody id="data-table1">
+                <!-- Data will load here -->
+            </tbody>
+        </table>
+    </div>
+    <div class="print-button col-12 col-lg-6 mt-4">
+        <button class="btn btn-primary mt-2 mx-2" id="print-btn">
+            <img src="img/print.png" alt="icon" style="width:24px; height:24px;">
+        </button>
+        <button class="btn btn-success mt-2 mx-2" id="excel-btn"><img src="img/ecxel.png" alt="icon"
+                style="width:24px; height:24px;"></button>
+    </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                    loadTableData();
+
+                    function loadTableData() {
+                        fetch("php/fetch_eq.php")
+                            .then(response => response.json())
+                            .then(data => {
+                                const tableBody = document.getElementById("data-table1");
+                                tableBody.innerHTML = "";
+                                if (data.length > 0) {
+                                    data.forEach((row, index) => {
+                                        const tr = document.createElement("tr");
+                                        tr.innerHTML = `<td>${index + 1}</td>
+                                                        <td>${row.reg_id}</td>
+                                                        <td>${row.club_name}</td>
+                                                        <td>${row.district || "N/A"}</td>
+                                                        <td>${row.division || "N/A"}</td>
+                                                        <td>${row.village || "N/A"}</td>
+                                                        <td>${row.volleyball || "N/A"}</td>
+                                                        <td>${row.net || "N/A"}</td>
+                                                        <td>${row.nb || "N/A"}</td>
+                                                        <td>${row.football || "N/A"}</td>
+                                                        <td>${row.tenis || "N/A"}</td>
+                                                        <td>${row.bat || "N/A"}</td>
+                                                        <td>${row.wicket || "N/A"}</td>
+                                                        <td>${row.equipments || "N/A"}</td>`;
+                                        tableBody.appendChild(tr);
+                                    });
+                                } else {
+                                    tableBody.innerHTML = `<tr><td colspan="6">No data available</td></tr>`;
+                                }
+                            })
+                            .catch(error => console.error("Error loading data:", error));
+                    }
+
+                    document.getElementById("data-table1").addEventListener("click", function (event) {
+                        const target = event.target;
+                        if (target.classList.contains("edit-button")) {
+                            const regId = target.getAttribute("data-id");
+                            window.location.href = `edit.html?reg_id=${regId}`;
+                        }
+
+                        if (target.classList.contains("delete-button")) {
+                            const id = target.getAttribute("data-id");
+                            if (confirm("Are you sure you want to delete this record?")) {
+                                deleteRecord(id);
+                            }
+                        }
+                    });
+
+                    function deleteRecord(id) {
+                        fetch("php/delete_record.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: `id=${id}`
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    loadTableData();
+                                } else {
+                                    alert(data.message);
+                                }
+                            })
+                            .catch(error => console.error("Error deleting record:", error));
+                    }
+
+                    document.getElementById("dist").addEventListener("input", function () {
+                        const district = this.value;
+                        const diviList = document.getElementById("divi-list");
+
+                        if (district) {
+                            fetch(`php/fetch_divi.php?district=${district}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    diviList.innerHTML = "";
+                                    data.forEach(item => {
+                                        const option = document.createElement("option");
+                                        option.value = item.name;
+                                        diviList.appendChild(option);
+                                    });
+                                })
+                                .catch(error => console.error("Error loading divis:", error));
+                        } else {
+                            diviList.innerHTML = "";
+                        }
+                    });
+                });
+
+                document.getElementById('print-btn').addEventListener('click', () => {
+                        const tableScroll = document.querySelector('.table-scroll');
+                        const originalMaxHeight = tableScroll.style.maxHeight;
+                        tableScroll.style.maxHeight = 'none';
+                        tableScroll.style.overflow = 'visible';
+
+                        window.print();
+
+                        tableScroll.style.maxHeight = originalMaxHeight;
+                        tableScroll.style.overflowY = 'auto';
+                    });
+
+                document.getElementById('excel-btn').addEventListener('click', () => {
+                        const table = document.querySelector('.table-scroll table');
+                        const rows = Array.from(table.rows);
+
+                        // Exclude the first column from the exported data
+                        const data = rows.map(row =>
+                            Array.from(row.cells).slice(1).map(cell => cell.innerText.trim())
+                        );
+
+                        const wb = XLSX.utils.book_new();
+                        const ws = XLSX.utils.aoa_to_sheet(data);
+                        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+                        XLSX.writeFile(wb, 'TableData.xlsx');
+                    });
+
+        </script>
+        <script src="Js/eq.js"></script>
+        <script src="Assests/bootstrap/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</body>
+
+</html>
