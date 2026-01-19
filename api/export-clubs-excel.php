@@ -132,7 +132,7 @@ try {
             $lastMonth = (int)$lastDate->format('m');
             $lastYear = (int)$lastDate->format('Y');
             $lastDay = (int)$lastDate->format('d');
-            
+
             if ($lastMonth >= 7) {
                 // If reorg is in July or later, next due is 2 years later, January 1st
                 $nextDate = new DateTime(($lastYear + 2) . '-01-01');
@@ -142,7 +142,7 @@ try {
             }
             $nextReorgDate = $nextDate->format('Y-m-d');
         }
-        
+
         $row = [
             $club['reg_number'],
             date('Y-m-d', strtotime($club['registration_date'])),
