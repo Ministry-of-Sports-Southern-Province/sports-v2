@@ -46,9 +46,11 @@ function displayClubDetails(club) {
 
   container.innerHTML = `
     <div class="print-header" style="display: none;">
-      <h1 data-i18n="header.department_name">Southern Province Sports Department</h1>
-      <div class="subtitle" data-i18n="header.department_name_en">Southern Province Sports Department</div>
-      <div class="subtitle" style="font-weight: bold; margin-top: 3mm;" data-i18n="header.certificate_title">Sports Club Registration Certificate</div>
+      <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
+      
+      <h1 data-i18n="header.certificate_title">Sports Club Registration Certificate</h1>
+      
+      <div class="club-name-display">${escapeHtml(club.name)}</div>
     </div>
     
     <style>
@@ -57,71 +59,73 @@ function displayClubDetails(club) {
       }
     </style>
 
-    <div class="detail-card">
-      <h2 data-i18n="form.club_information">Club Information</h2>
-      <div class="info-row">
-        <div><label data-i18n="form.reg_number">Registration Number</label><p>${escapeHtml(
-          club.reg_number,
-        )}</p></div>
-        <div><label data-i18n="form.registration_date">Registration Date</label><p>${formatDate(
-          club.registration_date,
-        )}</p></div>
+    <div class="info-grid">
+      <div class="detail-card">
+        <h2 data-i18n="form.club_information">Club Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.reg_number">Registration Number</label><p>${escapeHtml(
+            club.reg_number,
+          )}</p></div>
+          <div><label data-i18n="form.registration_date">Registration Date</label><p>${formatDate(
+            club.registration_date,
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.club_name">Club Name</label><p>${escapeHtml(
+            club.name,
+          )}</p></div>
+        </div>
       </div>
-      <div class="info-row">
-        <div class="full-width"><label data-i18n="form.club_name">Club Name</label><p>${escapeHtml(
-          club.name,
-        )}</p></div>
-      </div>
-    </div>
 
-    <div class="detail-card">
-      <h2 data-i18n="form.location_information">Location Information</h2>
-      <div class="info-row">
-        <div><label data-i18n="form.district">District</label><p>${escapeHtml(
-          club.district_name || "-",
-        )}</p></div>
-        <div><label data-i18n="form.division">Division</label><p>${escapeHtml(
-          club.division_name || "-",
-        )}</p></div>
+      <div class="detail-card">
+        <h2 data-i18n="form.location_information">Location Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.district">District</label><p>${escapeHtml(
+            club.district_name || "-",
+          )}</p></div>
+          <div><label data-i18n="form.division">Division</label><p>${escapeHtml(
+            club.division_name || "-",
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.gn_division">GN Division</label><p>${escapeHtml(
+            club.gn_division_name || "-",
+          )}</p></div>
+        </div>
       </div>
-      <div class="info-row">
-        <div class="full-width"><label data-i18n="form.gn_division">GN Division</label><p>${escapeHtml(
-          club.gn_division_name || "-",
-        )}</p></div>
-      </div>
-    </div>
 
-    <div class="detail-card">
-      <h2 data-i18n="form.chairman_information">Chairman Information</h2>
-      <div class="info-row">
-        <div><label data-i18n="form.chairman_name">Chairman Name</label><p>${escapeHtml(
-          club.chairman_name,
-        )}</p></div>
-        <div><label data-i18n="form.chairman_phone">Chairman Phone</label><p>${escapeHtml(
-          club.chairman_phone,
-        )}</p></div>
+      <div class="detail-card">
+        <h2 data-i18n="form.chairman_information">Chairman Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.chairman_name">Chairman Name</label><p>${escapeHtml(
+            club.chairman_name,
+          )}</p></div>
+          <div><label data-i18n="form.chairman_phone">Chairman Phone</label><p>${escapeHtml(
+            club.chairman_phone,
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.chairman_address">Chairman Address</label><p>${escapeHtml(
+            club.chairman_address,
+          )}</p></div>
+        </div>
       </div>
-      <div class="info-row">
-        <div class="full-width"><label data-i18n="form.chairman_address">Chairman Address</label><p>${escapeHtml(
-          club.chairman_address,
-        )}</p></div>
-      </div>
-    </div>
 
-    <div class="detail-card">
-      <h2 data-i18n="form.secretary_information">Secretary Information</h2>
-      <div class="info-row">
-        <div><label data-i18n="form.secretary_name">Secretary Name</label><p>${escapeHtml(
-          club.secretary_name,
-        )}</p></div>
-        <div><label data-i18n="form.secretary_phone">Secretary Phone</label><p>${escapeHtml(
-          club.secretary_phone,
-        )}</p></div>
-      </div>
-      <div class="info-row">
-        <div class="full-width"><label data-i18n="form.secretary_address">Secretary Address</label><p>${escapeHtml(
-          club.secretary_address,
-        )}</p></div>
+      <div class="detail-card">
+        <h2 data-i18n="form.secretary_information">Secretary Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.secretary_name">Secretary Name</label><p>${escapeHtml(
+            club.secretary_name,
+          )}</p></div>
+          <div><label data-i18n="form.secretary_phone">Secretary Phone</label><p>${escapeHtml(
+            club.secretary_phone,
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.secretary_address">Secretary Address</label><p>${escapeHtml(
+            club.secretary_address,
+          )}</p></div>
+        </div>
       </div>
     </div>
 
@@ -130,26 +134,18 @@ function displayClubDetails(club) {
         ? `
     <div class="detail-card">
       <h2 data-i18n="form.equipment_information">Equipment</h2>
-      <table>
-        <thead>
-          <tr>
-            <th data-i18n="table.equipment">Equipment</th>
-            <th data-i18n="table.quantity">Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${club.equipment
+      <div class="equipment-list">
+        ${club.equipment
             .map(
               (eq) => `
-            <tr>
-              <td>${escapeHtml(eq.name)}</td>
-              <td>${eq.quantity}</td>
-            </tr>
+            <div class="equipment-item">
+              <span class="eq-name">${escapeHtml(eq.name)}</span>
+              <span class="eq-qty">${eq.quantity}</span>
+            </div>
           `,
             )
             .join("")}
-        </tbody>
-      </table>
+      </div>
     </div>
     `
         : ""
@@ -176,7 +172,19 @@ function displayClubDetails(club) {
     </div>
     
     <div class="print-footer" style="display: none;">
-      <p data-i18n="footer.certificate_note">This certificate was issued by the Southern Province Sports Department</p>
+      <div class="signatures">
+        <div class="sig-block">
+            <div class="sig-line">............................................................</div>
+            <div class="sig-label" data-i18n="footer.created_by">Created By</div>
+        </div>
+        <div class="sig-block">
+            <div class="sig-line">............................................................</div>
+            <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p data-i18n="footer.certificate_note">This certificate was issued by the Southern Province Sports Department</p>
+      </div>
     </div>
     
     <div id="reorgModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
