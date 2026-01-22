@@ -55,7 +55,51 @@ function displayClubDetails(club) {
     
     <style>
       @media print {
-        .print-header { display: block !important; }
+        @page { margin: 10mm; size: A4; }
+        body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        
+        /* Layout Resets */
+        .container, main { max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        .no-print, nav, header, .accessibility-fab { display: none !important; }
+        
+        /* Main Border Container */
+        #clubDetails { 
+            border: 3px double #1e3a8a; 
+            padding: 20px; 
+            min-height: 270mm; 
+            box-sizing: border-box; 
+            position: relative; 
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; }
+        .dept-name { font-size: 12pt; font-weight: bold; color: #4b5563; text-transform: uppercase; margin-bottom: 5px; }
+        .print-header h1 { font-size: 22pt; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin: 5px 0; letter-spacing: 1px; }
+        .club-name-display { font-size: 14pt; font-weight: bold; color: #000; background: #f3f4f6; padding: 6px 20px; border-radius: 20px; border: 1px solid #d1d5db; display: inline-block; margin-top: 5px; }
+
+        /* Info Grid */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .detail-card { border: 1px solid #9ca3af; padding: 0; margin-bottom: 10px; page-break-inside: avoid; border-radius: 4px; overflow: hidden; }
+        .detail-card h2 { background-color: #1e3a8a !important; color: white !important; padding: 5px 10px; font-size: 10pt; font-weight: bold; margin: 0 0 5px 0; text-transform: uppercase; border-bottom: 1px solid #1e3a8a; }
+        .info-row { display: flex; gap: 10px; padding: 0 10px 5px 10px; margin-bottom: 2px; }
+        .info-row > div { flex: 1; }
+        .detail-card label { font-size: 7.5pt; font-weight: bold; color: #555; display: block; text-transform: uppercase; }
+        .detail-card p { font-size: 9pt; font-weight: 600; color: #000; border-bottom: 1px dotted #ccc; margin: 0; padding-bottom: 1px; min-height: 16px; }
+
+        /* Equipment Grid */
+        .equipment-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border: 1px solid #9ca3af; padding: 8px; margin-bottom: 20px; }
+        .equipment-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; padding: 4px 8px; border-radius: 4px; page-break-inside: avoid; }
+        .equipment-item .eq-name { font-size: 8pt; font-weight: 600; color: #333; }
+        .equipment-item .eq-qty { font-size: 8pt; font-weight: bold; background: #eee; padding: 1px 6px; border-radius: 4px; }
+
+        /* Footer & Signatures */
+        .print-footer { display: block !important; position: absolute; bottom: 0; left: 0; right: 0; padding: 0 20px 10px; width: 100%; box-sizing: border-box; }
+        .signatures { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .sig-block { width: 200px; text-align: center; }
+        .sig-line { border-bottom: 1px dotted #000; margin-bottom: 5px; height: 20px; }
+        .sig-label { font-size: 9pt; font-weight: bold; text-transform: uppercase; }
+        .footer-bottom { border-top: 2px solid #1e3a8a; padding-top: 5px; text-align: center; font-size: 8pt; color: #555; }
       }
     </style>
 
@@ -174,11 +218,11 @@ function displayClubDetails(club) {
     <div class="print-footer" style="display: none;">
       <div class="signatures">
         <div class="sig-block">
-            <div class="sig-line">............................................................</div>
+            <div class="sig-line"></div>
             <div class="sig-label" data-i18n="footer.created_by">Created By</div>
         </div>
         <div class="sig-block">
-            <div class="sig-line">............................................................</div>
+            <div class="sig-line"></div>
             <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
         </div>
       </div>

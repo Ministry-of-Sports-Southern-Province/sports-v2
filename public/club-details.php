@@ -274,18 +274,55 @@ $customStyles = '
                 
                 .print-footer {
                     position: absolute;
-                    bottom: 10px;
+                    bottom: 0;
                     left: 0;
                     right: 0;
-                    margin-top: 20px;
-                    padding-top: 10px;
+                    width: 100%;
+                    padding: 0 15px 10px 15px; /* Padding inside the footer area */
+                    box-sizing: border-box;
+                }
+
+                .signatures {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 30px; /* Space between signature and footer note */
+                    padding: 0 10px;
+                }
+
+                .sig-block {
+                    text-align: center;
+                    width: 200px;
+                }
+
+                .sig-line {
+                    color: #9ca3af;
+                    margin-bottom: 5px;
+                    letter-spacing: -1px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    font-weight: bold;
+                }
+
+                .sig-label {
+                    font-weight: bold;
+                    font-size: 9pt;
+                    color: #000;
+                    text-transform: uppercase;
+                }
+                
+                .footer-bottom {
                     border-top: 2px solid #1e3a8a;
+                    padding-top: 8px;
+                    text-align: center;
+                }
+
+                .footer-bottom p {
+                    margin: 0;
+                    border: none;
                     font-size: 7pt;
                     color: #374151;
-                    text-align: center;
-                    width: 100%;
+                    font-weight: normal;
                 }
-            }
     ';
 
 // No additional links needed for this page
@@ -312,7 +349,7 @@ include '../includes/header.php';
 
 <?php
 // Scripts to include
-$scripts = ['../assets/js/club-details.js'];
+$scripts = ['../assets/js/club-details.js?v=' . time()];
 
 // Include footer
 include '../includes/footer.php';
