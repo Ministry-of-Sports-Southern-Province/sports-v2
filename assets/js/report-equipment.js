@@ -144,11 +144,17 @@ function displayReport(
   const gnDivisionText = gnDivision ? ` | GN Division: ${gnDivision}` : "";
 
   output.innerHTML = `
-        <div class="text-center mb-6">
+        <div class="print-header" style="display: none;">
+            <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
+            <h1 data-i18n="report.type_equipment">Equipment Report</h1>
+            <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</div>
+        </div>
+
+        <div class="text-center mb-6 no-print">
             <h2 class="text-2xl font-bold">Southern Province Sports Department</h2>
             <h3 class="text-xl mt-2">Equipment Report</h3>
             <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</p>
-            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString()}</p>
+            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString('si-LK')}</p>
         </div>
         <table class="min-w-full border-collapse border border-gray-300">
             <thead class="bg-gray-100">
@@ -185,5 +191,20 @@ function displayReport(
         <div class="mt-6 text-sm text-gray-600">
             <p>Total Records: ${data.length}</p>
         </div>
+
+        <div class="print-footer" style="display: none;">
+            <div class="sig-block">
+                <div class="sig-line"></div>
+                <div class="sig-label" data-i18n="footer.created_by">Created By</div>
+            </div>
+            <div class="sig-block">
+                <div class="sig-line"></div>
+                <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
+            </div>
+        </div>
     `;
+
+  if (window.i18n && window.i18n.applyTranslations) {
+    window.i18n.applyTranslations();
+  }
 }

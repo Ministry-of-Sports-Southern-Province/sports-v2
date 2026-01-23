@@ -43,6 +43,7 @@ try {
                 c.registration_date,
                 c.chairman_name,
                 c.chairman_address,
+                c.chairman_phone,
                 c.secretary_name,
                 c.secretary_address,
                 d.name as district_name,
@@ -100,76 +101,128 @@ try {
 
     // Generate HTML table for PDF
     $html = '<meta charset="UTF-8"><style>
+        @page { size: A4 landscape; margin: 10mm; }
         body { 
             font-family: ' . $fontFamily . '; 
-            margin: 20px; 
+            margin: 0; 
+            padding: 10mm;
             direction: ' . $dir . ';
+            box-sizing: border-box;
+            background: white;
         }
-        h1 { 
-            text-align: center; 
-            color: #1f2937; 
-            margin-bottom: 5px; 
-            font-size: 24px;
+        .report-wrapper {
+            border: 3px double #1e3a8a;
+            padding: 20px;
+            min-height: 180mm;
+            position: relative;
+            box-sizing: border-box;
         }
-        p { 
+        .print-header { 
             text-align: center; 
-            color: #666; 
-            margin-bottom: 20px; 
-            font-size: 12px; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid #1e3a8a; 
+            padding-bottom: 15px; 
+        }
+        .dept-name { 
+            font-size: 12pt; 
+            font-weight: bold; 
+            color: #4b5563; 
+            text-transform: uppercase; 
+            margin-bottom: 8px; 
+        }
+        .print-header h1 { 
+            font-size: 24pt; 
+            font-weight: 900; 
+            color: #1e3a8a; 
+            text-transform: uppercase; 
+            margin: 5px 0; 
+            letter-spacing: 1px; 
+        }
+        .report-info {
+            font-size: 11pt;
+            color: #374151;
+            margin-top: 10px;
+            font-weight: 500;
         }
         table { 
             width: 100%; 
             border-collapse: collapse; 
-            margin-top: 20px; 
+            margin-top: 15px; 
+            border: 1px solid #1e3a8a;
         }
         th { 
-            background-color: #2563eb; 
+            background-color: #1e3a8a; 
             color: white; 
-            padding: 12px; 
-            text-align: left; 
-            border: 1px solid #ddd; 
+            padding: 8px 4px; 
+            text-align: center; 
+            border: 1px solid #1e3a8a; 
             font-weight: bold; 
-            font-size: 11px; 
+            font-size: 9pt; 
+            text-transform: uppercase;
         }
         td { 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            font-size: 10px; 
+            padding: 6px 4px; 
+            border: 1px solid #d1d5db; 
+            font-size: 8.5pt; 
+            color: #000;
         }
         tr:nth-child(even) { 
             background-color: #f9fafb; 
         }
-        tr:hover { 
-            background-color: #f3f4f6; 
+        .signatures { 
+            display: table;
+            width: 100%;
+            margin-top: 50px; 
         }
-        .footer { 
-            margin-top: 30px; 
+        .sig-block { 
+            display: table-cell;
+            width: 50%; 
             text-align: center; 
-            font-size: 10px; 
-            color: #999; 
-            border-top: 1px solid #ddd; 
-            padding-top: 10px; 
+        }
+        .sig-line { 
+            border-bottom: 1.5px dotted #1e3a8a; 
+            width: 200px;
+            margin: 0 auto 8px auto;
+            height: 30px; 
+        }
+        .sig-label { 
+            font-size: 10pt; 
+            font-weight: bold; 
+            color: #1e3a8a; 
+            text-transform: uppercase; 
+        }
+        .footer-bottom { 
+            margin-top: 30px; 
+            border-top: 2px solid #1e3a8a; 
+            padding-top: 8px; 
+            text-align: center; 
+            font-size: 8pt; 
+            color: #555; 
         }
     </style>';
 
+    $html .= '<div class="report-wrapper">';
+    $html .= '<div class="print-header">';
+    $html .= '<div class="dept-name">' . htmlspecialchars(t('header.department_name', 'Southern Province Sports Department')) . '</div>';
     $html .= '<h1>' . htmlspecialchars(t('page.dashboard_title', 'Sports Clubs Report')) . '</h1>';
-    $html .= '<p>' . htmlspecialchars(t('form.registration_date', 'Registration Date')) . ': ' . date('F d, Y H:i') . '</p>';
-    $html .= '<p>' . htmlspecialchars(t('table.total', 'Total')) . ': ' . count($clubs) . '</p>';
+    $html .= '<div class="report-info">';
+    $html .= htmlspecialchars(t('table.total', 'Total')) . ': ' . count($clubs) . ' | ';
+    $html .= htmlspecialchars(t('report.generated_date', 'Generated')) . ': ' . date('Y-m-d H:i');
+    $html .= '</div>';
+    $html .= '</div>';
 
     $html .= '<table>';
     $html .= '<thead>';
     $html .= '<tr>';
-    $html .= '<th>' . htmlspecialchars(t('table.reg_number', 'Registration No')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.registration_date', 'Registration Date')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.club_name', 'Club Name')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.division', 'Division')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.gn_division', 'GN Division')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.chairman', 'Chairman')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.chairman_address', 'Chairman Address')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.secretary_name', 'Secretary Name')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.secretary_address', 'Secretary Address')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.last_reorg_date', 'Last Reorganization Date')) . '</th>';
-    $html .= '<th>' . htmlspecialchars(t('table.next_reorg_due_date', 'Next Reorganization Due Date')) . '</th>';
+    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.reg_number', 'Reg No')) . '</th>';
+    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.registration_date', 'Reg Date')) . '</th>';
+    $html .= '<th style="width: 12%">' . htmlspecialchars(t('table.club_name', 'Club Name')) . '</th>';
+    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.division', 'Division')) . '</th>';
+    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.gn_division', 'GN')) . '</th>';
+    $html .= '<th style="width: 14%">' . htmlspecialchars(t('table.chairman', 'Chairman')) . '</th>';
+    $html .= '<th style="width: 14%">' . htmlspecialchars(t('table.secretary_name', 'Secretary')) . '</th>';
+    $html .= '<th style="width: 10%">' . htmlspecialchars(t('table.last_reorg_date', 'Last Reorg')) . '</th>';
+    $html .= '<th style="width: 10%">' . htmlspecialchars(t('table.next_reorg_due_date', 'Next Due')) . '</th>';
     $html .= '</tr>';
     $html .= '</thead>';
     $html .= '<tbody>';
@@ -199,20 +252,26 @@ try {
         $html .= '<td>' . htmlspecialchars($club['name']) . '</td>';
         $html .= '<td>' . htmlspecialchars($club['division_name'] ?? '') . '</td>';
         $html .= '<td>' . htmlspecialchars($club['gn_division_name'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['chairman_name'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['chairman_address'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['secretary_name'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['secretary_address'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['last_reorg_date'] ? date('Y-m-d', strtotime($club['last_reorg_date'])) : '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($nextReorgDate) . '</td>';
+        $html .= '<td>' . htmlspecialchars($club['chairman_name'] ?? '') . '<br><small style="color:#666; font-size:7pt;">' . htmlspecialchars($club['chairman_address'] ?? '') . '</small></td>';
+        $html .= '<td>' . htmlspecialchars($club['secretary_name'] ?? '') . '<br><small style="color:#666; font-size:7pt;">' . htmlspecialchars($club['secretary_address'] ?? '') . '</small></td>';
+        $html .= '<td>' . htmlspecialchars($club['last_reorg_date'] ? date('Y-m-d', strtotime($club['last_reorg_date'])) : '-') . '</td>';
+        $html .= '<td>' . htmlspecialchars($nextReorgDate ?: '-') . '</td>';
         $html .= '</tr>';
     }
 
     $html .= '</tbody>';
     $html .= '</table>';
-    $html .= '<div class="footer">';
+
+    $html .= '<div class="signatures">';
+    $html .= '<div class="sig-block"><div class="sig-line"></div><div class="sig-label">' . htmlspecialchars(t('footer.created_by', 'Created By')) . '</div></div>';
+    $html .= '<div class="sig-block"><div class="sig-line"></div><div class="sig-label">' . htmlspecialchars(t('footer.approved_by', 'Approved By')) . '</div></div>';
+    $html .= '</div>';
+
+    $html .= '<div class="footer-bottom">';
     $html .= '<p>' . htmlspecialchars(t('footer.copyright', 'Southern Province Sports Department © 2026. All rights reserved.')) . '</p>';
     $html .= '</div>';
+    $html .= '</div>'; // report-wrapper closing
+
 
     // Return HTML that can be processed by html2pdf
     sendJSONResponse(true, ['html' => $html], 'PDF data generated successfully', 200);

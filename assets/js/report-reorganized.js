@@ -53,7 +53,13 @@ function displayReport(data, year, district) {
     const districtText = district || 'සියලු දිස්ත්රික්ක';
     
     output.innerHTML = `
-        <div class="text-center mb-6">
+        <div class="print-header" style="display: none;">
+            <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
+            <h1 data-i18n="report.type_reorganized">ප්රතිසංවිධාන සමාජ වාර්තාව</h1>
+            <div class="text-sm">වර්ෂය: ${year} | දිස්ත්රික්කය: ${districtText}</div>
+        </div>
+
+        <div class="text-center mb-6 no-print">
             <h2 class="text-2xl font-bold">දකුණු පළාත් ක්රීඩා අමාත්යාංශය</h2>
             <h3 class="text-xl mt-2">ප්රතිසංවිධාන සමාජ වාර්තාව - ${year}</h3>
             <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText}</p>
@@ -88,5 +94,20 @@ function displayReport(data, year, district) {
         <div class="mt-6 text-sm text-gray-600">
             <p>මුළු වාර්තා ගණන: ${data.length}</p>
         </div>
+
+        <div class="print-footer" style="display: none;">
+            <div class="sig-block">
+                <div class="sig-line"></div>
+                <div class="sig-label" data-i18n="footer.created_by">Created By</div>
+            </div>
+            <div class="sig-block">
+                <div class="sig-line"></div>
+                <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
+            </div>
+        </div>
     `;
+
+    if (window.i18n && window.i18n.applyTranslations) {
+        window.i18n.applyTranslations();
+    }
 }

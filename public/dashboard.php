@@ -70,6 +70,125 @@ $customStyles = '
             color: #9ca3af;
             font-size: 14px;
         }
+
+        /* ----- Print Container and Styles (Club Detail Model) ----- */
+        #printContainer {
+            display: none;
+        }
+
+        @media print {
+            @page { 
+                size: A4 landscape; 
+                margin: 5mm; /* Minimal browser margins for maximum space */
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            /* Hide all main dashboard elements */
+            body > *:not(#printContainer) {
+                display: none !important;
+            }
+            
+            /* Hide floating widgets/headers/footers */
+            .accessibility-fab, .accessibility-panel, header, footer {
+                display: none !important;
+            }
+
+            /* Show Print Container */
+            #printContainer {
+                display: block !important;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 9999;
+            }
+
+            /* Report Page Layout (Classic Certificate Style) */
+            .print-page-wrapper {
+                width: 100%;
+                min-height: 195mm; 
+                border: 3px double #1e3a8a;
+                padding: 10mm;
+                box-sizing: border-box;
+                background: white;
+                
+                /* Layout: Header top, Content middle, Footer bottom */
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .report-content {
+                flex-grow: 1;
+                width: 100%;
+            }
+
+            /* Header */
+            .print-header { 
+                text-align: center; 
+                margin-bottom: 20px; 
+                border-bottom: 2px solid #1e3a8a; 
+                padding-bottom: 10px; 
+            }
+            .print-header .dept-name { 
+                font-size: 10pt;
+                font-weight: bold; 
+                color: #4b5563; 
+                text-transform: uppercase; 
+                margin-bottom: 5px; 
+            }
+            .print-header h1 { 
+                font-size: 20pt;
+                font-weight: 900; 
+                color: #1e3a8a; 
+                text-transform: uppercase; 
+                margin: 5px 0; 
+                letter-spacing: 1px; 
+                line-height: 1.1;
+            }
+            .print-header .report-subtitle {
+                font-size: 12pt;
+                font-weight: bold;
+                color: #000;
+                margin-top: 10px;
+                background: #f3f4f6;
+                padding: 5px 15px;
+                border-radius: 20px;
+                display: inline-block;
+                border: 1px solid #d1d5db;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            
+            /* Table Styling */
+            #printContainer table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 10px; table-layout: fixed; }
+            #printContainer table th { 
+                background-color: #1e3a8a !important; 
+                color: white !important; 
+                font-weight: bold; 
+                padding: 5px; 
+                border: 1px solid #ccc; 
+                text-align: left; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            #printContainer table td { padding: 4px; border: 1px solid #ccc; font-size: 8pt; color: #333; }
+            #printContainer table tr:nth-child(even) { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            
+            /* Footer */
+            .print-footer { margin-top: 20px; width: 100%; }
+            .signatures { display: flex; justify-content: space-between; margin-bottom: 30px; margin-top: 40px; }
+            .sig-block { width: 200px; text-align: center; }
+            .sig-line { border-bottom: 1px dotted #000; margin-bottom: 5px; height: 20px; }
+            .sig-label { font-size: 9pt; font-weight: bold; text-transform: uppercase; color: black; }
+            .footer-bottom { border-top: 2px solid #1e3a8a; padding-top: 5px; text-align: center; font-size: 8pt; color: #555; }
+        }
 ';
 
 // Additional links for Chart.js and PDF export library

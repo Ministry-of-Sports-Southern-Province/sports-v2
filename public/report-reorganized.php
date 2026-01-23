@@ -33,7 +33,117 @@ include '../includes/header.php';
     <div id="reportOutput" class="bg-white rounded-lg shadow p-6"></div>
 </main>
 
-<style>@media print { .no-print { display: none !important; } }</style>
+<style>
+    @media print {
+        @page {
+            margin: 10mm;
+            size: A4 landscape;
+        }
+        
+        body {
+            background: white;
+            font-size: 9pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .no-print, nav, .gov-header, footer, .accessibility-fab, .mb-4, .bg-white.rounded-lg.shadow.p-6.mb-6 {
+            display: none !important;
+        }
+        
+        .container, main {
+            max-width: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #reportOutput {
+            box-shadow: none !important;
+            border: 2px solid #1e3a8a !important;
+            padding: 15px !important;
+            min-height: 180mm;
+            border-radius: 8px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .print-header {
+            display: block !important;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1e3a8a;
+        }
+
+        .print-header .dept-name {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #4b5563;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .print-header h1 {
+            font-size: 22pt;
+            font-weight: 900;
+            color: #1e3a8a;
+            margin: 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #1e3a8a !important;
+            color: white !important;
+            padding: 8px 4px !important;
+            border: 1px solid #1e3a8a !important;
+            font-size: 9pt;
+        }
+
+        td {
+            border: 1px solid #d1d5db !important;
+            padding: 6px 4px !important;
+            font-size: 9pt;
+            color: #000 !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb !important;
+        }
+
+        .print-footer {
+            display: flex !important;
+            justify-content: space-between;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .sig-block {
+            text-align: center;
+            width: 200px;
+        }
+
+        .sig-line {
+            border-bottom: 1px dotted #1e3a8a;
+            margin-bottom: 5px;
+            height: 30px;
+        }
+
+        .sig-label {
+            font-weight: bold;
+            font-size: 8pt;
+            text-transform: uppercase;
+        }
+    }
+</style>
 
 <?php
 $scripts = ['../assets/js/report-reorganized.js'];
