@@ -567,6 +567,7 @@ function loadClubs() {
  * Display clubs in table
  */
 function displayClubs(clubs) {
+  currentClubsData = clubs; // Store for printing
   const tbody = document.getElementById("clubsTableBody");
 
   if (clubs.length === 0) {
@@ -800,9 +801,7 @@ function deleteClub(clubId, clubName) {
       }
     });
 }
-/**
- * Export clubs to Excel
- */
+
 /**
  * Export clubs to Excel (Server-side CSV export)
  */
@@ -853,66 +852,91 @@ function exportToExcel() {
 }
 
 /**
- * Export clubs to PDF
+ * Store clubs data for printing
  */
-function exportToPDF() {
-  // Check if required libraries are loaded
-  if (typeof html2pdf === "undefined") {
-    alert("PDF export library is loading. Please try again in a moment.");
-    console.error("html2pdf library not loaded");
+let currentClubsData = [];
+
+/**
+ * Populate print container with current data
+ */
+function populatePrintContainer() {
+  const printTableBody = document.getElementById("printTableBody");
+  const printFilterInfo = document.getElementById("printFilterInfo");
+
+  if (!printTableBody) return;
+
+  // Clear existing content
+  printTableBody.innerHTML = "";
+
+  // Get filter info
+  const search = document.getElementById("searchInput").value;
+  const districtSelect = document.getElementById("filterDistrict");
+  const divisionSelect = document.getElementById("filterDivision");
+  const gnDivisionSelect = document.getElementById("filterGnDivision");
+
+  let filterText = window.i18n
+    ? window.i18n.t("filter.all_clubs")
+    : "All Clubs";
+
+  if (gnDivisionSelect.value) {
+    filterText =
+      gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
+  } else if (divisionSelect.value) {
+    filterText = divisionSelect.options[divisionSelect.selectedIndex].text;
+  } else if (districtSelect.value) {
+    filterText = districtSelect.options[districtSelect.selectedIndex].text;
+  }
+
+  if (search) {
+    filterText += ` - ${window.i18n ? window.i18n.t("placeholder.search") : "Search"}: ${search}`;
+  }
+
+  printFilterInfo.textContent = filterText;
+
+  // Populate table with current clubs data
+  if (currentClubsData.length === 0) {
+    printTableBody.innerHTML =
+      '<tr><td colspan="12" style="text-align: center; padding: 20px;">No data available</td></tr>';
     return;
   }
 
-  const search = document.getElementById("searchInput").value;
-  const districtId = document.getElementById("filterDistrict").value;
-  const divisionId = document.getElementById("filterDivision").value;
-  const gnDivisionId = document.getElementById("filterGnDivision").value;
-  const language = localStorage.getItem("language") || "si";
+  currentClubsData.forEach((club, index) => {
+    const tr = document.createElement("tr");
 
-  // Build query parameters
-  const params = new URLSearchParams();
-  if (search) params.append("search", search);
-  if (districtId) params.append("district_id", districtId);
-  if (divisionId) params.append("division_id", divisionId);
-  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
-  params.append("language", language);
+    const statusText =
+      club.reorg_status === "active"
+        ? window.i18n
+          ? window.i18n.t("status.active")
+          : "Active"
+        : window.i18n
+          ? window.i18n.t("status.expired")
+          : "Expired";
 
-  // Show loading indicator
-  const originalBtn = event.target;
-  const originalText = originalBtn.textContent;
-  originalBtn.disabled = true;
-  originalBtn.textContent = "Generating PDF...";
+    tr.innerHTML = `
+      <td style="text-align: center;">${index + 1}</td>
+      <td>${escapeHtml(club.reg_number || "-")}</td>
+      <td>${escapeHtml(club.name)}</td>
+      <td>${escapeHtml(club.district_name || "-")}</td>
+      <td>${escapeHtml(club.division_name || "-")}</td>
+      <td>${escapeHtml(club.gn_division_name || "-")}</td>
+      <td>${escapeHtml(club.chairman_name || "-")}</td>
+      <td>${escapeHtml(club.chairman_phone || "-")}</td>
+      <td>${escapeHtml(club.secretary_name || "-")}</td>
+      <td>${escapeHtml(club.secretary_phone || "-")}</td>
+      <td style="text-align: center;">${formatDate(club.registration_date)}</td>
+      <td style="text-align: center;">${statusText}</td>
+    `;
 
-  // Fetch PDF data from API
-  fetch(`/sports-v2/api/export-clubs-pdf.php?${params.toString()}`)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success && data.data.html) {
-        // PDF options
-        const options = {
-          margin: [10, 10, 10, 10],
-          filename: `clubs_report_${new Date().toISOString().split("T")[0]}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, letterRendering: true },
-          jsPDF: { orientation: "landscape", unit: "mm", format: "a4" },
-        };
+    printTableBody.appendChild(tr);
+  });
 
-        // Generate PDF from HTML
-        html2pdf().set(options).from(data.data.html).save();
-
-        // Reset button
-        originalBtn.disabled = false;
-        originalBtn.textContent = originalText;
-      } else {
-        alert(data.message || "Failed to generate PDF data");
-        originalBtn.disabled = false;
-        originalBtn.textContent = originalText;
-      }
-    })
-    .catch((error) => {
-      console.error("Error exporting to PDF:", error);
-      alert("Failed to export data. Please try again.");
-      originalBtn.disabled = false;
-      originalBtn.textContent = originalText;
-    });
+  // Apply translations to print container
+  if (window.i18n && window.i18n.applyTranslations) {
+    window.i18n.applyTranslations();
+  }
 }
+
+// Listen for print event to populate print container
+window.addEventListener("beforeprint", function () {
+  populatePrintContainer();
+});
