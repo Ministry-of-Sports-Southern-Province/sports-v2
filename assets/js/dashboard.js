@@ -915,16 +915,17 @@ function populatePrintContainer() {
     tr.innerHTML = `
       <td style="text-align: center;">${index + 1}</td>
       <td>${escapeHtml(club.reg_number || "-")}</td>
+      <td style="text-align: center;">${formatDate(club.registration_date)}</td>
       <td>${escapeHtml(club.name)}</td>
       <td>${escapeHtml(club.district_name || "-")}</td>
       <td>${escapeHtml(club.division_name || "-")}</td>
       <td>${escapeHtml(club.gn_division_name || "-")}</td>
       <td>${escapeHtml(club.chairman_name || "-")}</td>
-      <td>${escapeHtml(club.chairman_phone || "-")}</td>
+      <td>${escapeHtml(club.chairman_address || "-")}</td>
       <td>${escapeHtml(club.secretary_name || "-")}</td>
-      <td>${escapeHtml(club.secretary_phone || "-")}</td>
-      <td style="text-align: center;">${formatDate(club.registration_date)}</td>
-      <td style="text-align: center;">${statusText}</td>
+      <td>${escapeHtml(club.secretary_address || "-")}</td>
+      <td style="text-align: center;">${formatDate(club.last_reorg_date)}</td>
+      <td style="text-align: center;">${formatDate(club.next_reorg_due_date)}</td>
     `;
 
     printTableBody.appendChild(tr);

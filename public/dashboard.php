@@ -321,30 +321,31 @@ include '../includes/header.php';
             <h1 data-i18n="page.dashboard_title">Sports Clubs Dashboard</h1>
             <div class="report-subtitle" id="printFilterInfo"></div>
         </div>
-        
+
         <div class="report-content">
             <table id="printTable">
                 <thead>
                     <tr>
-                        <th data-i18n="table.no">#</th>
-                        <th data-i18n="table.reg_number">Reg. No.</th>
+                        <th data-i18n="table.no"></th>
+                        <th data-i18n="table.reg_number">Reg No.</th>
+                        <th data-i18n="table.registration_date"></th>
                         <th data-i18n="table.club_name">Club Name</th>
                         <th data-i18n="table.district">District</th>
                         <th data-i18n="table.division">Division</th>
                         <th data-i18n="table.gn_division">GN Division</th>
-                        <th data-i18n="table.chairman">Chairman</th>
-                        <th data-i18n="table.chairman_phone">Phone</th>
-                        <th data-i18n="table.secretary_name">Secretary</th>
-                        <th data-i18n="table.secretary_phone">Phone</th>
-                        <th data-i18n="table.registration_date">Reg. Date</th>
-                        <th data-i18n="table.reorg_status">Status</th>
+                        <th data-i18n="table.chairman">Chairman's name</th>
+                        <th data-i18n="table.chairman_address">Address</th>
+                        <th data-i18n="table.secretary_name">Secretary's name</th>
+                        <th data-i18n="table.secretary_address">Address</th>
+                        <th data-i18n="table.last_reorg_date">Last Reorg Date</th>
+                        <th data-i18n="table.next_reorg_due_date">Next Reorg Due Date</th>
                     </tr>
                 </thead>
                 <tbody id="printTableBody">
                 </tbody>
             </table>
         </div>
-        
+
         <div class="print-footer">
             <div class="signatures">
                 <div class="sig-block">
