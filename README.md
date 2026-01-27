@@ -1,6 +1,6 @@
 # Sports Club Management System v2.0
 
-A modern sports club management system for the Southern Province Sports Department (දකුණු පළාත් ක්‍රීඩා අමාත්‍යාංශය) built with clean architecture, proper database normalization, and multilingual support.
+A modern sports club management system for the Southern Province Sports Department (දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව) built with clean architecture, proper database normalization, and multilingual support.
 
 ## Features
 
@@ -89,7 +89,6 @@ define('DB_PASS', '');               // Change if needed
 ### Step 3: Access the System
 
 1. Place the `sports-v2` folder in your web server's document root:
-
    - WAMP: `c:\wamp64\www\sports-v2`
    - XAMPP: `c:\xampp\htdocs\sports-v2`
 
@@ -107,25 +106,21 @@ define('DB_PASS', '');               // Change if needed
    - Enter manual number (digits only)
    - System validates uniqueness in real-time
 3. **Location Information**:
-
    - Type at least 3 characters to search districts/divisions/GN divisions
    - Can add new entries on-the-fly (saved immediately)
    - District selection filters divisions
    - Division selection filters GN divisions
 
 4. **Chairman & Secretary Information**:
-
    - Enter name, address, and 10-digit phone number
    - Phone validated automatically
 
 5. **Equipment** (Optional):
-
    - Check standard equipment and enter quantities (min: 1)
    - Use "Add Other Equipment" for custom items
    - Custom equipment supports autocomplete
 
 6. **Registration Date**:
-
    - Choose "Use Current Date" (default) OR
    - Choose "Enter Past Date" for backdated registrations
    - Manual date cannot be in the future

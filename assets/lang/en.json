@@ -93,6 +93,7 @@
   "table.division": "Division",
   "table.gn_division": "GN Division",
   "table.chairman": "Chairman",
+  "table.chairman_name": "Chairman Name",
   "table.chairman_address": "Chairman Address",
   "table.chairman_phone": "Phone Number",
   "table.secretary": "Secretary",

@@ -114,7 +114,7 @@ try {
         t('table.club_name', 'Club Name'),
         t('table.division', 'Division'),
         t('table.gn_division', 'GN Division'),
-        t('table.chairman', 'Chairman'),
+        t('table.chairman_name', 'Chairman Name'),
         t('table.chairman_address', 'Chairman Address'),
         t('table.secretary_name', 'Secretary Name'),
         t('table.secretary_address', 'Secretary Address'),

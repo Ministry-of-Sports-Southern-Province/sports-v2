@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Restore Complete Translation Files with Statistics Keys
  * This script restores all translation keys including the new statistics keys
@@ -117,7 +118,7 @@ $siJson = [
     "status.inactive" => "අක්‍රිය",
     "status.pending" => "විමසීමට ලක් පවතී",
     "page.welcome_title" => "ක්‍රීඩා සමාජ කළමනාකරන පද්ධතිය",
-    "page.welcome_subtitle" => "දකුණු පළාත් ක්‍රීඩා අමාත්‍යාංශය",
+    "page.welcome_subtitle" => "දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව",
     "page.welcome_description" => "ක්‍රීඩා සමාජ ලියාපදිංචි කිරීම සහ කළමනාකරනය සඳහා වන ඩිජිටල් පද්ධතිය",
     "button.register_new_club" => "නව සමාජයක් ලියාපදිංචි කරන්න",
     "button.view_clubs" => "සමාජ බලන්න",

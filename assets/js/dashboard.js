@@ -810,7 +810,7 @@ function exportToExcel() {
   const districtId = document.getElementById("filterDistrict").value;
   const divisionId = document.getElementById("filterDivision").value;
   const gnDivisionId = document.getElementById("filterGnDivision").value;
-  const language = localStorage.getItem("language") || "si";
+  const language = localStorage.getItem("language") 
 
   // Build query parameters
   const params = new URLSearchParams();
@@ -879,8 +879,7 @@ function populatePrintContainer() {
     : "All Clubs";
 
   if (gnDivisionSelect.value) {
-    filterText =
-      gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
+    filterText = gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
   } else if (divisionSelect.value) {
     filterText = divisionSelect.options[divisionSelect.selectedIndex].text;
   } else if (districtSelect.value) {
@@ -941,3 +940,58 @@ function populatePrintContainer() {
 window.addEventListener("beforeprint", function () {
   populatePrintContainer();
 });
+
+
+/* JavaScript for Print with Date */
+function printWithDate() {
+  // Store original title
+  const originalTitle = document.title;
+
+  // Get current date in YYYY-MM-DD format
+  const now = new Date();
+  const dateStr =
+    now.getFullYear() +
+    "-" +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(now.getDate()).padStart(2, "0");
+
+  // Get filter info if available
+  let filterInfo = "";
+  const district = document.getElementById("filterDistrict")?.value;
+  const division = document.getElementById("filterDivision")?.value;
+
+  if (district) {
+    const districtText =
+      document.getElementById("filterDistrict")?.selectedOptions[0]?.text;
+    filterInfo = "_" + districtText.replace(/\s+/g, "_");
+  }
+
+  if (division) {
+    const divisionText =
+      document.getElementById("filterDivision")?.selectedOptions[0]?.text;
+    filterInfo += "_" + divisionText.replace(/\s+/g, "_");
+  }
+
+  /* ✅ PUT IT HERE */
+  const printFilterEl = document.getElementById("printFilterInfo");
+  if (printFilterEl) {
+    printFilterEl.textContent =
+      "Sports Clubs Report | " +
+      dateStr +
+      (filterInfo ? " | " + filterInfo.replaceAll("_", " ") : "");
+  }
+
+  // Optional: update title (for tab / header only)
+  document.title = "Sports_Clubs_Report_" + dateStr + filterInfo;
+
+  // Print
+  window.print();
+
+  // Restore original title (give browser enough time)
+  setTimeout(() => {
+    document.title = originalTitle;
+  }, 5000);
+}
+
+

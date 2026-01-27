@@ -114,7 +114,7 @@ $customStyles = '
                 width: 100%;
                 min-height: 195mm; 
                 border: 3px double #1e3a8a;
-                padding: 10mm;
+                padding: 8mm;
                 box-sizing: border-box;
                 background: white;
                 
@@ -132,63 +132,67 @@ $customStyles = '
             /* Header */
             .print-header { 
                 text-align: center; 
-                margin-bottom: 20px; 
+                margin-bottom: 12px; 
                 border-bottom: 2px solid #1e3a8a; 
-                padding-bottom: 10px; 
+                padding-bottom: 6px; 
             }
             .print-header .dept-name { 
-                font-size: 10pt;
+                font-size: 9pt;
                 font-weight: bold; 
                 color: #4b5563; 
                 text-transform: uppercase; 
-                margin-bottom: 5px; 
+                margin-bottom: 3px; 
             }
             .print-header h1 { 
-                font-size: 20pt;
+                font-size: 16pt;
                 font-weight: 900; 
                 color: #1e3a8a; 
                 text-transform: uppercase; 
-                margin: 5px 0; 
-                letter-spacing: 1px; 
-                line-height: 1.1;
+                margin: 3px 0; 
+                letter-spacing: 0.5px; 
+                line-height: 1;
             }
             .print-header .report-subtitle {
-                font-size: 12pt;
+                font-size: 10pt;
                 font-weight: bold;
                 color: #000;
-                margin-top: 10px;
+                margin-top: 6px;
                 background: #f3f4f6;
-                padding: 5px 15px;
-                border-radius: 20px;
+                padding: 3px 12px;
+                border-radius: 15px;
                 display: inline-block;
                 border: 1px solid #d1d5db;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             
-            /* Table Styling */
-            #printContainer table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 10px; table-layout: fixed; }
+            /* Table Styling - Compact for Maximum Rows */
+            #printContainer table { width: 100%; border-collapse: collapse; font-size: 7pt; margin-top: 8px; table-layout: fixed; line-height: 1.2; }
             #printContainer table th { 
                 background-color: #1e3a8a !important; 
                 color: white !important; 
                 font-weight: bold; 
-                padding: 5px; 
+                font-size: 7pt;
+                padding: 3px; 
                 border: 1px solid #ccc; 
                 text-align: left; 
+                line-height: 1.1;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
-            #printContainer table td { padding: 4px; border: 1px solid #ccc; font-size: 8pt; color: #333; }
+            #printContainer table td { padding: 2px 3px; border: 1px solid #ccc; font-size: 7pt; color: #333; line-height: 1.2; vertical-align: top; }
             #printContainer table tr:nth-child(even) { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
             /* Footer */
-            .print-footer { margin-top: 20px; width: 100%; }
-            .signatures { display: flex; justify-content: space-between; margin-bottom: 30px; margin-top: 40px; }
-            .sig-block { width: 200px; text-align: center; }
-            .sig-line { border-bottom: 1px dotted #000; margin-bottom: 5px; height: 20px; }
-            .sig-label { font-size: 9pt; font-weight: bold; text-transform: uppercase; color: black; }
-            .footer-bottom { border-top: 2px solid #1e3a8a; padding-top: 5px; text-align: center; font-size: 8pt; color: #555; }
+            .print-footer { margin-top: 12px; width: 100%; }
+            .signatures { display: flex; justify-content: space-between; margin-bottom: 20px; margin-top: 25px; }
+            .sig-block { width: 180px; text-align: center; }
+            .sig-line { border-bottom: 1px dotted #000; margin-bottom: 4px; height: 15px; }
+            .sig-label { font-size: 8pt; font-weight: bold; text-transform: uppercase; color: black; }
+            .footer-bottom { border-top: 2px solid #1e3a8a; padding-top: 4px; text-align: center; font-size: 7pt; color: #555; }
         }
+        
+        
 ';
 
 // Additional links for Chart.js
@@ -236,7 +240,7 @@ include '../includes/header.php';
                 </svg>
                 <span data-i18n="button.export_excel">Excel</span>
             </button>
-            <button onclick="window.print()" class="action-btn px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-md font-medium flex items-center gap-2" title="Print Preview">
+            <button onclick="printWithDate()" class="action-btn px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-md font-medium flex items-center gap-2" title="Print Preview">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
@@ -292,7 +296,7 @@ include '../includes/header.php';
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.club_name"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.division"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.gn_division"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman"></th>
+                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_name"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_address"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_name"></th>
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_address"></th>
@@ -333,7 +337,7 @@ include '../includes/header.php';
                         <th data-i18n="table.district">District</th>
                         <th data-i18n="table.division">Division</th>
                         <th data-i18n="table.gn_division">GN Division</th>
-                        <th data-i18n="table.chairman">Chairman's name</th>
+                        <th data-i18n="table.chairman_name">Chairman's name</th>
                         <th data-i18n="table.chairman_address">Address</th>
                         <th data-i18n="table.secretary_name">Secretary's name</th>
                         <th data-i18n="table.secretary_address">Address</th>
