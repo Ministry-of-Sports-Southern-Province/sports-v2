@@ -40,7 +40,7 @@ include '../includes/header.php';
 
         <div class="flex gap-4">
             <button onclick="generateReport()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" data-i18n="button.generate_report">වාර්තාව උත්පාදනය කරන්න</button>
-            <button onclick="window.print()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700" data-i18n="button.print">මුද්රණය කරන්න</button>
+            <button onclick="printReportWithDate()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700" data-i18n="button.print">මුද්රණය කරන්න</button>
         </div>
     </div>
 
@@ -135,9 +135,17 @@ include '../includes/header.php';
         .print-footer {
             display: flex !important;
             justify-content: space-between;
+            align-items: flex-end;
             margin-top: 30px;
+            padding: 15px 50px 0 50px;
             border-top: 1px solid #eee;
-            padding-top: 15px;
+        }
+
+        .signatures {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
         }
 
         .sig-block {

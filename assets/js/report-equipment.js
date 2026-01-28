@@ -130,6 +130,37 @@ function generateReport() {
     });
 }
 
+// Print function with date
+function printReportWithDate() {
+  const originalTitle = document.title;
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + 
+                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                String(now.getDate()).padStart(2, '0');
+  
+  const equipment = document.getElementById("equipment")?.value;
+  const district = document.getElementById("district")?.value;
+  const division = document.getElementById("division")?.value;
+  
+  let filterInfo = '';
+  if (equipment) {
+    filterInfo = '_' + equipment.replace(/\s+/g, '_');
+  }
+  if (district) {
+    filterInfo += '_' + district.replace(/\s+/g, '_');
+  }
+  if (division) {
+    filterInfo += '_' + division.replace(/\s+/g, '_');
+  }
+  
+  document.title = 'Equipment_Report_' + dateStr + filterInfo;
+  window.print();
+  
+  setTimeout(() => {
+    document.title = originalTitle;
+  }, 1000);
+}
+
 function displayReport(
   data,
   equipment,
@@ -143,7 +174,180 @@ function displayReport(
   const divisionText = division ? ` | Division: ${division}` : "";
   const gnDivisionText = gnDivision ? ` | GN Division: ${gnDivision}` : "";
 
+  // Calculate total
+  const totalQuantity = data.reduce((sum, row) => sum + parseInt(row.quantity || 0), 0);
+
+  // Sort data by district, division, gn_division for proper grouping
+  const sortedData = [...data].sort((a, b) => {
+    if (a.district !== b.district) return (a.district || '').localeCompare(b.district || '');
+    if (a.division !== b.division) return (a.division || '').localeCompare(b.division || '');
+    if (a.gn_division !== b.gn_division) return (a.gn_division || '').localeCompare(b.gn_division || '');
+    return 0;
+  });
+
+  // Assign colors to groups - cycling through color palette
+  const colors = [
+    '#dbeafe',  // light blue
+    '#fef3c7',  // light yellow
+    '#d1fae5',  // light green
+    '#fce7f3',  // light pink
+    '#e0e7ff',  // light indigo
+    '#fed7aa',  // light orange
+    '#f3e8ff',  // light purple
+    '#fecaca',  // light red
+  ];
+
+  let tableRows = '';
+  let currentGnDivisionKey = '';
+  let colorIndex = 0;
+  let currentColor = '';
+
+  sortedData.forEach((row, i) => {
+    const gnDivisionKey = `${row.district}|${row.division}|${row.gn_division}`;
+    
+    // Change color when GN Division changes
+    if (gnDivisionKey !== currentGnDivisionKey) {
+      currentGnDivisionKey = gnDivisionKey;
+      currentColor = colors[colorIndex % colors.length];
+      colorIndex++;
+    }
+    
+    tableRows += `
+      <tr style="background-color: ${currentColor} !important;">
+        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.reg_number}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.name}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.district || "-"}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.division || "-"}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.gn_division || "-"}</td>
+        <td class="border border-gray-300 px-4 py-2">${row.equipment}</td>
+        <td class="border border-gray-300 px-4 py-2" style="text-align: right;">${row.quantity}</td>
+      </tr>`;
+  });
+
   output.innerHTML = `
+        <style>
+            /* Print Styles - Compact with Same-Color Grouping */
+            @media print {
+                @page { 
+                    size: A4 landscape; 
+                    margin: 5mm; 
+                }
+                
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: white;
+                }
+                
+                .no-print {
+                    display: none !important;
+                }
+                
+                .print-header,
+                .print-footer {
+                    display: block !important;
+                }
+                
+                /* Header Compact */
+                .print-header { 
+                    text-align: center; 
+                    margin-bottom: 12px; 
+                    border-bottom: 2px solid #1e3a8a; 
+                    padding-bottom: 6px; 
+                }
+                .print-header .dept-name { 
+                    font-size: 9pt;
+                    font-weight: bold; 
+                    color: #4b5563; 
+                    text-transform: uppercase; 
+                    margin-bottom: 3px; 
+                }
+                .print-header h1 { 
+                    font-size: 16pt;
+                    font-weight: 900; 
+                    color: #1e3a8a; 
+                    margin: 3px 0; 
+                    line-height: 1;
+                }
+                .print-header .text-sm {
+                    font-size: 9pt;
+                    margin-top: 5px;
+                    color: #000;
+                }
+                
+                /* Table Compact Styling */
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    font-size: 7pt; 
+                    margin-top: 8px; 
+                    line-height: 1.2;
+                }
+                table th { 
+                    background-color: #1e3a8a !important; 
+                    color: white !important; 
+                    font-weight: bold; 
+                    font-size: 7pt;
+                    padding: 3px; 
+                    border: 1px solid #ccc; 
+                    text-align: left; 
+                    line-height: 1.1;
+                    -webkit-print-color-adjust: exact; 
+                    print-color-adjust: exact;
+                }
+                table td { 
+                    padding: 2px 3px; 
+                    border: 1px solid #ccc; 
+                    font-size: 7pt; 
+                    color: #333; 
+                    line-height: 1.2; 
+                    vertical-align: top; 
+                }
+                
+                /* Ensure inline background colors print */
+                table tbody tr {
+                    -webkit-print-color-adjust: exact; 
+                    print-color-adjust: exact;
+                }
+                
+                /* Footer - Properly Aligned Left and Right */
+                .print-footer { 
+                    margin-top: 15px; 
+                    page-break-inside: avoid;
+                }
+                .signatures { 
+                    display: flex; 
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-top: 20px; 
+                    padding: 0 50px;
+                }
+                .sig-block { 
+                    width: 180px; 
+                    text-align: center; 
+                }
+                .sig-line { 
+                    border-bottom: 1px dotted #000; 
+                    margin-bottom: 4px; 
+                    height: 15px; 
+                }
+                .sig-label { 
+                    font-size: 8pt; 
+                    font-weight: bold; 
+                    text-transform: uppercase; 
+                    color: black; 
+                }
+                
+                /* Summary section */
+                .mt-6 {
+                    margin-top: 10px;
+                    font-size: 8pt;
+                    font-weight: bold;
+                }
+            }
+        </style>
+        
         <div class="print-header" style="display: none;">
             <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
             <h1 data-i18n="report.type_equipment">Equipment Report</h1>
@@ -154,8 +358,9 @@ function displayReport(
             <h2 class="text-2xl font-bold">Southern Province Sports Department</h2>
             <h3 class="text-xl mt-2">Equipment Report</h3>
             <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</p>
-            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString('si-LK')}</p>
+            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString('en-US')}</p>
         </div>
+        
         <table class="min-w-full border-collapse border border-gray-300">
             <thead class="bg-gray-100">
                 <tr>
@@ -166,40 +371,28 @@ function displayReport(
                     <th class="border border-gray-300 px-4 py-2">Division</th>
                     <th class="border border-gray-300 px-4 py-2">GN Division</th>
                     <th class="border border-gray-300 px-4 py-2">Equipment</th>
-                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                    <th class="border border-gray-300 px-4 py-2" style="text-align: right;">Quantity</th>
                 </tr>
             </thead>
             <tbody>
-                ${data
-                  .map(
-                    (row, i) => `
-                    <tr>
-                        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.reg_number}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.name}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.district || "-"}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.division || "-"}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.gn_division || "-"}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.equipment}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.quantity}</td>
-                    </tr>
-                `,
-                  )
-                  .join("")}
+                ${tableRows}
             </tbody>
         </table>
+        
         <div class="mt-6 text-sm text-gray-600">
-            <p>Total Records: ${data.length}</p>
+            <p>Total Records: ${data.length} | Total Quantity: ${totalQuantity}</p>
         </div>
 
         <div class="print-footer" style="display: none;">
-            <div class="sig-block">
-                <div class="sig-line"></div>
-                <div class="sig-label" data-i18n="footer.created_by">Created By</div>
-            </div>
-            <div class="sig-block">
-                <div class="sig-line"></div>
-                <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
+            <div class="signatures">
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-label" data-i18n="footer.prepared_by">Prepared By</div>
+                </div>
+                <div class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
+                </div>
             </div>
         </div>
     `;

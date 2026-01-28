@@ -241,10 +241,6 @@ function displayReport(data, district, dateRange) {
                 </div>
                 <div class="sig-block">
                     <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.checked_by">Checked By</div>
-                </div>
-                <div class="sig-block">
-                    <div class="sig-line"></div>
                     <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
                 </div>
             </div>
