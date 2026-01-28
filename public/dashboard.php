@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Dashboard Page
@@ -246,8 +246,10 @@ include '../includes/header.php';
                 </svg>
                 <span data-i18n="button.print">Print</span>
             </button>
-            <!-- Register Button -->
+            <!-- Register Button - Only visible to admins -->
+            <?php if (isAdmin()): ?>
             <a href="register.php" class="action-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md font-medium" data-i18n="nav.register"></a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -380,3 +382,8 @@ $scripts = ['../assets/js/dashboard.js'];
 // Include footer
 include '../includes/footer.php';
 ?>
+
+<script>
+// Make user role available to JavaScript
+window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
+</script>

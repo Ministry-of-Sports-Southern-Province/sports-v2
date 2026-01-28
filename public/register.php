@@ -28,6 +28,10 @@ $additionalLinks = [
     '<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">'
 ];
 
+// Require admin role - only admins can register clubs
+require_once '../includes/auth.php';
+requireAdmin();
+
 // Include header
 include '../includes/header.php';
 ?>

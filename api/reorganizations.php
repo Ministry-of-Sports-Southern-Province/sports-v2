@@ -3,8 +3,17 @@ mb_internal_encoding('UTF-8');
 mb_http_output('UTF-8');
 header('Content-Type: application/json; charset=UTF-8');
 require_once '../config/database.php';
+require_once '../includes/auth.php';
+
+// Require login for all operations
+requireLogin();
 
 $method = $_SERVER['REQUEST_METHOD'];
+
+// Restrict write operations (POST, DELETE) to admins only
+if (in_array($method, ['POST', 'DELETE'])) {
+    requireAdmin();
+}
 
 try {
     $pdo = getDBConnection();

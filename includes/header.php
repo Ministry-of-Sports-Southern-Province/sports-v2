@@ -290,11 +290,13 @@ $currentAdmin = getCurrentAdmin();
                             class="<?php echo $activePage === 'dashboard' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
                             data-i18n="nav.dashboard">උපකරණ පුවරුව</a>
                     </li>
+                    <?php if (isAdmin()): ?>
                     <li>
                         <a href="<?php echo $basePath; ?>public/register.php"
                             class="<?php echo $activePage === 'register' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
                             data-i18n="nav.register">සමාජය ලියාපදිංචි කරන්න</a>
                     </li>
+                    <?php endif; ?>
                     <li>
                         <a href="<?php echo $basePath; ?>public/reorganizations.php"
                             class="<?php echo $activePage === 'reorganizations' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
@@ -310,6 +312,13 @@ $currentAdmin = getCurrentAdmin();
                             class="<?php echo $activePage === 'reports' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
                             data-i18n="nav.reports">වාර්තා</a>
                     </li>
+                    <?php if (isAdmin()): ?>
+                    <li>
+                        <a href="<?php echo $basePath; ?>public/admin-settings.php"
+                            class="<?php echo $activePage === 'admin-settings' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                            data-i18n="nav.admin_settings">පරිපාලන සැකසීම්</a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
         </div>

@@ -7,6 +7,15 @@
 
 header('Content-Type: application/json; charset=UTF-8');
 require_once '../config/database.php';
+require_once '../includes/auth.php';
+
+// Require login for all operations
+requireLogin();
+
+// Restrict write operations (POST, PUT, DELETE) to admins only
+if (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE'])) {
+    requireAdmin();
+}
 
 try {
     $pdo = getDBConnection();

@@ -354,3 +354,8 @@ $scripts = ['../assets/js/club-details.js?v=' . time()];
 // Include footer
 include '../includes/footer.php';
 ?>
+
+<script>
+// Make user role available to JavaScript
+window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
+</script>

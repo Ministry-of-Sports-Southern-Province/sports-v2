@@ -46,3 +46,8 @@ include '../includes/header.php';
 $scripts = ['../assets/js/reorganizations.js'];
 include '../includes/footer.php';
 ?>
+
+<script>
+// Make user role available to JavaScript
+window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
+</script>

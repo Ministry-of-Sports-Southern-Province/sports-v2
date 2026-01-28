@@ -37,7 +37,8 @@ function getCurrentAdmin()
     return [
         'id' => $_SESSION['admin_id'],
         'username' => $_SESSION['admin_username'],
-        'full_name' => $_SESSION['admin_full_name'] ?? $_SESSION['admin_username']
+        'full_name' => $_SESSION['admin_full_name'] ?? $_SESSION['admin_username'],
+        'role' => $_SESSION['admin_role'] ?? 'admin'
     ];
 }
 
@@ -49,6 +50,7 @@ function setAdminSession($adminData)
     $_SESSION['admin_id'] = $adminData['id'];
     $_SESSION['admin_username'] = $adminData['username'];
     $_SESSION['admin_full_name'] = $adminData['full_name'];
+    $_SESSION['admin_role'] = $adminData['role'] ?? 'admin';
     $_SESSION['admin_login_time'] = time();
 }
 
@@ -60,6 +62,7 @@ function clearAdminSession()
     unset($_SESSION['admin_id']);
     unset($_SESSION['admin_username']);
     unset($_SESSION['admin_full_name']);
+    unset($_SESSION['admin_role']);
     unset($_SESSION['admin_login_time']);
 
     // Destroy session completely
@@ -82,4 +85,71 @@ function verifyPassword($password, $hash)
 function hashPassword($password)
 {
     return password_hash($password, PASSWORD_DEFAULT);
+}
+
+/**
+ * Get current user's role
+ */
+function getCurrentRole()
+{
+    if (!isLoggedIn()) {
+        return null;
+    }
+    return $_SESSION['admin_role'] ?? 'admin';
+}
+
+/**
+ * Check if current user is admin
+ */
+function isAdmin()
+{
+    return getCurrentRole() === 'admin';
+}
+
+/**
+ * Check if current user is viewer
+ */
+function isViewer()
+{
+    return getCurrentRole() === 'viewer';
+}
+
+/**
+ * Require admin role - redirect to dashboard if not admin
+ * For API endpoints, returns JSON error response
+ */
+function requireAdmin()
+{
+    if (!isLoggedIn()) {
+        // Check if this is an API request
+        if (strpos($_SERVER['REQUEST_URI'], '/api/') !== false) {
+            header('Content-Type: application/json; charset=UTF-8');
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'data' => null,
+                'message' => 'Authentication required'
+            ]);
+            exit();
+        }
+        header('Location: ../login.php');
+        exit();
+    }
+    
+    if (!isAdmin()) {
+        // Check if this is an API request
+        if (strpos($_SERVER['REQUEST_URI'], '/api/') !== false) {
+            header('Content-Type: application/json; charset=UTF-8');
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'data' => null,
+                'message' => 'Access denied. Admin role required.'
+            ]);
+            exit();
+        }
+        // Redirect to dashboard with access denied message
+        header('Location: ../public/dashboard.php?error=access_denied');
+        exit();
+    }
 }

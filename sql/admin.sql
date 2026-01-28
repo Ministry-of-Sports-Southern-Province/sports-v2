@@ -7,11 +7,19 @@ CREATE TABLE IF NOT EXISTS admin_users (
     email VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP NULL,
-    is_active TINYINT(1) DEFAULT 1
+    is_active TINYINT(1) DEFAULT 1,
+    role ENUM('admin', 'viewer') NOT NULL DEFAULT 'admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default admin user (username: admin, password: admin123)
 -- Password is hashed using PHP password_hash()
-INSERT INTO admin_users (username, password, full_name, email) 
-VALUES ('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@sports.gov.lk')
+INSERT INTO admin_users (username, password, full_name, email, role) 
+VALUES ('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@sports.gov.lk', 'admin')
 ON DUPLICATE KEY UPDATE username=username;
+
+-- Migration: Add role column to existing tables (if column doesn't exist)
+-- Run this if the table already exists without the role column
+-- ALTER TABLE admin_users 
+-- ADD COLUMN role ENUM('admin', 'viewer') NOT NULL DEFAULT 'admin' 
+-- AFTER is_active;
+-- UPDATE admin_users SET role = 'admin' WHERE role IS NULL;

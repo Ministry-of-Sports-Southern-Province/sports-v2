@@ -27,7 +27,7 @@ try {
     $pdo = getDBConnection();
 
     // Get admin user
-    $stmt = $pdo->prepare("SELECT id, username, password, full_name, is_active FROM admin_users WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT id, username, password, full_name, is_active, role FROM admin_users WHERE username = ?");
     $stmt->execute([$username]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -51,7 +51,8 @@ try {
     setAdminSession([
         'id' => $admin['id'],
         'username' => $admin['username'],
-        'full_name' => $admin['full_name']
+        'full_name' => $admin['full_name'],
+        'role' => $admin['role'] ?? 'admin'
     ]);
 
     // Redirect to dashboard

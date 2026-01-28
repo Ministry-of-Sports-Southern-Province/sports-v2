@@ -72,8 +72,10 @@ function displayClubs(clubs) {
                 <td class="px-6 py-4"><span class="px-2 py-1 rounded text-sm ${statusClass}" data-i18n="status.${status}">${status === "active" ? "සක්රීය" : "කල් ඉකුත්"}</span></td>
                 <td class="px-6 py-4">
                     <button onclick="viewHistory(${club.id})" class="text-blue-600 hover:text-blue-800 mr-2" data-i18n="button.view_history">ඉතිහාසය</button>
+                    ${(window.currentUserRole === 'admin') ? `
                     <button onclick="renewClub(${club.id})" class="text-green-600 hover:text-green-800 mr-2" data-i18n="button.renew">නවීකරණය</button>
                     <button onclick="deleteReorg(${club.id})" class="text-red-600 hover:text-red-800" data-i18n="button.delete">මකන්න</button>
+                    ` : ''}
                 </td>
             </tr>
         `;

@@ -205,10 +205,12 @@ function displayClubDetails(club) {
         <div><label data-i18n="form.reorg_status">Status</label><p><span class="px-2 py-1 rounded text-sm ${club.reorg_status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}" data-i18n="status.${club.reorg_status}">${club.reorg_status === "active" ? (window.i18n ? window.i18n.t("status.active") : "Active") : (window.i18n ? window.i18n.t("status.expired") : "Expired")}</span></p></div>
       </div>
       <div class="no-print mt-4">
+        ${(window.currentUserRole === 'admin') ? `
         <button onclick="openReorgModal(${club.id})" class="px-4 py-2 ${club.reorg_status === "expired" ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"} text-white rounded transition">
           <span data-i18n="button.add_reorg">Add Reorganization</span>
         </button>
         ${club.last_reorg_date ? `<button onclick="deleteReorg(${club.id})" class="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"><span data-i18n="button.delete_reorg">Delete Last Date</span></button>` : ""}
+        ` : ''}
         <button onclick="viewReorgHistory(${club.id})" class="ml-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition">
           <span data-i18n="button.view_history">View History</span>
         </button>
