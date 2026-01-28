@@ -252,5 +252,17 @@
   "table.role": "භූමිකාව",
   "table.status": "තත්ත්වය",
   "table.last_login": "අවසාන පිවිසීම",
-  "message.confirm_delete_user": "මෙම පරිශීලකයා මකා දැමීමට අවශ්‍යද?"
+  "message.confirm_delete_user": "මෙම පරිශීලකයා මකා දැමීමට අවශ්‍යද?",
+  "page.login_title": "පිවිසීම - ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය",
+  "page.login_system_title": "ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය",
+  "page.login_department": "දකුණු පළාත් ක්රීඩා අමාත්යාංශය",
+  "form.login_title": "පරිපාලක පිවිසීම",
+  "button.login": "පිවිසීම",
+  "login.default_credentials": "පෙරනිමි අක්තපත්‍ර:",
+  "login.error_invalid": "වලංගු නොවන පරිශීලක නාමය හෝ මුරපදය",
+  "login.error_required": "කරුණාකර පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න",
+  "login.error_inactive": "මෙම ගිණුම අක්‍රිය කර ඇත",
+  "login.error_generic": "දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න",
+  "footer.department_name": "දකුණු පළාත් ක්රීඩා අමාත්යාංශය",
+  "footer.all_rights": "සියලුම හිමිකම් ඇවිරිණි."
 }

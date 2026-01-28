@@ -10,106 +10,245 @@ if (isLoggedIn()) {
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sports Club Management System</title>
+    <title data-i18n="page.login_title">Login - ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="assets/js/i18n.js"></script>
     <style>
         body {
-            font-family: 'Noto Sans Sinhala', 'Noto Sans Tamil', 'Roboto', sans-serif;
+            font-family: 'Poppins', 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            transition: font-size 0.3s ease;
         }
 
         .login-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-icon {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .input-field {
+            font-family: 'Poppins', 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .lang-btn {
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .role-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
         }
     </style>
 </head>
 
-<body class="login-gradient min-h-screen flex items-center justify-center px-4">
-    <div class="max-w-md w-full">
-        <!-- Logo/Header -->
-        <div class="text-center mb-8">
-            <div class="inline-block bg-white rounded-full p-4 shadow-lg mb-4">
-                <svg class="w-16 h-16 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+<body class="login-gradient flex items-center justify-center px-4 py-8">
+    <div class="max-w-sm w-full">
+        <!-- Language Switcher -->
+        <div class="flex justify-end mb-4">
+            <div class="flex space-x-1 bg-white/10 rounded-lg p-1">
+                <button data-language="en" class="lang-btn px-3 py-1.5 rounded text-xs font-medium text-white hover:bg-white/20">
+                    EN
+                </button>
+                <button data-language="si" class="lang-btn active px-3 py-1.5 rounded text-xs font-medium text-white hover:bg-white/20">
+                    සිං
+                </button>
+                <button data-language="ta" class="lang-btn px-3 py-1.5 rounded text-xs font-medium text-white hover:bg-white/20">
+                    தமிழ்
+                </button>
+            </div>
+        </div>
+
+        <!-- Logo/Header Section -->
+        <div class="text-center mb-6">
+            <div class="inline-block login-icon rounded-full p-4 mb-4">
+                <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Sports Club Management</h1>
-            <p class="text-purple-100">Southern Province Sports Department</p>
+            <h1 class="text-xl font-bold text-white mb-1" data-i18n="page.login_system_title">ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
+            <p class="text-blue-100 text-sm" data-i18n="page.login_department">Southern Province Sports Department</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white rounded-2xl shadow-2xl p-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Admin Login</h2>
+        <div class="login-card p-6">
+            <div class="mb-5">
+                <h2 class="text-lg font-bold text-gray-800 text-center mb-1" data-i18n="form.login_title">පරිපාලක පිවිසීම</h2>
+                <div class="flex items-center justify-center gap-2 mt-2">
+                    <span class="role-badge bg-blue-100 text-blue-700" data-i18n="role.admin">Admin</span>
+                    <span class="text-gray-400 text-xs">/</span>
+                    <span class="role-badge bg-gray-100 text-gray-600" data-i18n="role.viewer">Viewer</span>
+                </div>
+            </div>
 
             <?php if ($error): ?>
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p class="text-red-600 text-sm">
-                        <?php
-                        if ($error === 'invalid') {
-                            echo 'Invalid username or password';
-                        } elseif ($error === 'required') {
-                            echo 'Please enter username and password';
-                        } elseif ($error === 'inactive') {
-                            echo 'This account is inactive';
-                        } else {
-                            echo 'An error occurred. Please try again';
-                        }
-                        ?>
-                    </p>
+                <div class="mb-4 p-3 bg-red-50 border-l-3 border-red-500 rounded">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-red-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-red-700 text-xs font-medium" id="errorMessage" 
+                           data-i18n="<?php
+                           if ($error === 'invalid') {
+                               echo 'login.error_invalid';
+                           } elseif ($error === 'required') {
+                               echo 'login.error_required';
+                           } elseif ($error === 'inactive') {
+                               echo 'login.error_inactive';
+                           } else {
+                               echo 'login.error_generic';
+                           }
+                           ?>">
+                            <?php
+                            if ($error === 'invalid') {
+                                echo 'වලංගු නොවන පරිශීලක නාමය හෝ මුරපදය';
+                            } elseif ($error === 'required') {
+                                echo 'කරුණාකර පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න';
+                            } elseif ($error === 'inactive') {
+                                echo 'මෙම ගිණුම අක්‍රිය කර ඇත';
+                            } else {
+                                echo 'දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න';
+                            }
+                            ?>
+                        </p>
+                    </div>
                 </div>
             <?php endif; ?>
 
-            <form action="api/login.php" method="POST">
-                <div class="mb-4">
-                    <label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
+            <form action="api/login.php" method="POST" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-xs font-semibold text-gray-700 mb-1.5">
+                        <span data-i18n="form.username">පරිශීලක නාමය</span>
+                        <span class="text-gray-400 font-normal"> (Username)</span>
+                    </label>
                     <input
                         type="text"
                         id="username"
                         name="username"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
-                        placeholder="Enter your username"
+                        class="input-field w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        data-i18n-placeholder="placeholder.enter_username"
                         required
                         autofocus>
                 </div>
 
-                <div class="mb-6">
-                    <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
+                <div>
+                    <label for="password" class="block text-xs font-semibold text-gray-700 mb-1.5">
+                        <span data-i18n="form.password">මුරපදය</span>
+                        <span class="text-gray-400 font-normal"> (Password)</span>
+                    </label>
                     <input
                         type="password"
                         id="password"
                         name="password"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
-                        placeholder="Enter your password"
+                        class="input-field w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        data-i18n-placeholder="placeholder.enter_password"
                         required>
                 </div>
 
                 <button
                     type="submit"
-                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition duration-200 shadow-lg">
-                    Sign In
+                    class="btn-login w-full text-white py-2.5 rounded-lg font-semibold shadow-md">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                        </svg>
+                        <span data-i18n="button.login">පිවිසීම</span>
+                    </span>
                 </button>
             </form>
 
-            <div class="mt-6 pt-6 border-t border-gray-200">
-                <p class="text-sm text-gray-600 text-center">
-                    Default credentials:<br>
-                    <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">admin / admin123</span>
+            <div class="mt-5 pt-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 text-center">
+                    <span data-i18n="login.default_credentials">පෙරනිමි අක්තපත්‍ර:</span>
+                    <span class="font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-700 ml-1">admin / admin123</span>
                 </p>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="mt-8 text-center text-white text-sm">
-            <p>&copy; 2026 Southern Province Sports Department. All rights reserved.</p>
+        <div class="mt-6 text-center text-white text-xs">
+            <p>&copy; 2026 <span data-i18n="footer.department_name">Southern Province Sports Department</span>. <span data-i18n="footer.all_rights">All rights reserved.</span></p>
         </div>
     </div>
+
+    <script>
+        // Update language switcher active state
+        function updateLanguageSwitcher(lang) {
+            document.querySelectorAll("[data-language]").forEach((button) => {
+                if (button.getAttribute("data-language") === lang) {
+                    button.classList.add("active");
+                } else {
+                    button.classList.remove("active");
+                }
+            });
+        }
+
+        // Setup language switcher
+        document.querySelectorAll("[data-language]").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                e.preventDefault();
+                const lang = button.getAttribute("data-language");
+                if (window.i18n) {
+                    window.i18n.loadTranslations(lang);
+                    updateLanguageSwitcher(lang);
+                }
+            });
+        });
+
+        // Error message will be automatically translated via data-i18n attribute
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('language') || 'si';
+            updateLanguageSwitcher(savedLang);
+        });
+    </script>
 </body>
 
 </html>

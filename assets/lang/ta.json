@@ -243,5 +243,17 @@
   "table.role": "பங்கு",
   "table.status": "நிலை",
   "table.last_login": "கடைசி உள்நுழைவு",
-  "message.confirm_delete_user": "இந்த பயனரை நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+  "message.confirm_delete_user": "இந்த பயனரை நிச்சயமாக நீக்க விரும்புகிறீர்களா?",
+  "page.login_title": "உள்நுழை - விளையாட்டு கிளப் மேலாண்மை அமைப்பு",
+  "page.login_system_title": "விளையாட்டு கிளப் மேலாண்மை அமைப்பு",
+  "page.login_department": "தெற்கு மாகாண விளையாட்டு துறை",
+  "form.login_title": "நிர்வாகி உள்நுழைவு",
+  "button.login": "உள்நுழை",
+  "login.default_credentials": "இயல்புநிலை அறிமுகங்கள்:",
+  "login.error_invalid": "தவறான பயனர் பெயர் அல்லது கடவுச்சொல்",
+  "login.error_required": "தயவுசெய்து பயனர் பெயர் மற்றும் கடவுச்சொல்லை உள்ளிடவும்",
+  "login.error_inactive": "இந்த கணக்கு செயலில் இல்லை",
+  "login.error_generic": "பிழை ஏற்பட்டது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்",
+  "footer.department_name": "தெற்கு மாகாண விளையாட்டு துறை",
+  "footer.all_rights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன."
 }
