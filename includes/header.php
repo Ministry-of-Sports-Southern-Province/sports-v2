@@ -34,7 +34,7 @@ $currentAdmin = getCurrentAdmin();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="<?php echo htmlspecialchars($pageTitle); ?>">ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</title>
+    <title data-i18n="<?php echo htmlspecialchars($pageTitle); ?>">ක්‍රීඩා සමාජ කළමනාකරණ පද්ධතිය</title>
 
     <!-- Tailwind CSS: production build when available, else CDN -->
     <?php
@@ -604,8 +604,8 @@ $currentAdmin = getCurrentAdmin();
                     <!-- Site Logo -->
                     <img src="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" alt="Southern Province Sports" class="w-12 h-12 object-contain" />
                     <div>
-                        <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
-                        <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්රීඩා අමාත්යාංශය</p>
+                        <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්‍රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
+                        <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</p>
                     </div>
                 </div>
 
@@ -670,7 +670,7 @@ $currentAdmin = getCurrentAdmin();
                     <li>
                         <a href="<?php echo $basePath; ?>public/reorganizations.php"
                             class="<?php echo $activePage === 'reorganizations' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                            data-i18n="nav.reorganizations">ප්රතිසංවිධාන</a>
+                            data-i18n="nav.reorganizations">ප්‍රතිසංවිධාන</a>
                     </li>
                     <li>
                         <a href="<?php echo $basePath; ?>public/summary.php"

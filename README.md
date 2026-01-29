@@ -1,6 +1,6 @@
 # Sports Club Management System v2.0
 
-A modern sports club management system for the Southern Province Sports Department (දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව) built with clean architecture, proper database normalization, and multilingual support.
+A modern sports club management system for the Department of Sports Southern Province (දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව) built with clean architecture, proper database normalization, and multilingual support.
 
 ## Features
 
@@ -96,10 +96,13 @@ Build Tailwind using the **standalone CLI** (no npm or Node.js required):
    - Place the exe in the project `bin\` folder (create the folder if needed), optionally rename to `tailwindcss.exe`.
 
 2. **Build CSS** (production, minified):
+
    ```bat
    build-css.bat
    ```
+
    Or run the CLI directly:
+
    ```bat
    bin\tailwindcss-windows-x64.exe -i assets\css\input.css -o assets\css\tailwind.css --minify -c tailwind.config.js
    ```
@@ -274,11 +277,11 @@ sports-v2/
 
 ## Support
 
-For issues or questions, contact the Southern Province Sports Department IT team.
+For issues or questions, contact the Department of Sports Southern Province IT team.
 
 ## License
 
-Proprietary - Southern Province Sports Department, Sri Lanka
+Proprietary - Department of Sports Southern Province, Sri Lanka
 
 ---
 

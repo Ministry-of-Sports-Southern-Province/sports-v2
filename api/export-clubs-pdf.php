@@ -203,7 +203,7 @@ try {
 
     $html .= '<div class="report-wrapper">';
     $html .= '<div class="print-header">';
-    $html .= '<div class="dept-name">' . htmlspecialchars(t('header.department_name', 'Southern Province Sports Department')) . '</div>';
+    $html .= '<div class="dept-name">' . htmlspecialchars(t('header.department_name', 'Department of Sports Southern Province')) . '</div>';
     $html .= '<h1>' . htmlspecialchars(t('page.dashboard_title', 'Sports Clubs Report')) . '</h1>';
     $html .= '<div class="report-info">';
     $html .= htmlspecialchars(t('table.total', 'Total')) . ': ' . count($clubs) . ' | ';
@@ -268,7 +268,7 @@ try {
     $html .= '</div>';
 
     $html .= '<div class="footer-bottom">';
-    $html .= '<p>' . htmlspecialchars(t('footer.copyright', 'Southern Province Sports Department © 2026. All rights reserved.')) . '</p>';
+    $html .= '<p>' . htmlspecialchars(t('footer.copyright', 'Department of Sports Southern Province © 2026. All rights reserved.')) . '</p>';
     $html .= '</div>';
     $html .= '</div>'; // report-wrapper closing
 

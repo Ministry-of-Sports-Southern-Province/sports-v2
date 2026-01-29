@@ -13,12 +13,16 @@ document.addEventListener("DOMContentLoaded", function () {
       loadClubs(1);
     }, 300);
   });
-  document.getElementById("districtFilter").addEventListener("change", function () {
-    loadClubs(1);
-  });
-  document.getElementById("statusFilter").addEventListener("change", function () {
-    loadClubs(1);
-  });
+  document
+    .getElementById("districtFilter")
+    .addEventListener("change", function () {
+      loadClubs(1);
+    });
+  document
+    .getElementById("statusFilter")
+    .addEventListener("change", function () {
+      loadClubs(1);
+    });
 });
 
 function loadDistricts() {
@@ -110,10 +114,14 @@ function displayClubs(clubs, pageOneBased) {
                 <td><span class="px-2 py-1 rounded text-sm font-medium ${statusClass}" data-i18n="status.${status}">${status === "active" ? "සක්රීය" : "කල් ඉකුත්"}</span></td>
                 <td>
                     <button onclick="viewHistory(${club.id})" class="text-blue-600 hover:text-blue-800 mr-2" data-i18n="button.view_history">ඉතිහාසය</button>
-                    ${(window.currentUserRole === "admin") ? `
+                    ${
+                      window.currentUserRole === "admin"
+                        ? `
                     <button onclick="renewClub(${club.id})" class="text-green-600 hover:text-green-800 mr-2" data-i18n="button.renew">නවීකරණය</button>
                     <button onclick="deleteReorg(${club.id})" class="text-red-600 hover:text-red-800" data-i18n="button.delete">මකන්න</button>
-                    ` : ""}
+                    `
+                        : ""
+                    }
                 </td>
             </tr>
         `;
@@ -178,7 +186,9 @@ function renderPagination(pagination) {
     btn.textContent = i;
     btn.className =
       "px-3 py-1 border rounded " +
-      (i === currentPage ? "bg-blue-600 text-white" : "bg-white hover:bg-gray-50");
+      (i === currentPage
+        ? "bg-blue-600 text-white"
+        : "bg-white hover:bg-gray-50");
     btn.onclick = function () {
       loadClubs(i);
     };
@@ -215,9 +225,14 @@ function renderPagination(pagination) {
   if (infoEl) {
     const from = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
     const to = Math.min(currentPage * rowsPerPage, totalRows);
-    infoEl.textContent = (window.i18n && window.i18n.t("pagination.showing"))
-      ? window.i18n.t("pagination.showing").replace("{from}", from).replace("{to}", to).replace("{total}", totalRows)
-      : "Showing " + from + "–" + to + " of " + totalRows;
+    infoEl.textContent =
+      window.i18n && window.i18n.t("pagination.showing")
+        ? window.i18n
+            .t("pagination.showing")
+            .replace("{from}", from)
+            .replace("{to}", to)
+            .replace("{total}", totalRows)
+        : "Showing " + from + "–" + to + " of " + totalRows;
   }
 }
 
@@ -230,7 +245,7 @@ function viewHistory(clubId) {
 }
 
 function renewClub(clubId) {
-  if (!confirm("මෙම සමාජය ප්රතිසංවිධාන කිරීමට අවශ්‍යද?")) return;
+  if (!confirm("මෙම සමාජය ප්‍රතිසංවිධාන කිරීමට අවශ්‍යද?")) return;
 
   fetch("../api/reorganizations.php", {
     method: "POST",
@@ -243,10 +258,17 @@ function renewClub(clubId) {
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        alert(window.i18n ? window.i18n.t("message.reorg_added_success") : "Success");
+        alert(
+          window.i18n
+            ? window.i18n.t("message.reorg_added_success")
+            : "Success",
+        );
         loadClubs(currentPage);
       } else {
-        alert(data.message || (window.i18n ? window.i18n.t("message.error_generic") : "Error"));
+        alert(
+          data.message ||
+            (window.i18n ? window.i18n.t("message.error_generic") : "Error"),
+        );
       }
     })
     .catch((err) => {
@@ -256,7 +278,7 @@ function renewClub(clubId) {
 }
 
 function deleteReorg(clubId) {
-  if (!confirm("අවසාන ප්රතිසංවිධාන දිනය ඉවත් කිරීමට අවශ්‍යද?")) return;
+  if (!confirm("අවසාන ප්‍රතිසංවිධාන දිනය ඉවත් කිරීමට අවශ්‍යද?")) return;
 
   fetch("../api/reorganizations.php", {
     method: "DELETE",
@@ -266,10 +288,17 @@ function deleteReorg(clubId) {
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        alert(window.i18n ? window.i18n.t("message.reorg_deleted_success") : "Deleted");
+        alert(
+          window.i18n
+            ? window.i18n.t("message.reorg_deleted_success")
+            : "Deleted",
+        );
         loadClubs(currentPage);
       } else {
-        alert(data.message || (window.i18n ? window.i18n.t("message.error_generic") : "Error"));
+        alert(
+          data.message ||
+            (window.i18n ? window.i18n.t("message.error_generic") : "Error"),
+        );
       }
     })
     .catch((err) => {

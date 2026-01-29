@@ -46,7 +46,7 @@ function displayClubDetails(club) {
 
   container.innerHTML = `
     <div class="print-header" style="display: none;">
-      <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
+      <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
       
       <h1 data-i18n="header.certificate_title">Sports Club Registration Certificate</h1>
       
@@ -180,15 +180,15 @@ function displayClubDetails(club) {
       <h2 data-i18n="form.equipment_information">Equipment</h2>
       <div class="equipment-list">
         ${club.equipment
-            .map(
-              (eq) => `
+          .map(
+            (eq) => `
             <div class="equipment-item">
               <span class="eq-name">${escapeHtml(eq.name)}</span>
               <span class="eq-qty">${eq.quantity}</span>
             </div>
           `,
-            )
-            .join("")}
+          )
+          .join("")}
       </div>
     </div>
     `
@@ -198,19 +198,23 @@ function displayClubDetails(club) {
     <div class="detail-card">
       <h2 data-i18n="form.reorganization_information">Reorganization Information</h2>
       <div class="info-row">
-        <div><label data-i18n="form.last_reorg_date">Last Reorganization Date</label><p>${club.last_reorg_date ? formatDate(club.last_reorg_date) : (window.i18n ? window.i18n.t("message.no_data") : "N/A")}</p></div>
-        <div><label data-i18n="form.reorg_due_date">Next Reorganization Date</label><p>${club.reorg_due_date ? formatDate(club.reorg_due_date) : (window.i18n ? window.i18n.t("message.no_data") : "N/A")}</p></div>
+        <div><label data-i18n="form.last_reorg_date">Last Reorganization Date</label><p>${club.last_reorg_date ? formatDate(club.last_reorg_date) : window.i18n ? window.i18n.t("message.no_data") : "N/A"}</p></div>
+        <div><label data-i18n="form.reorg_due_date">Next Reorganization Date</label><p>${club.reorg_due_date ? formatDate(club.reorg_due_date) : window.i18n ? window.i18n.t("message.no_data") : "N/A"}</p></div>
       </div>
       <div class="info-row">
-        <div><label data-i18n="form.reorg_status">Status</label><p><span class="px-2 py-1 rounded text-sm ${club.reorg_status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}" data-i18n="status.${club.reorg_status}">${club.reorg_status === "active" ? (window.i18n ? window.i18n.t("status.active") : "Active") : (window.i18n ? window.i18n.t("status.expired") : "Expired")}</span></p></div>
+        <div><label data-i18n="form.reorg_status">Status</label><p><span class="px-2 py-1 rounded text-sm ${club.reorg_status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}" data-i18n="status.${club.reorg_status}">${club.reorg_status === "active" ? (window.i18n ? window.i18n.t("status.active") : "Active") : window.i18n ? window.i18n.t("status.expired") : "Expired"}</span></p></div>
       </div>
       <div class="no-print mt-4">
-        ${(window.currentUserRole === 'admin') ? `
+        ${
+          window.currentUserRole === "admin"
+            ? `
         <button onclick="openReorgModal(${club.id})" class="px-4 py-2 ${club.reorg_status === "expired" ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"} text-white rounded transition">
           <span data-i18n="button.add_reorg">Add Reorganization</span>
         </button>
         ${club.last_reorg_date ? `<button onclick="deleteReorg(${club.id})" class="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"><span data-i18n="button.delete_reorg">Delete Last Date</span></button>` : ""}
-        ` : ''}
+        `
+            : ""
+        }
         <button onclick="viewReorgHistory(${club.id})" class="ml-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition">
           <span data-i18n="button.view_history">View History</span>
         </button>
@@ -229,7 +233,7 @@ function displayClubDetails(club) {
         </div>
       </div>
       <div class="footer-bottom">
-        <p data-i18n="footer.certificate_note">This certificate was issued by the Southern Province Sports Department</p>
+        <p data-i18n="footer.certificate_note">This certificate was issued by the Department of Sports Southern Province</p>
       </div>
     </div>
     

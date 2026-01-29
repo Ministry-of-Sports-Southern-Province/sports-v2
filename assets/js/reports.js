@@ -98,7 +98,7 @@ function displayReport(data, columns, type) {
 
   const title =
     type === "reorganized"
-      ? "ප්රතිසංවිධාන සමාජ වාර්තාව"
+      ? "ප්‍රතිසංවිධාන සමාජ වාර්තාව"
       : type === "registered"
         ? "ලියාපදිංචි සමාජ වාර්තාව"
         : "උපකරණ වාර්තාව";
@@ -112,14 +112,14 @@ function displayReport(data, columns, type) {
     chairman_phone: "දුරකථනය",
     secretary: "ලේකම්",
     registration_date: "ලියාපදිංචි දිනය",
-    reorg_date: "ප්රතිසංවිධාන දිනය",
+    reorg_date: "ප්‍රතිසංවිධාන දිනය",
     equipment: "උපකරණ",
-    quantity: "ප්රමාණය",
+    quantity: "ප්‍රමාණය",
   };
 
   output.innerHTML = `
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්රීඩා අමාත්යාංශය</h2>
+            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</h2>
             <h3 class="text-xl mt-2">${title}</h3>
             <p class="text-sm text-gray-600 mt-2">උත්පාදන දිනය: ${new Date().toLocaleDateString("si-LK")}</p>
         </div>

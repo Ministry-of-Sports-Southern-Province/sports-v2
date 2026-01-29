@@ -7,7 +7,7 @@ include '../includes/header.php';
 
 <main class="container mx-auto px-4 py-8">
     <div class="mb-4"><a href="reports.php" class="text-blue-600 hover:underline font-medium" data-i18n="button.back">← ආපසු</a></div>
-    
+
     <div class="section-card mb-6 no-print">
         <h2 class="section-heading" data-i18n="report.type_registered">ලියාපදිංචි සමාජ වාර්තාව</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -28,7 +28,7 @@ include '../includes/header.php';
         </div>
         <div class="flex flex-wrap gap-3">
             <button onclick="generateReport()" class="btn btn-primary" data-i18n="button.generate_report">වාර්තාව උත්පාදනය කරන්න</button>
-            <button onclick="printReportWithDate()" class="btn btn-success" data-i18n="button.print">මුද්රණය කරන්න</button>
+            <button onclick="printReportWithDate()" class="btn btn-success" data-i18n="button.print">මුද්‍රණය කරන්න</button>
         </div>
     </div>
 
@@ -45,7 +45,7 @@ include '../includes/header.php';
             margin: 10mm;
             size: A4 landscape;
         }
-        
+
         body {
             background: white;
             font-size: 9pt;
@@ -53,11 +53,18 @@ include '../includes/header.php';
             print-color-adjust: exact;
         }
 
-        .no-print, nav, .gov-header, footer, .accessibility-fab, .mb-4, .bg-white.rounded-lg.shadow.p-6.mb-6 {
+        .no-print,
+        nav,
+        .gov-header,
+        footer,
+        .accessibility-fab,
+        .mb-4,
+        .bg-white.rounded-lg.shadow.p-6.mb-6 {
             display: none !important;
         }
-        
-        .container, main {
+
+        .container,
+        main {
             max-width: none !important;
             width: 100% !important;
             margin: 0 !important;

@@ -7,7 +7,7 @@ include '../includes/header.php';
 
 <main class="container mx-auto px-4 py-8">
     <h2 class="page-title center" data-i18n="page.summary_title">සාරාංශය</h2>
-    
+
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="stat-card" style="border-left-color: #3b82f6;">
@@ -23,7 +23,7 @@ include '../includes/header.php';
             <div class="stat-value text-amber-600" id="expiredClubs">0</div>
         </div>
         <div class="stat-card" style="border-left-color: #7c3aed;">
-            <div class="stat-label" data-i18n="stats.total_reorgs">මුළු ප්රතිසංවිධාන</div>
+            <div class="stat-label" data-i18n="stats.total_reorgs">මුළු ප්‍රතිසංවිධාන</div>
             <div class="stat-value text-purple-600" id="totalReorgs">0</div>
         </div>
     </div>
@@ -60,24 +60,24 @@ include '../includes/footer.php';
 ?>
 
 <style>
-/* Ensure charts maintain aspect ratio and responsiveness */
-canvas {
-    max-height: 100%;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Adjust for smaller screens */
-@media (max-width: 768px) {
-    .relative[style*="height"] {
-        height: 250px !important;
+    /* Ensure charts maintain aspect ratio and responsiveness */
+    canvas {
+        max-height: 100%;
+        width: 100% !important;
+        height: 100% !important;
     }
-}
 
-/* Adjust for very small screens */
-@media (max-width: 480px) {
-    .relative[style*="height"] {
-        height: 220px !important;
+    /* Adjust for smaller screens */
+    @media (max-width: 768px) {
+        .relative[style*="height"] {
+            height: 250px !important;
+        }
     }
-}
+
+    /* Adjust for very small screens */
+    @media (max-width: 480px) {
+        .relative[style*="height"] {
+            height: 220px !important;
+        }
+    }
 </style>

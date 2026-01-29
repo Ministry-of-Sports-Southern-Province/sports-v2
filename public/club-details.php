@@ -341,7 +341,7 @@ include '../includes/header.php';
     <div class="mb-4 flex justify-between items-center no-print">
         <a href="dashboard.php" class="text-blue-600 hover:text-blue-800" data-i18n="button.back">← ආපසු</a>
         <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            🖨️ <span data-i18n="button.print">මුද්රණය කරන්න</span>
+            🖨️ <span data-i18n="button.print">මුද්‍රණය කරන්න</span>
         </button>
     </div>
 
@@ -361,6 +361,6 @@ include '../includes/footer.php';
 ?>
 
 <script>
-// Make user role available to JavaScript
-window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
+    // Make user role available to JavaScript
+    window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
 </script>

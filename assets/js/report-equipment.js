@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
   loadEquipmentTypes();
 
   // Real-time report generation (reset to page 1 when filters change)
-  document
-    .getElementById("equipment")
-    .addEventListener("change", function () { generateReport(1); });
+  document.getElementById("equipment").addEventListener("change", function () {
+    generateReport(1);
+  });
   document.getElementById("district").addEventListener("change", function () {
     loadDivisions();
     generateReport(1);
@@ -16,7 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document
     .getElementById("gnDivision")
-    ?.addEventListener("change", function () { generateReport(1); });
+    ?.addEventListener("change", function () {
+      generateReport(1);
+    });
 });
 
 let currentPage = 1;
@@ -24,7 +26,11 @@ let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
 
-function buildReportQuery({ page = 1, limit = rowsPerPage, printAll = false } = {}) {
+function buildReportQuery({
+  page = 1,
+  limit = rowsPerPage,
+  printAll = false,
+} = {}) {
   const equipment = document.getElementById("equipment").value;
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
@@ -164,26 +170,29 @@ function generateReportPage(page = 1) {
 function printReportWithDate() {
   const originalTitle = document.title;
   const now = new Date();
-  const dateStr = now.getFullYear() + '-' + 
-                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                String(now.getDate()).padStart(2, '0');
-  
+  const dateStr =
+    now.getFullYear() +
+    "-" +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(now.getDate()).padStart(2, "0");
+
   const equipment = document.getElementById("equipment")?.value;
   const district = document.getElementById("district")?.value;
   const division = document.getElementById("division")?.value;
-  
-  let filterInfo = '';
+
+  let filterInfo = "";
   if (equipment) {
-    filterInfo = '_' + equipment.replace(/\s+/g, '_');
+    filterInfo = "_" + equipment.replace(/\s+/g, "_");
   }
   if (district) {
-    filterInfo += '_' + district.replace(/\s+/g, '_');
+    filterInfo += "_" + district.replace(/\s+/g, "_");
   }
   if (division) {
-    filterInfo += '_' + division.replace(/\s+/g, '_');
+    filterInfo += "_" + division.replace(/\s+/g, "_");
   }
-  
-  document.title = 'Equipment_Report_' + dateStr + filterInfo;
+
+  document.title = "Equipment_Report_" + dateStr + filterInfo;
 
   const equipmentVal = document.getElementById("equipment")?.value;
   const districtVal = document.getElementById("district")?.value;
@@ -194,7 +203,13 @@ function printReportWithDate() {
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        displayReport(data.data, equipmentVal, districtVal, divisionVal, gnDivisionVal);
+        displayReport(
+          data.data,
+          equipmentVal,
+          districtVal,
+          divisionVal,
+          gnDivisionVal,
+        );
         window.print();
         setTimeout(() => {
           document.title = originalTitle;
@@ -264,7 +279,9 @@ function renderPagination(pagination) {
     btn.textContent = String(i);
     btn.className =
       "px-3 py-1 border rounded " +
-      (i === currentPage ? "bg-blue-600 text-white" : "bg-white hover:bg-gray-50");
+      (i === currentPage
+        ? "bg-blue-600 text-white"
+        : "bg-white hover:bg-gray-50");
     btn.onclick = () => generateReportPage(i);
     container.appendChild(btn);
   }
@@ -315,43 +332,49 @@ function displayReport(
   const gnDivisionText = gnDivision ? ` | GN Division: ${gnDivision}` : "";
 
   // Calculate total
-  const totalQuantity = data.reduce((sum, row) => sum + parseInt(row.quantity || 0), 0);
+  const totalQuantity = data.reduce(
+    (sum, row) => sum + parseInt(row.quantity || 0),
+    0,
+  );
 
   // Sort data by district, division, gn_division for proper grouping
   const sortedData = [...data].sort((a, b) => {
-    if (a.district !== b.district) return (a.district || '').localeCompare(b.district || '');
-    if (a.division !== b.division) return (a.division || '').localeCompare(b.division || '');
-    if (a.gn_division !== b.gn_division) return (a.gn_division || '').localeCompare(b.gn_division || '');
+    if (a.district !== b.district)
+      return (a.district || "").localeCompare(b.district || "");
+    if (a.division !== b.division)
+      return (a.division || "").localeCompare(b.division || "");
+    if (a.gn_division !== b.gn_division)
+      return (a.gn_division || "").localeCompare(b.gn_division || "");
     return 0;
   });
 
   // Assign colors to groups - cycling through color palette
   const colors = [
-    '#dbeafe',  // light blue
-    '#fef3c7',  // light yellow
-    '#d1fae5',  // light green
-    '#fce7f3',  // light pink
-    '#e0e7ff',  // light indigo
-    '#fed7aa',  // light orange
-    '#f3e8ff',  // light purple
-    '#fecaca',  // light red
+    "#dbeafe", // light blue
+    "#fef3c7", // light yellow
+    "#d1fae5", // light green
+    "#fce7f3", // light pink
+    "#e0e7ff", // light indigo
+    "#fed7aa", // light orange
+    "#f3e8ff", // light purple
+    "#fecaca", // light red
   ];
 
-  let tableRows = '';
-  let currentGnDivisionKey = '';
+  let tableRows = "";
+  let currentGnDivisionKey = "";
   let colorIndex = 0;
-  let currentColor = '';
+  let currentColor = "";
 
   sortedData.forEach((row, i) => {
     const gnDivisionKey = `${row.district}|${row.division}|${row.gn_division}`;
-    
+
     // Change color when GN Division changes
     if (gnDivisionKey !== currentGnDivisionKey) {
       currentGnDivisionKey = gnDivisionKey;
       currentColor = colors[colorIndex % colors.length];
       colorIndex++;
     }
-    
+
     tableRows += `
       <tr style="background-color: ${currentColor} !important;">
         <td class="font-medium text-slate-900">${i + 1}</td>
@@ -499,16 +522,16 @@ function displayReport(
         </style>
         
         <div class="print-header" style="display: none;">
-            <div class="dept-name" data-i18n="header.department_name">Southern Province Sports Department</div>
+            <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
             <h1 data-i18n="report.type_equipment">Equipment Report</h1>
             <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</div>
         </div>
 
         <div class="text-center mb-6 no-print">
-            <h2 class="text-2xl font-bold">Southern Province Sports Department</h2>
+            <h2 class="text-2xl font-bold">Department of Sports Southern Province</h2>
             <h3 class="text-xl mt-2">Equipment Report</h3>
             <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</p>
-            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString('en-US')}</p>
+            <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString("en-US")}</p>
         </div>
         
         <table class="report-table min-w-full border-collapse">
