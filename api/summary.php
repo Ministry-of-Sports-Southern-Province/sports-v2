@@ -45,16 +45,18 @@ try {
         }
     }
 
-    // By district
+    // By district — join via divisions and GN divisions because clubs reference GN division
     try {
-        $stmt = $pdo->query("SELECT d.name as district, COUNT(c.id) as count 
-            FROM districts d 
-            LEFT JOIN clubs c ON c.district_id = d.id 
-            GROUP BY d.id, d.name 
+        $stmt = $pdo->query("SELECT d.name as district, COUNT(DISTINCT c.id) as count
+            FROM districts d
+            LEFT JOIN divisions dv ON dv.district_id = d.id
+            LEFT JOIN grama_niladhari_divisions gn ON gn.division_id = dv.id
+            LEFT JOIN clubs c ON c.gn_division_id = gn.id
+            GROUP BY d.id, d.name
             ORDER BY d.name");
         $byDistrict = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        // If districts table doesn't exist, return empty array
+        // If districts/divisions tables don't exist, return empty array
         $byDistrict = [];
     }
 
