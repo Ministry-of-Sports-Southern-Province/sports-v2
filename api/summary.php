@@ -9,16 +9,40 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total FROM clubs");
     $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-    // Active/Expired clubs (check if last_reorg_date column exists)
+    // Active/Expired clubs — compute from club_reorganizations (robust for schemas
+    // that store reorg dates in a separate table). NULL (no reorg) is considered expired.
     try {
-        $stmt = $pdo->query("SELECT 
-            SUM(CASE WHEN last_reorg_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR) THEN 1 ELSE 0 END) as active,
-            SUM(CASE WHEN last_reorg_date < DATE_SUB(CURDATE(), INTERVAL 2 YEAR) OR last_reorg_date IS NULL THEN 1 ELSE 0 END) as expired
-            FROM clubs");
+        $sql = "SELECT 
+            SUM(CASE WHEN (due_date IS NOT NULL AND due_date > CURDATE()) THEN 1 ELSE 0 END) AS active,
+            SUM(CASE WHEN (due_date IS NULL OR due_date <= CURDATE()) THEN 1 ELSE 0 END) AS expired
+            FROM (
+                SELECT c.id,
+                    CASE
+                        WHEN MAX(cr.reorg_date) IS NULL THEN NULL
+                        WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN STR_TO_DATE(CONCAT(YEAR(MAX(cr.reorg_date)) + 2, '-01-01'), '%Y-%m-%d')
+                        ELSE DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)
+                    END AS due_date
+                FROM clubs c
+                LEFT JOIN club_reorganizations cr ON c.id = cr.club_id
+                GROUP BY c.id
+            ) AS t";
+
+        $stmt = $pdo->query($sql);
         $status = $stmt->fetch(PDO::FETCH_ASSOC);
+        // ensure integers
+        $status['active'] = (int)($status['active'] ?? 0);
+        $status['expired'] = (int)($status['expired'] ?? 0);
     } catch (Exception $e) {
-        // If last_reorg_date doesn't exist, set all as active
-        $status = ['active' => $total, 'expired' => 0];
+        // Fallback: attempt the older clubs.last_reorg_date method, otherwise mark all active
+        try {
+            $stmt = $pdo->query("SELECT 
+                SUM(CASE WHEN last_reorg_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR) THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN last_reorg_date < DATE_SUB(CURDATE(), INTERVAL 2 YEAR) OR last_reorg_date IS NULL THEN 1 ELSE 0 END) as expired
+                FROM clubs");
+            $status = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e2) {
+            $status = ['active' => $total, 'expired' => 0];
+        }
     }
 
     // By district
