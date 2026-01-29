@@ -598,11 +598,15 @@ $currentAdmin = getCurrentAdmin();
     <!-- Header -->
     <header class="gov-header text-white shadow-lg">
         <div class="container mx-auto px-4 py-4">
-            <!-- Top row: Title and User Info -->
+            <!-- Top row: Logo, Title and User Info -->
             <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
-                    <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්රීඩා අමාත්යාංශය</p>
+                <div class="flex items-center gap-4">
+                    <!-- Site Logo -->
+                    <img src="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" alt="Southern Province Sports" class="w-12 h-12 object-contain" />
+                    <div>
+                        <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
+                        <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්රීඩා අමාත්යාංශය</p>
+                    </div>
                 </div>
 
                 <!-- Right side: Language Switcher above User Info & Logout -->
