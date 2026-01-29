@@ -44,30 +44,28 @@ try {
     $where = "";
     $params = [];
 
-    // Add search filter
+    // Add search filter (use named parameter so we don't mix positional and named placeholders)
     if ($search !== '') {
-        $where .= " AND (c.name LIKE ? OR c.reg_number LIKE ? OR c.chairman_name LIKE ?)";
-        $params[] = '%' . $search . '%';
-        $params[] = '%' . $search . '%';
-        $params[] = '%' . $search . '%';
+        $where .= " AND (c.name LIKE :search OR c.reg_number LIKE :search OR c.chairman_name LIKE :search)";
+        $params['search'] = '%' . $search . '%';
     }
 
     // Add district filter
     if ($districtId) {
-        $where .= " AND d.id = ?";
-        $params[] = $districtId;
+        $where .= " AND d.id = :district_id";
+        $params['district_id'] = (int)$districtId;
     }
 
     // Add division filter
     if ($divisionId) {
-        $where .= " AND dv.id = ?";
-        $params[] = $divisionId;
+        $where .= " AND dv.id = :division_id";
+        $params['division_id'] = (int)$divisionId;
     }
 
     // Add GN division filter
     if ($gnDivisionId) {
-        $where .= " AND gn.id = ?";
-        $params[] = $gnDivisionId;
+        $where .= " AND gn.id = :gn_division_id";
+        $params['gn_division_id'] = (int)$gnDivisionId;
     }
 
     // HAVING for reorg_status (active = due date in future, expired = due date past or no reorg)
@@ -116,8 +114,10 @@ try {
     }
 
     $stmt = $pdo->prepare($sql);
-    foreach ($params as $idx => $val) {
-        $stmt->bindValue($idx + 1, $val);
+    // Bind named parameters (preserve integer types when possible)
+    foreach ($params as $name => $val) {
+        $type = is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR;
+        $stmt->bindValue(':' . $name, $val, $type);
     }
     if (!$printAll) {
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
