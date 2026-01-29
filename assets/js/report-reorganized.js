@@ -213,28 +213,28 @@ function displayReport(data, year, district) {
             <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText}</p>
             <p class="text-sm text-gray-600">උත්පාදන දිනය: ${new Date().toLocaleDateString('si-LK')}</p>
         </div>
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-gray-100">
+        <table class="report-table min-w-full border-collapse">
+            <thead>
                 <tr>
-                    <th class="border border-gray-300 px-4 py-2">#</th>
-                    <th class="border border-gray-300 px-4 py-2">ලියාපදිංචි අංකය</th>
-                    <th class="border border-gray-300 px-4 py-2">සමාජ නාමය</th>
-                    <th class="border border-gray-300 px-4 py-2">දිස්ත්රික්කය</th>
-                    <th class="border border-gray-300 px-4 py-2">සභාපති</th>
-                    <th class="border border-gray-300 px-4 py-2">දුරකථනය</th>
-                    <th class="border border-gray-300 px-4 py-2">ප්රතිසංවිධාන දිනය</th>
+                    <th>#</th>
+                    <th>ලියාපදිංචි අංකය</th>
+                    <th>සමාජ නාමය</th>
+                    <th>දිස්ත්රික්කය</th>
+                    <th>සභාපති</th>
+                    <th>දුරකථනය</th>
+                    <th>ප්රතිසංවිධාන දිනය</th>
                 </tr>
             </thead>
             <tbody>
                 ${data.map((row, i) => `
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.reg_number}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.name}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.district || '-'}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.chairman}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.chairman_phone}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.reorg_date}</td>
+                        <td class="font-medium text-slate-900">${i + 1}</td>
+                        <td class="text-slate-800">${row.reg_number}</td>
+                        <td class="text-slate-800 font-medium">${row.name}</td>
+                        <td class="text-slate-800">${row.district || '-'}</td>
+                        <td class="text-slate-800">${row.chairman}</td>
+                        <td class="text-slate-800">${row.chairman_phone}</td>
+                        <td class="text-slate-800">${row.reorg_date}</td>
                     </tr>
                 `).join('')}
             </tbody>

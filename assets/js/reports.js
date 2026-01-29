@@ -109,18 +109,18 @@ function displayReport(data, columns, type) {
             <h3 class="text-xl mt-2">${title}</h3>
             <p class="text-sm text-gray-600 mt-2">උත්පාදන දිනය: ${new Date().toLocaleDateString('si-LK')}</p>
         </div>
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-gray-100">
+        <table class="report-table min-w-full border-collapse">
+            <thead>
                 <tr>
-                    <th class="border border-gray-300 px-4 py-2">#</th>
-                    ${columns.map(col => `<th class="border border-gray-300 px-4 py-2">${headers[col] || col}</th>`).join('')}
+                    <th>#</th>
+                    ${columns.map(col => `<th>${headers[col] || col}</th>`).join('')}
                 </tr>
             </thead>
             <tbody>
                 ${data.map((row, i) => `
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
-                        ${columns.map(col => `<td class="border border-gray-300 px-4 py-2">${row[col] || '-'}</td>`).join('')}
+                        <td class="font-medium text-slate-900">${i + 1}</td>
+                        ${columns.map(col => `<td class="text-slate-800">${row[col] || '-'}</td>`).join('')}
                     </tr>
                 `).join('')}
             </tbody>

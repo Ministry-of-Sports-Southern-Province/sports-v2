@@ -354,14 +354,14 @@ function displayReport(
     
     tableRows += `
       <tr style="background-color: ${currentColor} !important;">
-        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.reg_number}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.name}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.district || "-"}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.division || "-"}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.gn_division || "-"}</td>
-        <td class="border border-gray-300 px-4 py-2">${row.equipment}</td>
-        <td class="border border-gray-300 px-4 py-2" style="text-align: right;">${row.quantity}</td>
+        <td class="font-medium text-slate-900">${i + 1}</td>
+        <td class="text-slate-800">${row.reg_number}</td>
+        <td class="text-slate-800 font-medium">${row.name}</td>
+        <td class="text-slate-800">${row.district || "-"}</td>
+        <td class="text-slate-800">${row.division || "-"}</td>
+        <td class="text-slate-800">${row.gn_division || "-"}</td>
+        <td class="text-slate-800">${row.equipment}</td>
+        <td class="text-right font-medium text-slate-900">${row.quantity}</td>
       </tr>`;
   });
 
@@ -416,13 +416,14 @@ function displayReport(
                     color: #000;
                 }
                 
-                /* Table Compact Styling */
+                /* Table Compact Styling - text wraps to avoid column overflow */
                 table { 
                     width: 100%; 
                     border-collapse: collapse; 
                     font-size: 7pt; 
                     margin-top: 8px; 
                     line-height: 1.2;
+                    table-layout: fixed;
                 }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
@@ -431,20 +432,27 @@ function displayReport(
                     color: white !important; 
                     font-weight: bold; 
                     font-size: 7pt;
-                    padding: 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     text-align: left; 
                     line-height: 1.1;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                     -webkit-print-color-adjust: exact; 
                     print-color-adjust: exact;
                 }
                 table td { 
-                    padding: 2px 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     font-size: 7pt; 
                     color: #333; 
                     line-height: 1.2; 
-                    vertical-align: top; 
+                    vertical-align: top;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    min-width: 0;
                 }
                 
                 /* Ensure inline background colors print */
@@ -503,17 +511,17 @@ function displayReport(
             <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString('en-US')}</p>
         </div>
         
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-gray-100">
+        <table class="report-table min-w-full border-collapse">
+            <thead>
                 <tr>
-                    <th class="border border-gray-300 px-4 py-2">#</th>
-                    <th class="border border-gray-300 px-4 py-2">Registration No</th>
-                    <th class="border border-gray-300 px-4 py-2">Club Name</th>
-                    <th class="border border-gray-300 px-4 py-2">District</th>
-                    <th class="border border-gray-300 px-4 py-2">Division</th>
-                    <th class="border border-gray-300 px-4 py-2">GN Division</th>
-                    <th class="border border-gray-300 px-4 py-2">Equipment</th>
-                    <th class="border border-gray-300 px-4 py-2" style="text-align: right;">Quantity</th>
+                    <th>#</th>
+                    <th>Registration No</th>
+                    <th>Club Name</th>
+                    <th>District</th>
+                    <th>Division</th>
+                    <th>GN Division</th>
+                    <th>Equipment</th>
+                    <th class="text-right">Quantity</th>
                 </tr>
             </thead>
             <tbody>

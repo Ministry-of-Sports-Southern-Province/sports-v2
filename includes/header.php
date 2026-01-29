@@ -230,6 +230,255 @@ $currentAdmin = getCurrentAdmin();
             color: #374151;
         }
 
+        /* ===== Global UI: Sections, Forms, Buttons ===== */
+        main.container { max-width: 1280px; }
+        .page-title { font-size: 1.875rem; font-weight: 700; color: #1e293b; margin-bottom: 1.5rem; }
+        .page-title.center { text-align: center; margin-bottom: 2rem; }
+
+        /* Section cards */
+        .section-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-card:last-child { margin-bottom: 0; }
+        .section-heading {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .section-heading + p { margin-top: 0; }
+
+        /* Form controls */
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.9375rem;
+            color: #1e293b;
+            background: #fff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .form-input::placeholder,
+        .form-textarea::placeholder { color: #94a3b8; }
+        .form-input:disabled,
+        .form-select:disabled,
+        .form-textarea:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-hint { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; }
+        .form-error { font-size: 0.8125rem; color: #dc2626; margin-top: 0.25rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:hover { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25); }
+        .btn-secondary {
+            background: #64748b;
+            color: #fff;
+        }
+        .btn-secondary:hover { background: #475569; }
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+        }
+        .btn-success:hover { background: linear-gradient(135deg, #047857 0%, #065f46 100%); }
+        .btn-outline {
+            background: #fff;
+            color: #475569;
+            border: 1.5px solid #cbd5e1;
+        }
+        .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; color: #334155; }
+
+        /* Stat cards (dashboard / summary) */
+        .stat-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #3b82f6;
+            padding: 1.25rem 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+        .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .stat-card .stat-label { font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem; }
+        .stat-card .stat-value { font-size: 1.875rem; font-weight: 700; color: #1e293b; }
+
+        /* Content / report output card */
+        .content-card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+        }
+
+        /* Link cards (e.g. reports hub) */
+        .link-card {
+            display: block;
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        .link-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        .link-card .link-card-title { font-size: 1.125rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+        .link-card .link-card-desc { font-size: 0.875rem; color: #64748b; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-panel {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid #e2e8f0;
+            max-width: 28rem;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-panel .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-panel .modal-title { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+        .modal-panel .modal-body { padding: 1.5rem; }
+
+        /* Data tables: better visibility, borders, spacing */
+        .data-table {
+            min-width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .data-table thead {
+            background: linear-gradient(to right, #334155, #1e293b);
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .data-table thead th {
+            padding: 0.875rem 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: white;
+            white-space: nowrap;
+            border-bottom: 2px solid #475569;
+        }
+        .data-table tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.15s;
+        }
+        .data-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: rgba(248, 250, 252, 0.5);
+        }
+        .data-table tbody tr:nth-child(even):hover {
+            background-color: #f1f5f9;
+        }
+        .data-table tbody td {
+            padding: 0.875rem 1.25rem;
+            font-size: 0.875rem;
+            color: #1e293b;
+        }
+        .data-table-wrapper {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        /* Report-style tables (bordered cells) */
+        .report-table {
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table thead {
+            background: #334155;
+            color: white;
+        }
+        .report-table thead th {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border: 1px solid #475569;
+        }
+        .report-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .report-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+        }
+
         <?php echo $customStyles; ?>
     </style>
 </head>

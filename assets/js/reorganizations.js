@@ -58,7 +58,7 @@ function loadClubs(page) {
   currentPage = page || 1;
   const tbody = document.getElementById("clubsTable");
   tbody.innerHTML =
-    '<tr><td colspan="7" class="px-6 py-4 text-center" data-i18n="message.loading">පූරණය වෙමින්...</td></tr>';
+    '<tr><td colspan="7" class="py-8 text-center text-slate-500" data-i18n="message.loading">පූරණය වෙමින්...</td></tr>';
 
   const params = getReorgParams();
   params.append("page", String(currentPage));
@@ -75,13 +75,13 @@ function loadClubs(page) {
         }
       } else {
         tbody.innerHTML =
-          '<tr><td colspan="7" class="px-6 py-4 text-center text-red-600">දෝෂයකි</td></tr>';
+          '<tr><td colspan="7" class="py-8 text-center text-red-600">දෝෂයකි</td></tr>';
       }
     })
     .catch((err) => {
       console.error(err);
       tbody.innerHTML =
-        '<tr><td colspan="7" class="px-6 py-4 text-center text-red-600">දෝෂයකි</td></tr>';
+        '<tr><td colspan="7" class="py-8 text-center text-red-600">දෝෂයකි</td></tr>';
     });
 }
 
@@ -89,7 +89,7 @@ function displayClubs(clubs, pageOneBased) {
   const tbody = document.getElementById("clubsTable");
   if (!clubs || clubs.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="7" class="px-6 py-4 text-center">දත්ත නොමැත</td></tr>';
+      '<tr><td colspan="7" class="py-8 text-center text-slate-500">දත්ත නොමැත</td></tr>';
     return;
   }
   const start = ((pageOneBased || 1) - 1) * rowsPerPage;
@@ -102,13 +102,13 @@ function displayClubs(clubs, pageOneBased) {
           : "bg-yellow-100 text-yellow-800";
       return `
             <tr>
-                <td class="px-6 py-4">${start + i + 1}</td>
-                <td class="px-6 py-4">${escapeHtml(club.reg_number)}</td>
-                <td class="px-6 py-4">${escapeHtml(club.name)}</td>
-                <td class="px-6 py-4">${escapeHtml(club.district_name || "-")}</td>
-                <td class="px-6 py-4">${club.last_reorg_date || "N/A"}</td>
-                <td class="px-6 py-4"><span class="px-2 py-1 rounded text-sm ${statusClass}" data-i18n="status.${status}">${status === "active" ? "සක්රීය" : "කල් ඉකුත්"}</span></td>
-                <td class="px-6 py-4">
+                <td class="font-medium text-slate-900">${start + i + 1}</td>
+                <td class="font-medium text-slate-900">${escapeHtml(club.reg_number)}</td>
+                <td class="text-slate-900">${escapeHtml(club.name)}</td>
+                <td class="text-slate-700">${escapeHtml(club.district_name || "-")}</td>
+                <td class="text-slate-700">${club.last_reorg_date || "N/A"}</td>
+                <td><span class="px-2 py-1 rounded text-sm font-medium ${statusClass}" data-i18n="status.${status}">${status === "active" ? "සක්රීය" : "කල් ඉකුත්"}</span></td>
+                <td>
                     <button onclick="viewHistory(${club.id})" class="text-blue-600 hover:text-blue-800 mr-2" data-i18n="button.view_history">ඉතිහාසය</button>
                     ${(window.currentUserRole === "admin") ? `
                     <button onclick="renewClub(${club.id})" class="text-green-600 hover:text-green-800 mr-2" data-i18n="button.renew">නවීකරණය</button>

@@ -425,20 +425,20 @@ function viewReorgHistory(clubId) {
             '<p class="text-center text-gray-500" data-i18n="message.no_reorg_history">No reorganization history</p>';
         } else {
           historyContent.innerHTML = `
-          <table class="w-full">
+          <table class="data-table w-full">
             <thead>
-              <tr class="bg-gray-100">
-                <th class="p-2 text-left">#</th>
-                <th class="p-2 text-left" data-i18n="form.reorg_date">Date</th>
+              <tr>
+                <th>#</th>
+                <th data-i18n="form.reorg_date">Date</th>
               </tr>
             </thead>
             <tbody>
               ${data.data
                 .map(
                   (r, i) => `
-                <tr class="border-t">
-                  <td class="p-2">${i + 1}</td>
-                  <td class="p-2">${formatDate(r.reorg_date)}</td>
+                <tr>
+                  <td class="font-medium text-slate-900">${i + 1}</td>
+                  <td class="text-slate-800">${formatDate(r.reorg_date)}</td>
                 </tr>
               `,
                 )

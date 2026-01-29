@@ -10,23 +10,23 @@ $pageTitle = 'page.club_details_title';
 $pageHeading = 'page.club_details_title';
 $activePage = 'club-details';
 
-// Custom styles for this page
+// Custom styles for this page (detail-card aligns with section-card)
 $customStyles = '
         .detail-card {
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 1.5rem;
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem 1.75rem;
             margin-bottom: 1.5rem;
         }
-        
         .detail-card h2 {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #1f2937;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e293b;
             margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #3b82f6;
         }
         
         .info-row {
@@ -224,6 +224,9 @@ $customStyles = '
                     border-bottom: 1px solid #e5e7eb;
                     padding-bottom: 2px;
                     min-height: 14px;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                 }
                 
                 .info-row {
@@ -258,9 +261,11 @@ $customStyles = '
                     font-weight: 500;
                     padding-right: 5px;
                     font-size: 7.5pt;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    white-space: normal;
+                    min-width: 0;
                 }
                 
                 .equipment-item .eq-qty {

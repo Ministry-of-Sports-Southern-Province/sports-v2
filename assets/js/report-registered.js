@@ -250,13 +250,14 @@ function displayReport(data, district, dateRange) {
                     color: #000;
                 }
                 
-                /* Table Compact Styling */
+                /* Table Compact Styling - text wraps to avoid column overflow */
                 table { 
                     width: 100%; 
                     border-collapse: collapse; 
                     font-size: 7pt; 
                     margin-top: 8px; 
                     line-height: 1.2;
+                    table-layout: fixed;
                 }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
@@ -265,20 +266,27 @@ function displayReport(data, district, dateRange) {
                     color: white !important; 
                     font-weight: bold; 
                     font-size: 7pt;
-                    padding: 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     text-align: left; 
                     line-height: 1.1;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                     -webkit-print-color-adjust: exact; 
                     print-color-adjust: exact;
                 }
                 table td { 
-                    padding: 2px 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     font-size: 7pt; 
                     color: #333; 
                     line-height: 1.2; 
-                    vertical-align: top; 
+                    vertical-align: top;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    min-width: 0;
                 }
                 table tbody tr:nth-child(even) { 
                     background-color: #f9fafb !important; 
@@ -333,28 +341,28 @@ function displayReport(data, district, dateRange) {
             <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText} | කාල පරාසය: ${rangeText}</p>
             <p class="text-sm text-gray-600">උත්පාදන දිනය: ${new Date().toLocaleDateString('si-LK')}</p>
         </div>
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead class="bg-gray-100">
+        <table class="report-table min-w-full border-collapse">
+            <thead>
                 <tr>
-                    <th class="border border-gray-300 px-4 py-2">#</th>
-                    <th class="border border-gray-300 px-4 py-2">ලියාපදිංචි අංකය</th>
-                    <th class="border border-gray-300 px-4 py-2">සමාජ නාමය</th>
-                    <th class="border border-gray-300 px-4 py-2">දිස්ත්රික්කය</th>
-                    <th class="border border-gray-300 px-4 py-2">සභාපති</th>
-                    <th class="border border-gray-300 px-4 py-2">දුරකථනය</th>
-                    <th class="border border-gray-300 px-4 py-2">ලියාපදිංචි දිනය</th>
+                    <th>#</th>
+                    <th>ලියාපදිංචි අංකය</th>
+                    <th>සමාජ නාමය</th>
+                    <th>දිස්ත්රික්කය</th>
+                    <th>සභාපති</th>
+                    <th>දුරකථනය</th>
+                    <th>ලියාපදිංචි දිනය</th>
                 </tr>
             </thead>
             <tbody>
                 ${data.map((row, i) => `
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">${i + 1}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.reg_number}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.name}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.district || '-'}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.chairman}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.chairman_phone}</td>
-                        <td class="border border-gray-300 px-4 py-2">${row.registration_date}</td>
+                        <td class="font-medium text-slate-900">${i + 1}</td>
+                        <td class="text-slate-800">${row.reg_number}</td>
+                        <td class="text-slate-800 font-medium">${row.name}</td>
+                        <td class="text-slate-800">${row.district || '-'}</td>
+                        <td class="text-slate-800">${row.chairman}</td>
+                        <td class="text-slate-800">${row.chairman_phone}</td>
+                        <td class="text-slate-800">${row.registration_date}</td>
                     </tr>
                 `).join('')}
             </tbody>

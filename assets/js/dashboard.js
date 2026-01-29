@@ -214,18 +214,14 @@ function loadStatistics() {
             const color = colors[index % colors.length];
 
             const card = document.createElement("div");
-            card.className = "stat-card rounded-lg shadow-md p-6";
+            card.className = "stat-card";
             card.style.borderLeftColor = color.border;
 
             card.innerHTML = `
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm font-semibold text-gray-600">${escapeHtml(
-                    district.district_name,
-                  )}</p>
-                  <p class="text-3xl font-bold text-gray-800 mt-2">${
-                    district.count
-                  }</p>
+                  <p class="stat-label">${escapeHtml(district.district_name)}</p>
+                  <p class="stat-value mt-1">${district.count}</p>
                 </div>
                 <div class="${color.text}">
                   <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -712,7 +708,7 @@ function displayClubs(clubs) {
 
   if (clubs.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="12" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
+      '<tr><td colspan="12" class="py-8 text-center text-slate-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
 
     // Update translations for dynamically added content
     if (window.i18n && typeof window.i18n.updateContent === "function") {
@@ -725,7 +721,6 @@ function displayClubs(clubs) {
 
   clubs.forEach((club) => {
     const tr = document.createElement("tr");
-    tr.className = "hover:bg-gray-50";
 
     // Calculate next reorganization due date
     let nextReorgDate = "";
@@ -754,18 +749,18 @@ function displayClubs(clubs) {
     }
 
     tr.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${escapeHtml(club.reg_number)}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(club.registration_date)}</td>
-            <td class="px-6 py-4 text-sm text-gray-900">${escapeHtml(club.name)}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.division_name || "")}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.gn_division_name || "")}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_name || "")}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.chairman_address || "")}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.secretary_name || "")}</td>
-            <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(club.secretary_address || "")}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${club.last_reorg_date ? formatDate(club.last_reorg_date) : "-"}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${nextReorgDate || "-"}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <td class="whitespace-nowrap text-slate-900 font-medium">${escapeHtml(club.reg_number)}</td>
+            <td class="whitespace-nowrap text-slate-700">${formatDate(club.registration_date)}</td>
+            <td class="text-slate-900 font-medium">${escapeHtml(club.name)}</td>
+            <td class="text-slate-700">${escapeHtml(club.division_name || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.gn_division_name || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.chairman_name || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.chairman_address || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.secretary_name || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.secretary_address || "")}</td>
+            <td class="whitespace-nowrap text-slate-700">${club.last_reorg_date ? formatDate(club.last_reorg_date) : "-"}</td>
+            <td class="whitespace-nowrap text-slate-700">${nextReorgDate || "-"}</td>
+            <td class="whitespace-nowrap">
                 <div class="flex items-center gap-3">
                     <a href="club-details.php?id=${club.id}" 
                        class="text-blue-600 hover:text-blue-800 transition" 

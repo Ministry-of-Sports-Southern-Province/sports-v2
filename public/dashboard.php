@@ -166,21 +166,35 @@ $customStyles = '
                 print-color-adjust: exact;
             }
             
-            /* Table Styling - Compact for Maximum Rows */
+            /* Table Styling - Compact for Maximum Rows; text wraps to avoid column overflow */
             #printContainer table { width: 100%; border-collapse: collapse; font-size: 7pt; margin-top: 8px; table-layout: fixed; line-height: 1.2; }
             #printContainer table th { 
                 background-color: #1e3a8a !important; 
                 color: white !important; 
                 font-weight: bold; 
                 font-size: 7pt;
-                padding: 3px; 
+                padding: 3px 4px; 
                 border: 1px solid #ccc; 
                 text-align: left; 
                 line-height: 1.1;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
-            #printContainer table td { padding: 2px 3px; border: 1px solid #ccc; font-size: 7pt; color: #333; line-height: 1.2; vertical-align: top; }
+            #printContainer table td { 
+                padding: 3px 4px; 
+                border: 1px solid #ccc; 
+                font-size: 7pt; 
+                color: #333; 
+                line-height: 1.2; 
+                vertical-align: top;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
+                min-width: 0;
+            }
             #printContainer table tr:nth-child(even) { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
             /* Footer */
@@ -210,11 +224,11 @@ include '../includes/header.php';
     <!-- Statistics Cards -->
     <div id="statisticsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Clubs -->
-        <div class="stat-card rounded-lg shadow-md p-6" style="border-left-color: #3b82f6;">
+        <div class="stat-card" style="border-left-color: #3b82f6;">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-semibold text-gray-600" data-i18n="stats.total_clubs">Total Clubs</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="statTotalClubs">0</p>
+                    <p class="stat-label" data-i18n="stats.total_clubs">Total Clubs</p>
+                    <p class="stat-value mt-1" id="statTotalClubs">0</p>
                 </div>
                 <div class="text-blue-600">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,63 +240,57 @@ include '../includes/header.php';
         <!-- District cards will be dynamically inserted here -->
     </div>
 
-    <!-- Charts Section -->
-
-
     <!-- Action Bar -->
-    <div class="mb-6 flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-800" data-i18n="nav.dashboard"></h2>
-        <div class="flex items-center gap-4">
-            <!-- Export Buttons -->
-            <button onclick="exportToExcel()" class="action-btn px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md font-medium flex items-center gap-2" title="Export to Excel">
+    <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
+        <h2 class="page-title m-0" data-i18n="nav.dashboard"></h2>
+        <div class="flex items-center gap-3 flex-wrap">
+            <button onclick="exportToExcel()" class="btn btn-success" title="Export to Excel">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <span data-i18n="button.export_excel">Excel</span>
             </button>
-            <button onclick="printWithDate()" class="action-btn px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-md font-medium flex items-center gap-2" title="Print Preview">
+            <button onclick="printWithDate()" class="btn btn-primary" title="Print Preview">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
                 <span data-i18n="button.print">Print</span>
             </button>
-            <!-- Register Button - Only visible to admins -->
             <?php if (isAdmin()): ?>
-            <a href="register.php" class="action-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md font-medium" data-i18n="nav.register"></a>
+            <a href="register.php" class="btn btn-primary" data-i18n="nav.register"></a>
             <?php endif; ?>
         </div>
     </div>
 
     <!-- Search and Filter -->
-    <div class="search-card rounded-lg shadow-md p-6 mb-6">
+    <div class="section-card mb-6">
+        <h2 class="section-heading" data-i18n="search.title">Search &amp; Filter</h2>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-2">
-                <label class="block text-sm font-semibold text-gray-700 mb-2" data-i18n="placeholder.search"></label>
-                <input type="text" id="searchInput"
-                    class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                    data-i18n-placeholder="placeholder.search">
+                <label class="form-label" data-i18n="placeholder.search"></label>
+                <input type="text" id="searchInput" class="form-input" data-i18n-placeholder="placeholder.search">
             </div>
             <div class="md:col-span-2">
-                <label class="block text-sm font-semibold text-gray-700 mb-2" data-i18n="form.district"></label>
-                <select id="filterDistrict" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <label class="form-label" data-i18n="form.district"></label>
+                <select id="filterDistrict" class="form-select">
                     <option value="" data-i18n="placeholder.select"></option>
                 </select>
             </div>
             <div class="md:col-span-3">
-                <label class="block text-sm font-semibold text-gray-700 mb-2" data-i18n="form.division"></label>
-                <select id="filterDivision" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <label class="form-label" data-i18n="form.division"></label>
+                <select id="filterDivision" class="form-select">
                     <option value="" data-i18n="placeholder.select_district_first"></option>
                 </select>
             </div>
             <div class="md:col-span-3">
-                <label class="block text-sm font-semibold text-gray-700 mb-2" data-i18n="form.gn_division"></label>
-                <select id="filterGnDivision" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <label class="form-label" data-i18n="form.gn_division"></label>
+                <select id="filterGnDivision" class="form-select">
                     <option value="" data-i18n="placeholder.select_division_first"></option>
                 </select>
             </div>
             <div class="md:col-span-2 flex flex-col justify-end gap-2">
-                <button onclick="loadClubs()" class="action-btn w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md font-medium" data-i18n="button.search"></button>
-                <button onclick="resetFilters()" class="action-btn w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 shadow-md font-medium" data-i18n="button.reset"></button>
+                <button onclick="loadClubs()" class="btn btn-primary w-full" data-i18n="button.search"></button>
+                <button onclick="resetFilters()" class="btn btn-outline w-full" data-i18n="button.reset"></button>
             </div>
         </div>
     </div>
@@ -290,28 +298,28 @@ include '../includes/header.php';
     <!-- Pagination -->
 
     <!-- Clubs Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+    <div class="data-table-wrapper">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <table class="data-table w-full">
+                <thead>
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.reg_number"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.registration_date"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.club_name"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.division"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.gn_division"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_name"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.chairman_address"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_name"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.secretary_address"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.last_reorg_date"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.next_reorg_due_date"></th>
-                        <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider" data-i18n="table.actions"></th>
+                        <th data-i18n="table.reg_number"></th>
+                        <th data-i18n="table.registration_date"></th>
+                        <th data-i18n="table.club_name"></th>
+                        <th data-i18n="table.division"></th>
+                        <th data-i18n="table.gn_division"></th>
+                        <th data-i18n="table.chairman_name"></th>
+                        <th data-i18n="table.chairman_address"></th>
+                        <th data-i18n="table.secretary_name"></th>
+                        <th data-i18n="table.secretary_address"></th>
+                        <th data-i18n="table.last_reorg_date"></th>
+                        <th data-i18n="table.next_reorg_due_date"></th>
+                        <th data-i18n="table.actions"></th>
                     </tr>
                 </thead>
-                <tbody id="clubsTableBody" class="bg-white divide-y divide-gray-200">
+                <tbody id="clubsTableBody">
                     <tr>
-                        <td colspan="12" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="12" class="py-8 text-center text-slate-500">
                             <span data-i18n="message.loading"></span>
                         </td>
                     </tr>

@@ -30,7 +30,7 @@ function displayUsers(users) {
 
   if (users.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
+      '<tr><td colspan="7" class="py-8 text-center text-slate-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
     if (window.i18n && typeof window.i18n.updateContent === "function") {
       window.i18n.updateContent();
     }
@@ -51,25 +51,25 @@ function displayUsers(users) {
 
       return `
             <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${escapeHtml(
+                <td class="whitespace-nowrap font-medium text-slate-900">${escapeHtml(
                   user.username
                 )}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(
+                <td class="whitespace-nowrap text-slate-900">${escapeHtml(
                   user.full_name
                 )}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(
+                <td class="whitespace-nowrap text-slate-700">${escapeHtml(
                   user.email || "-"
                 )}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="whitespace-nowrap">
                     <span class="role-badge ${roleClass}">${escapeHtml(
         user.role
       )}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="whitespace-nowrap">
                     <span class="status-badge ${statusClass}">${statusText}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${lastLogin}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="whitespace-nowrap text-slate-700">${lastLogin}</td>
+                <td class="whitespace-nowrap">
                     <div class="flex items-center gap-3">
                         <button onclick="editUser(${user.id})" 
                                 class="text-blue-600 hover:text-blue-800 transition" 
