@@ -38,14 +38,13 @@ function initializeTomSelect() {
     maxOptions: 50,
     placeholder: window.i18n.t("placeholder.select"),
     load: function (query, callback) {
-      if (query.length < 3) {
+      // If no query typed, don't run search (initial list loaded in onInitialize)
+      if (!query || query.length === 0) {
         callback();
         return;
       }
 
-      fetch(
-        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`,
-      )
+      fetch(`../api/locations.php?type=district&search=${encodeURIComponent(query)}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -89,22 +88,21 @@ function initializeTomSelect() {
     createOnBlur: true,
     maxOptions: 50,
     placeholder: window.i18n.t("placeholder.select_district_first"),
+    preload: true,
     load: function (query, callback) {
       const districtId = window.tomSelectInstances.district.getValue();
       if (!districtId) {
         callback();
         return;
       }
-      if (query.length < 3) {
-        callback();
-        return;
-      }
 
-      fetch(
-        `../api/locations.php?type=division&search=${encodeURIComponent(
-          query,
-        )}&parent_id=${districtId}`,
-      )
+      // If query is empty, fetch all divisions for the district
+      const q =
+        query && query.length >= 1
+          ? `&search=${encodeURIComponent(query)}`
+          : "";
+
+      fetch(`../api/locations.php?type=division${q}&parent_id=${districtId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -135,22 +133,20 @@ function initializeTomSelect() {
     createOnBlur: true,
     maxOptions: 50,
     placeholder: window.i18n.t("placeholder.select_division_first"),
+    preload: true,
     load: function (query, callback) {
       const divisionId = window.tomSelectInstances.division.getValue();
       if (!divisionId) {
         callback();
         return;
       }
-      if (query.length < 3) {
-        callback();
-        return;
-      }
 
-      fetch(
-        `../api/locations.php?type=gn_division&search=${encodeURIComponent(
-          query,
-        )}&parent_id=${divisionId}`,
-      )
+      const q =
+        query && query.length >= 1
+          ? `&search=${encodeURIComponent(query)}`
+          : "";
+
+      fetch(`../api/locations.php?type=gn_division${q}&parent_id=${divisionId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
