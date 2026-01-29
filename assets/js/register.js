@@ -44,7 +44,9 @@ function initializeTomSelect() {
         return;
       }
 
-      fetch(`../api/locations.php?type=district&search=${encodeURIComponent(query)}`)
+      fetch(
+        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`,
+      )
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -232,12 +234,9 @@ function handleDistrictChange(districtId, selectInstance) {
       document.getElementById("regNumberPrefix").value = prefix;
       updateFullRegNumber();
 
-      // Enable registration number field
+      // Enable registration number field (do not autofocus)
       regNumberManual.disabled = false;
       if (regNumberHelper) regNumberHelper.classList.add("hidden");
-
-      // Focus on the field
-      setTimeout(() => regNumberManual.focus(), 100);
     }
 
     // Load divisions for selected district
