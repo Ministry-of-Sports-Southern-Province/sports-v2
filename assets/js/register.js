@@ -34,10 +34,9 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeTomSelect() {
   // District select
   window.tomSelectInstances.district = new TomSelect("#district", {
-    create: true,
-    createOnBlur: true,
+    create: false,
     maxOptions: 50,
-    placeholder: window.i18n.t("placeholder.type_to_search"),
+    placeholder: window.i18n.t("placeholder.select"),
     load: function (query, callback) {
       if (query.length < 3) {
         callback();
@@ -45,7 +44,7 @@ function initializeTomSelect() {
       }
 
       fetch(
-        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`
+        `../api/locations.php?type=district&search=${encodeURIComponent(query)}`,
       )
         .then((response) => response.json())
         .then((data) => {
@@ -55,7 +54,7 @@ function initializeTomSelect() {
                 value: item.id,
                 text: item.name,
                 sinhala_letter: item.sinhala_letter,
-              }))
+              })),
             );
           } else {
             callback();
@@ -82,9 +81,6 @@ function initializeTomSelect() {
     onChange: function (value) {
       handleDistrictChange(value, this);
     },
-    onCreate: function (input, callback) {
-      createNewLocation("district", input, null, callback);
-    },
   });
 
   // Division select
@@ -106,8 +102,8 @@ function initializeTomSelect() {
 
       fetch(
         `../api/locations.php?type=division&search=${encodeURIComponent(
-          query
-        )}&parent_id=${districtId}`
+          query,
+        )}&parent_id=${districtId}`,
       )
         .then((response) => response.json())
         .then((data) => {
@@ -116,7 +112,7 @@ function initializeTomSelect() {
               data.data.map((item) => ({
                 value: item.id,
                 text: item.name,
-              }))
+              })),
             );
           } else {
             callback();
@@ -152,8 +148,8 @@ function initializeTomSelect() {
 
       fetch(
         `../api/locations.php?type=gn_division&search=${encodeURIComponent(
-          query
-        )}&parent_id=${divisionId}`
+          query,
+        )}&parent_id=${divisionId}`,
       )
         .then((response) => response.json())
         .then((data) => {
@@ -162,7 +158,7 @@ function initializeTomSelect() {
               data.data.map((item) => ({
                 value: item.id,
                 text: item.name,
-              }))
+              })),
             );
           } else {
             callback();
@@ -213,7 +209,7 @@ function initializeTomSelect() {
       onChange: function (values) {
         updateEquipmentList(values);
       },
-    }
+    },
   );
 }
 
@@ -393,14 +389,14 @@ function addToStandardEquipmentSection(equipment) {
   div.className = "flex items-center space-x-3";
   div.innerHTML = `
     <input type="checkbox" id="eq_${equipment.id}" name="equipment[]" value="${
-    equipment.id
-  }" class="equipment-checkbox">
+      equipment.id
+    }" class="equipment-checkbox">
     <label for="eq_${equipment.id}" class="flex-grow text-gray-700">${
-    equipment.name
-  }</label>
+      equipment.name
+    }</label>
     <input type="number" id="eq_qty_${equipment.id}" name="equipment_qty[${
-    equipment.id
-  }]" min="1" disabled
+      equipment.id
+    }]" min="1" disabled
       class="w-20 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity"
       placeholder="${window.i18n.t("form.quantity")}">
   `;
@@ -465,18 +461,18 @@ function loadStandardEquipment() {
                         <input type="checkbox" id="eq_${
                           equipment.id
                         }" name="equipment[]" value="${
-            equipment.id
-          }" class="equipment-checkbox">
+                          equipment.id
+                        }" class="equipment-checkbox">
                         <label for="eq_${
                           equipment.id
                         }" class="flex-grow text-gray-700">${
-            equipment.name
-          }</label>
+                          equipment.name
+                        }</label>
                         <input type="number" id="eq_qty_${
                           equipment.id
                         }" name="equipment_qty[${
-            equipment.id
-          }]" min="1" disabled
+                          equipment.id
+                        }]" min="1" disabled
                             class="w-20 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity"
                             placeholder="${window.i18n.t("form.quantity")}">
                     `;
@@ -525,7 +521,7 @@ function setupFormValidation() {
     "input",
     debounce(function () {
       validateRegNumber();
-    }, 500)
+    }, 500),
   );
 
   // Phone number validation
@@ -590,8 +586,8 @@ function validateRegNumber() {
   // Check uniqueness
   fetch(
     `../api/validate-reg-number.php?reg_number=${encodeURIComponent(
-      fullRegNumber
-    )}`
+      fullRegNumber,
+    )}`,
   )
     .then((response) => response.json())
     .then((data) => {
@@ -700,61 +696,61 @@ function setupFormSubmission() {
       // Basic club info
       formData.append(
         "reg_number",
-        document.getElementById("regNumberFull").value
+        document.getElementById("regNumberFull").value,
       );
       formData.append("club_name", document.getElementById("clubName").value);
 
       // Location
       formData.append(
         "district_id",
-        window.tomSelectInstances.district.getValue()
+        window.tomSelectInstances.district.getValue(),
       );
       formData.append(
         "division_id",
-        window.tomSelectInstances.division.getValue()
+        window.tomSelectInstances.division.getValue(),
       );
       formData.append(
         "gn_division_id",
-        window.tomSelectInstances.gnDivision.getValue() || ""
+        window.tomSelectInstances.gnDivision.getValue() || "",
       );
 
       // Chairman
       formData.append(
         "chairman_name",
-        document.getElementById("chairmanName").value
+        document.getElementById("chairmanName").value,
       );
       formData.append(
         "chairman_address",
-        document.getElementById("chairmanAddress").value
+        document.getElementById("chairmanAddress").value,
       );
       formData.append(
         "chairman_phone",
-        document.getElementById("chairmanPhone").value
+        document.getElementById("chairmanPhone").value,
       );
 
       // Secretary
       formData.append(
         "secretary_name",
-        document.getElementById("secretaryName").value
+        document.getElementById("secretaryName").value,
       );
       formData.append(
         "secretary_address",
-        document.getElementById("secretaryAddress").value
+        document.getElementById("secretaryAddress").value,
       );
       formData.append(
         "secretary_phone",
-        document.getElementById("secretaryPhone").value
+        document.getElementById("secretaryPhone").value,
       );
 
       // Date
       const dateType = document.querySelector(
-        'input[name="dateType"]:checked'
+        'input[name="dateType"]:checked',
       ).value;
       formData.append("date_entry_type", dateType);
       if (dateType === "manual") {
         formData.append(
           "registration_date",
-          document.getElementById("registrationDate").value
+          document.getElementById("registrationDate").value,
         );
       }
 
@@ -842,7 +838,7 @@ function validateForm() {
   if (!regNumber || !document.getElementById("regNumberManual").value) {
     window.i18n.showError(
       document.getElementById("regNumberError"),
-      "required"
+      "required",
     );
     isValid = false;
   }
@@ -869,7 +865,7 @@ function validateForm() {
     if (!document.getElementById("registrationDate").value) {
       window.i18n.showError(
         document.getElementById("registrationDateError"),
-        "required"
+        "required",
       );
       isValid = false;
     }
@@ -913,7 +909,7 @@ function checkEditMode() {
         populateFormWithClubData(data.data);
       } else {
         alert(
-          window.i18n.t("message.load_error") || "Failed to load club data"
+          window.i18n.t("message.load_error") || "Failed to load club data",
         );
         window.location.href = "dashboard.php";
       }
@@ -966,7 +962,7 @@ function populateFormWithClubData(club) {
       // Load divisions first if we have a division_id
       const loadDivisions = club.division_id
         ? fetch(
-            `../api/locations.php?type=division&parent_id=${club.district_id}`
+            `../api/locations.php?type=division&parent_id=${club.district_id}`,
           )
             .then((response) => response.json())
             .then((data) => {
@@ -985,7 +981,7 @@ function populateFormWithClubData(club) {
       const loadGNDivisions =
         club.gn_division_id && club.division_id
           ? fetch(
-              `../api/locations.php?type=gn_division&parent_id=${club.division_id}`
+              `../api/locations.php?type=gn_division&parent_id=${club.division_id}`,
             )
               .then((response) => response.json())
               .then((data) => {
@@ -1008,7 +1004,7 @@ function populateFormWithClubData(club) {
         // Re-add and set division options
         if (club.division_id) {
           fetch(
-            `../api/locations.php?type=division&parent_id=${club.district_id}`
+            `../api/locations.php?type=division&parent_id=${club.district_id}`,
           )
             .then((response) => response.json())
             .then((data) => {
@@ -1021,13 +1017,13 @@ function populateFormWithClubData(club) {
                 });
                 window.tomSelectInstances.division.setValue(
                   club.division_id,
-                  true
+                  true,
                 );
 
                 // Re-add and set GN division options
                 if (club.gn_division_id) {
                   fetch(
-                    `../api/locations.php?type=gn_division&parent_id=${club.division_id}`
+                    `../api/locations.php?type=gn_division&parent_id=${club.division_id}`,
                   )
                     .then((response) => response.json())
                     .then((data) => {
@@ -1040,7 +1036,7 @@ function populateFormWithClubData(club) {
                         });
                         window.tomSelectInstances.gnDivision.setValue(
                           club.gn_division_id,
-                          true
+                          true,
                         );
                       }
                     });
