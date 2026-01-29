@@ -30,11 +30,15 @@ include '../includes/header.php';
 
         <div class="flex gap-4">
             <button onclick="generateReport()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" data-i18n="button.generate_report">වාර්තාව උත්පාදනය කරන්න</button>
-            <button onclick="window.print()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700" data-i18n="button.print">මුද්රණය කරන්න</button>
+            <button onclick="printReportWithDate()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700" data-i18n="button.print">මුද්රණය කරන්න</button>
         </div>
     </div>
 
     <div id="reportOutput" class="bg-white rounded-lg shadow p-6"></div>
+    <div class="flex justify-between items-center mt-4 px-4 no-print">
+        <div id="reportPaginationInfo" class="text-sm text-gray-600"></div>
+        <div id="reportPagination" class="flex gap-2"></div>
+    </div>
 </main>
 
 <style>

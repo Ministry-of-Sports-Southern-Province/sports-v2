@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
     populateYears();
     
     // Real-time report generation
-    document.getElementById('year').addEventListener('change', generateReport);
-    document.getElementById('district').addEventListener('change', generateReport);
+    document.getElementById('year').addEventListener('change', () => generateReport(1));
+    document.getElementById('district').addEventListener('change', () => generateReport(1));
 });
+
+let currentPage = 1;
+let rowsPerPage = 25;
+let totalPages = 1;
+let totalRows = 0;
 
 function populateYears() {
     const select = document.getElementById('year');
@@ -16,7 +21,7 @@ function populateYears() {
         opt.textContent = year;
         select.appendChild(opt);
     }
-    generateReport();
+    generateReport(1);
 }
 
 function loadDistricts() {
@@ -35,17 +40,160 @@ function loadDistricts() {
         });
 }
 
-function generateReport() {
+function buildReportQuery({ page = 1, limit = rowsPerPage, printAll = false } = {}) {
     const year = document.getElementById('year').value;
     const district = document.getElementById('district').value;
 
-    fetch(`../api/reports.php?type=reorganized&year=${year}&district=${district}`)
+    const params = new URLSearchParams();
+    params.append('type', 'reorganized');
+    params.append('year', year);
+    params.append('district', district);
+    if (printAll) {
+        params.append('print_all', '1');
+    } else {
+        params.append('page', String(page));
+        params.append('limit', String(limit));
+    }
+    return `../api/reports.php?${params.toString()}`;
+}
+
+function generateReport(page = 1) {
+    currentPage = page;
+    const year = document.getElementById('year').value;
+    const district = document.getElementById('district').value;
+
+    fetch(buildReportQuery({ page: currentPage, limit: rowsPerPage }))
         .then(res => res.json())
         .then(data => {
             if (data.success) {
                 displayReport(data.data, year, district);
+                renderPagination(data.pagination);
             }
         });
+}
+
+function printReportWithDate() {
+    const originalTitle = document.title;
+    const now = new Date();
+    const dateStr = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+
+    const yearVal = document.getElementById('year')?.value;
+    const districtVal = document.getElementById('district')?.value;
+    let filterInfo = '';
+    if (yearVal) filterInfo += '_' + String(yearVal);
+    if (districtVal) filterInfo += '_' + districtVal.replace(/\s+/g, '_');
+
+    document.title = 'Reorganized_Clubs_Report_' + dateStr + filterInfo;
+
+    const year = document.getElementById('year').value;
+    const district = document.getElementById('district').value;
+
+    fetch(buildReportQuery({ printAll: true }))
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                displayReport(data.data, year, district);
+                window.print();
+                setTimeout(() => {
+                    document.title = originalTitle;
+                    generateReport(currentPage);
+                }, 750);
+            } else {
+                window.print();
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 750);
+            }
+        })
+        .catch(() => {
+            window.print();
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 750);
+        });
+}
+
+function renderPagination(pagination) {
+    const container = document.getElementById('reportPagination');
+    const infoEl = document.getElementById('reportPaginationInfo');
+    if (!container) return;
+
+    if (!pagination) {
+        container.innerHTML = '';
+        if (infoEl) infoEl.textContent = '';
+        return;
+    }
+
+    totalPages = pagination.total_pages || 1;
+    totalRows = pagination.total || 0;
+    container.innerHTML = '';
+
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Prev';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.className =
+        'px-3 py-1 border rounded ' +
+        (prevBtn.disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white hover:bg-gray-50');
+    prevBtn.onclick = () => generateReport(currentPage - 1);
+    container.appendChild(prevBtn);
+
+    const windowSize = 3;
+    const start = Math.max(1, currentPage - windowSize);
+    const end = Math.min(totalPages, currentPage + windowSize);
+
+    if (start > 1) {
+        const firstBtn = document.createElement('button');
+        firstBtn.textContent = '1';
+        firstBtn.className = 'px-3 py-1 border rounded bg-white hover:bg-gray-50';
+        firstBtn.onclick = () => generateReport(1);
+        container.appendChild(firstBtn);
+        if (start > 2) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'px-2 text-gray-500';
+            container.appendChild(dots);
+        }
+    }
+
+    for (let i = start; i <= end; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = String(i);
+        btn.className =
+            'px-3 py-1 border rounded ' + (i === currentPage ? 'bg-blue-600 text-white' : 'bg-white hover:bg-gray-50');
+        btn.onclick = () => generateReport(i);
+        container.appendChild(btn);
+    }
+
+    if (end < totalPages) {
+        if (end < totalPages - 1) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'px-2 text-gray-500';
+            container.appendChild(dots);
+        }
+        const lastBtn = document.createElement('button');
+        lastBtn.textContent = String(totalPages);
+        lastBtn.className = 'px-3 py-1 border rounded bg-white hover:bg-gray-50';
+        lastBtn.onclick = () => generateReport(totalPages);
+        container.appendChild(lastBtn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.className =
+        'px-3 py-1 border rounded ' +
+        (nextBtn.disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white hover:bg-gray-50');
+    nextBtn.onclick = () => generateReport(currentPage + 1);
+    container.appendChild(nextBtn);
+
+    if (infoEl) {
+        const startRow = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+        const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+        infoEl.textContent = `Showing ${startRow}–${endRow} of ${totalRows} (Page ${currentPage} of ${totalPages})`;
+    }
 }
 
 function displayReport(data, year, district) {

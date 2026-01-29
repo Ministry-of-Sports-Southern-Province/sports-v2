@@ -1,3 +1,182 @@
+/* ================================
+   PAGINATION STATE
+================================ */
+let currentPage = 1;
+let rowsPerPage = 10;
+let totalPages = 1;
+let totalRows = 0;
+
+function getClubFiltersParams() {
+  const search = document.getElementById("searchInput")?.value || "";
+  const districtId = document.getElementById("filterDistrict")?.value || "";
+  const divisionId = document.getElementById("filterDivision")?.value || "";
+  const gnDivisionId = document.getElementById("filterGnDivision")?.value || "";
+
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  if (districtId) params.append("district_id", districtId);
+  if (divisionId) params.append("division_id", divisionId);
+  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+  return params;
+}
+
+async function fetchClubs({ page = 1, limit = rowsPerPage, printAll = false } = {}) {
+  const params = getClubFiltersParams();
+  if (printAll) {
+    params.append("print_all", "1");
+  } else {
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+  }
+
+  const res = await fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`);
+  return await res.json();
+}
+
+/* ================================
+   LOAD CLUBS (WITH PAGINATION)
+================================ */
+function loadClubs(page = 1) {
+  currentPage = page;
+
+  const tbody = document.getElementById("clubsTableBody");
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="12" class="px-6 py-4 text-center text-gray-500">
+        <span data-i18n="message.loading">Loading...</span>
+      </td>
+    </tr>`;
+
+  fetchClubs({ page: currentPage, limit: rowsPerPage })
+    .then(data => {
+      if (data.success) {
+        displayClubs(data.data);
+        renderPagination(data.pagination || null);
+
+        if (window.i18n && typeof window.i18n.updateContent === "function") {
+          window.i18n.updateContent();
+        }
+      } else {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="12" class="text-center text-red-500 py-4">
+              Failed to load data
+            </td>
+          </tr>`;
+      }
+    })
+    .catch(() => {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="12" class="text-center text-red-500 py-4">
+            Server error
+          </td>
+        </tr>`;
+    });
+}
+
+/* ================================
+   PAGINATION UI
+================================ */
+function renderPagination(pagination) {
+  const container = document.getElementById("pagination");
+  const infoEl = document.getElementById("paginationInfo");
+  if (!container) return;
+
+  if (!pagination) {
+    container.innerHTML = "";
+    if (infoEl) infoEl.textContent = "";
+    return;
+  }
+
+  totalPages = pagination.total_pages || 1;
+  totalRows = pagination.total || 0;
+  container.innerHTML = "";
+
+  // Prev
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "Prev";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.className =
+    "px-3 py-1 border rounded " +
+    (prevBtn.disabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-white hover:bg-gray-50");
+  prevBtn.onclick = () => loadClubs(currentPage - 1);
+  container.appendChild(prevBtn);
+
+  // Pages (windowed)
+  const windowSize = 3;
+  const start = Math.max(1, currentPage - windowSize);
+  const end = Math.min(totalPages, currentPage + windowSize);
+
+  if (start > 1) {
+    const firstBtn = document.createElement("button");
+    firstBtn.textContent = "1";
+    firstBtn.className =
+      "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    firstBtn.onclick = () => loadClubs(1);
+    container.appendChild(firstBtn);
+
+    if (start > 2) {
+      const dots = document.createElement("span");
+      dots.textContent = "...";
+      dots.className = "px-2 text-gray-500";
+      container.appendChild(dots);
+    }
+  }
+
+  for (let i = start; i <= end; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className =
+      "px-3 py-1 border rounded " +
+      (i === currentPage ? "bg-blue-600 text-white" : "bg-white");
+    btn.onclick = () => loadClubs(i);
+    container.appendChild(btn);
+  }
+
+  if (end < totalPages) {
+    if (end < totalPages - 1) {
+      const dots = document.createElement("span");
+      dots.textContent = "...";
+      dots.className = "px-2 text-gray-500";
+      container.appendChild(dots);
+    }
+
+    const lastBtn = document.createElement("button");
+    lastBtn.textContent = String(totalPages);
+    lastBtn.className =
+      "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    lastBtn.onclick = () => loadClubs(totalPages);
+    container.appendChild(lastBtn);
+  }
+
+  // Next
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.className =
+    "px-3 py-1 border rounded " +
+    (nextBtn.disabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-white hover:bg-gray-50");
+  nextBtn.onclick = () => loadClubs(currentPage + 1);
+  container.appendChild(nextBtn);
+
+  if (infoEl) {
+    const startRow = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+    infoEl.textContent = `Showing ${startRow}–${endRow} of ${totalRows} (Page ${currentPage} of ${totalPages})`;
+  }
+}
+
+/* ================================
+   SEARCH & FILTER EVENTS
+================================ */
+// (Initialized in the main DOMContentLoaded below)
+
+
 /**
  * Load dashboard statistics
  */
@@ -295,7 +474,7 @@ function debounce(func, delay) {
 // Load clubs when page loads
 document.addEventListener("DOMContentLoaded", function () {
   initializeDropdowns();
-  loadClubs();
+  loadClubs(1);
   loadStatistics();
 
   // Live search with debounce
@@ -305,7 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener(
       "input",
       debounce(function () {
-        loadClubs();
+        loadClubs(1);
       }, 500),
     );
 
@@ -313,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         clearTimeout(searchTimeout); // Cancel debounce
-        loadClubs();
+        loadClubs(1);
       }
     });
   }
@@ -337,7 +516,7 @@ function initializeDropdowns() {
   });
 
   gnDivisionSelect.addEventListener("change", function () {
-    loadClubs();
+    loadClubs(1);
   });
 
   // Load all districts
@@ -520,50 +699,6 @@ function handleDivisionChange(divisionId) {
 }
 
 /**
- * Load clubs based on filters
- */
-function loadClubs() {
-  const search = document.getElementById("searchInput").value;
-  const districtId = document.getElementById("filterDistrict").value;
-  const divisionId = document.getElementById("filterDivision").value;
-  const gnDivisionId = document.getElementById("filterGnDivision").value;
-
-  // Build query parameters
-  const params = new URLSearchParams();
-  if (search) params.append("search", search);
-  if (districtId) params.append("district_id", districtId);
-  if (divisionId) params.append("division_id", divisionId);
-  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
-
-  // Show loading state
-  const tbody = document.getElementById("clubsTableBody");
-  tbody.innerHTML =
-    '<tr><td colspan="12" class="px-6 py-4 text-center text-gray-500"><span data-i18n="message.loading">Loading...</span></td></tr>';
-
-  // Fetch clubs
-  fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        displayClubs(data.data);
-        updateStats(data.stats || {});
-      } else {
-        tbody.innerHTML =
-          '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">' +
-          (data.message || window.i18n.t("message.error_loading_clubs")) +
-          "</td></tr>";
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading clubs:", error);
-      tbody.innerHTML =
-        '<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">' +
-        window.i18n.t("message.error_loading_clubs") +
-        "</td></tr>";
-    });
-}
-
-/**
  * Display clubs in table
  */
 function displayClubs(clubs) {
@@ -700,7 +835,7 @@ function resetFilters() {
     window.i18n.updatePageTranslations();
   }
 
-  loadClubs();
+  loadClubs(1);
 }
 
 /**
@@ -858,6 +993,19 @@ function exportToExcel() {
  */
 let currentClubsData = [];
 
+async function loadAllClubsForPrint() {
+  try {
+    const data = await fetchClubs({ printAll: true });
+    if (data && data.success) {
+      currentClubsData = data.data || [];
+      return true;
+    }
+  } catch (e) {
+    console.error("Error loading clubs for print:", e);
+  }
+  return false;
+}
+
 /**
  * Populate print container with current data
  */
@@ -938,14 +1086,11 @@ function populatePrintContainer() {
   }
 }
 
-// Listen for print event to populate print container
-window.addEventListener("beforeprint", function () {
-  populatePrintContainer();
-});
+// Note: printing is initiated via printWithDate() which loads full data first.
 
 
 /* JavaScript for Print with Date */
-function printWithDate() {
+async function printWithDate() {
   // Store original title
   const originalTitle = document.title;
 
@@ -986,6 +1131,10 @@ function printWithDate() {
 
   // Optional: update title (for tab / header only)
   document.title = "Sports_Clubs_Report_" + dateStr + filterInfo;
+
+  // Ensure print table has all rows (not just current page)
+  await loadAllClubsForPrint();
+  populatePrintContainer();
 
   // Print
   window.print();

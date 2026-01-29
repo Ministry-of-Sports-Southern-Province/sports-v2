@@ -19,6 +19,34 @@ document.addEventListener("DOMContentLoaded", function () {
     ?.addEventListener("change", generateReport);
 });
 
+let currentPage = 1;
+let rowsPerPage = 25;
+let totalPages = 1;
+let totalRows = 0;
+
+function buildReportQuery({ page = 1, limit = rowsPerPage, printAll = false } = {}) {
+  const equipment = document.getElementById("equipment").value;
+  const district = document.getElementById("district").value;
+  const division = document.getElementById("division")?.value || "";
+  const gnDivision = document.getElementById("gnDivision")?.value || "";
+
+  const params = new URLSearchParams();
+  params.append("type", "equipment");
+  params.append("equipment", equipment);
+  params.append("district", district);
+  if (division) params.append("division", division);
+  if (gnDivision) params.append("gn_division", gnDivision);
+
+  if (printAll) {
+    params.append("print_all", "1");
+  } else {
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+  }
+
+  return `../api/reports.php?${params.toString()}`;
+}
+
 function loadDistricts() {
   fetch("../api/locations.php?type=district")
     .then((res) => res.json())
@@ -112,20 +140,22 @@ function loadEquipmentTypes() {
 }
 
 function generateReport() {
+  generateReportPage(1);
+}
+
+function generateReportPage(page = 1) {
+  currentPage = page;
   const equipment = document.getElementById("equipment").value;
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
   const gnDivision = document.getElementById("gnDivision")?.value || "";
 
-  let url = `../api/reports.php?type=equipment&equipment=${equipment}&district=${district}`;
-  if (division) url += `&division=${encodeURIComponent(division)}`;
-  if (gnDivision) url += `&gn_division=${encodeURIComponent(gnDivision)}`;
-
-  fetch(url)
+  fetch(buildReportQuery({ page: currentPage, limit: rowsPerPage }))
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
         displayReport(data.data, equipment, district, division, gnDivision);
+        renderPagination(data.pagination);
       }
     });
 }
@@ -154,11 +184,121 @@ function printReportWithDate() {
   }
   
   document.title = 'Equipment_Report_' + dateStr + filterInfo;
-  window.print();
-  
-  setTimeout(() => {
-    document.title = originalTitle;
-  }, 1000);
+
+  const equipmentVal = document.getElementById("equipment")?.value;
+  const districtVal = document.getElementById("district")?.value;
+  const divisionVal = document.getElementById("division")?.value || "";
+  const gnDivisionVal = document.getElementById("gnDivision")?.value || "";
+
+  fetch(buildReportQuery({ printAll: true }))
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        displayReport(data.data, equipmentVal, districtVal, divisionVal, gnDivisionVal);
+        window.print();
+        setTimeout(() => {
+          document.title = originalTitle;
+          generateReportPage(currentPage);
+        }, 750);
+      } else {
+        window.print();
+        setTimeout(() => {
+          document.title = originalTitle;
+        }, 750);
+      }
+    })
+    .catch(() => {
+      window.print();
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 750);
+    });
+}
+
+function renderPagination(pagination) {
+  const container = document.getElementById("reportPagination");
+  const infoEl = document.getElementById("reportPaginationInfo");
+  if (!container) return;
+
+  if (!pagination) {
+    container.innerHTML = "";
+    if (infoEl) infoEl.textContent = "";
+    return;
+  }
+
+  totalPages = pagination.total_pages || 1;
+  totalRows = pagination.total || 0;
+  container.innerHTML = "";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "Prev";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.className =
+    "px-3 py-1 border rounded " +
+    (prevBtn.disabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-white hover:bg-gray-50");
+  prevBtn.onclick = () => generateReportPage(currentPage - 1);
+  container.appendChild(prevBtn);
+
+  const windowSize = 3;
+  const start = Math.max(1, currentPage - windowSize);
+  const end = Math.min(totalPages, currentPage + windowSize);
+
+  if (start > 1) {
+    const firstBtn = document.createElement("button");
+    firstBtn.textContent = "1";
+    firstBtn.className = "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    firstBtn.onclick = () => generateReportPage(1);
+    container.appendChild(firstBtn);
+    if (start > 2) {
+      const dots = document.createElement("span");
+      dots.textContent = "...";
+      dots.className = "px-2 text-gray-500";
+      container.appendChild(dots);
+    }
+  }
+
+  for (let i = start; i <= end; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = String(i);
+    btn.className =
+      "px-3 py-1 border rounded " +
+      (i === currentPage ? "bg-blue-600 text-white" : "bg-white hover:bg-gray-50");
+    btn.onclick = () => generateReportPage(i);
+    container.appendChild(btn);
+  }
+
+  if (end < totalPages) {
+    if (end < totalPages - 1) {
+      const dots = document.createElement("span");
+      dots.textContent = "...";
+      dots.className = "px-2 text-gray-500";
+      container.appendChild(dots);
+    }
+    const lastBtn = document.createElement("button");
+    lastBtn.textContent = String(totalPages);
+    lastBtn.className = "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    lastBtn.onclick = () => generateReportPage(totalPages);
+    container.appendChild(lastBtn);
+  }
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.className =
+    "px-3 py-1 border rounded " +
+    (nextBtn.disabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : "bg-white hover:bg-gray-50");
+  nextBtn.onclick = () => generateReportPage(currentPage + 1);
+  container.appendChild(nextBtn);
+
+  if (infoEl) {
+    const startRow = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+    const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+    infoEl.textContent = `Showing ${startRow}–${endRow} of ${totalRows} (Page ${currentPage} of ${totalPages})`;
+  }
 }
 
 function displayReport(
@@ -284,6 +424,8 @@ function displayReport(
                     margin-top: 8px; 
                     line-height: 1.2;
                 }
+                thead { display: table-header-group; }
+                tfoot { display: table-footer-group; }
                 table th { 
                     background-color: #1e3a8a !important; 
                     color: white !important; 

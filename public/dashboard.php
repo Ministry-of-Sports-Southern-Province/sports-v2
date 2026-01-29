@@ -287,6 +287,8 @@ include '../includes/header.php';
         </div>
     </div>
 
+    <!-- Pagination -->
+
     <!-- Clubs Table -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
@@ -317,6 +319,14 @@ include '../includes/header.php';
             </table>
         </div>
     </div>
+            <!-- Pagination -->
+<div class="flex justify-between items-center mt-4 px-4">
+    <!-- Left info (optional later) -->
+    <div id="paginationInfo" class="text-sm text-gray-600"></div>
+
+    <!-- Buttons -->
+    <div id="pagination" class="flex gap-2"></div>
+</div>
 </main>
 
 <!-- Hidden Print Container -->

@@ -7,7 +7,7 @@
 
 // Database credentials
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'scs');
+define('DB_NAME', 'scms');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
@@ -51,8 +51,9 @@ function setUTF8Headers()
  * @param mixed $data Data to return
  * @param string $message Optional message
  * @param int $httpCode HTTP status code (default 200)
+ * @param array $extra Optional extra top-level fields to include in response
  */
-function sendJSONResponse($success, $data = null, $message = '', $httpCode = 200)
+function sendJSONResponse($success, $data = null, $message = '', $httpCode = 200, $extra = [])
 {
     http_response_code($httpCode);
     setUTF8Headers();
@@ -64,6 +65,12 @@ function sendJSONResponse($success, $data = null, $message = '', $httpCode = 200
 
     if ($data !== null) {
         $response['data'] = $data;
+    }
+
+    if (is_array($extra) && !empty($extra)) {
+        // Prevent accidental overwrite of core fields
+        unset($extra['success'], $extra['message'], $extra['data']);
+        $response = array_merge($response, $extra);
     }
 
     echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

@@ -45,6 +45,10 @@ include '../includes/header.php';
     </div>
 
     <div id="reportOutput" class="bg-white rounded-lg shadow p-6"></div>
+    <div class="flex justify-between items-center mt-4 px-4 no-print">
+        <div id="reportPaginationInfo" class="text-sm text-gray-600"></div>
+        <div id="reportPagination" class="flex gap-2"></div>
+    </div>
 </main>
 
 <style>
