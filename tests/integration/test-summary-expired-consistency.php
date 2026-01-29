@@ -8,7 +8,8 @@ $base = getenv('BASE_URL') ?: 'http://localhost/sports-v2';
 $expiredListUrl = $base . '/api/clubs-list.php?reorg_status=expired&limit=1';
 $summaryUrl = $base . '/api/summary.php';
 
-function getJson($url) {
+function getJson($url)
+{
     $opts = [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,

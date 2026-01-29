@@ -19,13 +19,15 @@ $c3 = (int)$pdo->query("SELECT COUNT(DISTINCT c.id) FROM clubs c
 echo "clubs whose GN->division->district join yields NULL district: $c3\n";
 
 // List distinct district names in districts table and counts via the GN chain
-foreach ($pdo->query("SELECT d.name, COUNT(DISTINCT c.id) as cnt
+foreach (
+    $pdo->query("SELECT d.name, COUNT(DISTINCT c.id) as cnt
     FROM districts d
     LEFT JOIN divisions dv ON dv.district_id = d.id
     LEFT JOIN grama_niladhari_divisions gn ON gn.division_id = dv.id
     LEFT JOIN clubs c ON c.gn_division_id = gn.id
     GROUP BY d.id, d.name
-    ORDER BY cnt DESC") as $r) {
+    ORDER BY cnt DESC") as $r
+) {
     printf("%s => %d\n", $r['name'], $r['cnt']);
 }
 

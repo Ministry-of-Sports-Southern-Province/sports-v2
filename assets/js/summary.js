@@ -20,7 +20,8 @@ function loadSummaryData() {
         if (!statusChart) createStatusChart(data.data.byStatus);
         else updateStatusChart(data.data.byStatus);
 
-        if (!registrationChart) createRegistrationChart(data.data.registrationTrend);
+        if (!registrationChart)
+          createRegistrationChart(data.data.registrationTrend);
         else updateRegistrationChart(data.data.registrationTrend);
       }
       return data;
@@ -35,21 +36,21 @@ function startRealtimeSummary() {
   // Prefer Server-Sent Events (simple, works over standard PHP/Apache)
   if (window.EventSource) {
     try {
-      const sse = new EventSource('../api/summary-stream.php');
+      const sse = new EventSource("../api/summary-stream.php");
 
-      sse.addEventListener('message', (evt) => {
+      sse.addEventListener("message", (evt) => {
         try {
           const payload = JSON.parse(evt.data);
           if (payload && payload.data) {
             applyRealtimePayload(payload.data);
           }
         } catch (e) {
-          console.error('Invalid SSE payload', e);
+          console.error("Invalid SSE payload", e);
         }
       });
 
-      sse.addEventListener('error', (err) => {
-        console.warn('SSE connection error, falling back to polling', err);
+      sse.addEventListener("error", (err) => {
+        console.warn("SSE connection error, falling back to polling", err);
         sse.close();
         startPollingFallback();
       });
@@ -58,7 +59,7 @@ function startRealtimeSummary() {
       clearPollingFallback();
       return;
     } catch (e) {
-      console.warn('SSE not available, fallback to polling', e);
+      console.warn("SSE not available, fallback to polling", e);
     }
   }
 
