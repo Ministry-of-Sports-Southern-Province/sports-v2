@@ -394,6 +394,7 @@ include '../includes/footer.php';
 ?>
 
 <script>
-// Make user role available to JavaScript
+// API base (relative to public/) so filters and search work
+window.API_BASE = '<?php echo isset($basePath) ? rtrim($basePath, "/") . "api" : "../api"; ?>';
 window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
 </script>

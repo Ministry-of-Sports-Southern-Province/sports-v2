@@ -2,25 +2,25 @@ document.addEventListener("DOMContentLoaded", function () {
   loadDistricts();
   loadEquipmentTypes();
 
-  // Real-time report generation
+  // Real-time report generation (reset to page 1 when filters change)
   document
     .getElementById("equipment")
-    .addEventListener("change", generateReport);
+    .addEventListener("change", function () { generateReport(1); });
   document.getElementById("district").addEventListener("change", function () {
     loadDivisions();
-    generateReport();
+    generateReport(1);
   });
   document.getElementById("division")?.addEventListener("change", function () {
     loadGNDivisions();
-    generateReport();
+    generateReport(1);
   });
   document
     .getElementById("gnDivision")
-    ?.addEventListener("change", generateReport);
+    ?.addEventListener("change", function () { generateReport(1); });
 });
 
 let currentPage = 1;
-let rowsPerPage = 25;
+let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
 

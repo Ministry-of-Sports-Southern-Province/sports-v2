@@ -8,11 +8,11 @@ try {
     $columns = explode(',', $_GET['columns'] ?? 'reg_number,name,district');
 
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 25;
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
     $printAll = isset($_GET['print_all']) && (string)$_GET['print_all'] === '1';
 
     if ($page < 1) $page = 1;
-    if ($limit < 1) $limit = 25;
+    if ($limit < 1) $limit = 10;
     if ($limit > 500) $limit = 500;
     $offset = ($page - 1) * $limit;
 

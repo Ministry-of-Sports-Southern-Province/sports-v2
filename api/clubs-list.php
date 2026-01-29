@@ -19,6 +19,10 @@ try {
     $districtId = $_GET['district_id'] ?? null;
     $divisionId = $_GET['division_id'] ?? null;
     $gnDivisionId = $_GET['gn_division_id'] ?? null;
+    $reorgStatus = isset($_GET['reorg_status']) ? trim($_GET['reorg_status']) : null;
+    if ($reorgStatus !== null && $reorgStatus !== 'active' && $reorgStatus !== 'expired') {
+        $reorgStatus = null;
+    }
 
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -66,8 +70,20 @@ try {
         $params[] = $gnDivisionId;
     }
 
+    // HAVING for reorg_status (active = due date in future, expired = due date past or no reorg)
+    $having = '';
+    if ($reorgStatus === 'active') {
+        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+    } elseif ($reorgStatus === 'expired') {
+        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 1 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() >= DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+    }
+
     // Total count (distinct clubs) for pagination
-    $countSql = "SELECT COUNT(DISTINCT c.id) as total " . $baseFrom . $where;
+    if ($having !== '') {
+        $countSql = "SELECT COUNT(*) as total FROM (SELECT c.id " . $baseFrom . $where . " GROUP BY c.id" . $having . ") AS sub";
+    } else {
+        $countSql = "SELECT COUNT(DISTINCT c.id) as total " . $baseFrom . $where;
+    }
     $countStmt = $pdo->prepare($countSql);
     $countStmt->execute($params);
     $total = (int)($countStmt->fetchColumn() ?: 0);
@@ -92,7 +108,7 @@ try {
                 gn.name as gn_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
             " . $baseFrom . $where . "
-            GROUP BY c.id
+            GROUP BY c.id" . $having . "
             ORDER BY c.registration_date DESC, c.created_at DESC";
 
     if (!$printAll) {

@@ -40,6 +40,10 @@ include '../includes/header.php';
             </tbody>
         </table>
     </div>
+    <div class="flex justify-between items-center mt-4 px-4">
+        <div id="paginationInfo" class="text-sm text-gray-600"></div>
+        <div id="pagination" class="flex gap-2"></div>
+    </div>
 </main>
 
 <?php

@@ -1,4 +1,9 @@
 /* ================================
+   API BASE (relative to public/ so filters & search work)
+================================ */
+var apiBase = (typeof window.API_BASE !== 'undefined') ? window.API_BASE : '../api';
+
+/* ================================
    PAGINATION STATE
 ================================ */
 let currentPage = 1;
@@ -29,7 +34,7 @@ async function fetchClubs({ page = 1, limit = rowsPerPage, printAll = false } = 
     params.append("limit", String(limit));
   }
 
-  const res = await fetch(`/sports-v2/api/clubs-list.php?${params.toString()}`);
+  const res = await fetch(`${apiBase}/clubs-list.php?${params.toString()}`);
   return await res.json();
 }
 
@@ -181,7 +186,7 @@ function renderPagination(pagination) {
  * Load dashboard statistics
  */
 function loadStatistics() {
-  fetch("/sports-v2/api/statistics.php")
+  fetch(apiBase + "/statistics.php")
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -520,7 +525,7 @@ function initializeDropdowns() {
   });
 
   // Load all districts
-  fetch("/sports-v2/api/locations.php?type=district")
+  fetch(apiBase + "/locations.php?type=district")
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -623,7 +628,7 @@ function handleDistrictChange(districtId) {
 
   if (districtId) {
     // Load divisions
-    const url = `/sports-v2/api/locations.php?type=division&parent_id=${districtId}`;
+    const url = `${apiBase}/locations.php?type=division&parent_id=${districtId}`;
     console.log("Fetching divisions from:", url);
 
     fetch(url)
@@ -648,7 +653,7 @@ function handleDistrictChange(districtId) {
       .catch((error) => console.error("Error loading divisions:", error));
   }
 
-  loadClubs();
+  loadClubs(1);
 }
 
 /**
@@ -670,7 +675,7 @@ function handleDivisionChange(divisionId) {
 
   if (divisionId) {
     // Load GN divisions
-    const url = `/sports-v2/api/locations.php?type=gn_division&parent_id=${divisionId}`;
+    const url = `${apiBase}/locations.php?type=gn_division&parent_id=${divisionId}`;
     console.log("Fetching GN divisions from:", url);
 
     fetch(url)
@@ -695,7 +700,7 @@ function handleDivisionChange(divisionId) {
       .catch((error) => console.error("Error loading GN divisions:", error));
   }
 
-  loadClubs();
+  loadClubs(1);
 }
 
 /**
@@ -889,7 +894,7 @@ function deleteClub(clubId, clubName) {
   }
 
   // Send delete request
-  fetch(`/sports-v2/api/clubs.php?id=${clubId}`, {
+  fetch(`${apiBase}/clubs.php?id=${clubId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -965,7 +970,7 @@ function exportToExcel() {
 
   try {
     // Create download link and trigger download
-    const downloadUrl = `/sports-v2/api/export-clubs-excel.php?${params.toString()}`;
+    const downloadUrl = `${apiBase}/export-clubs-excel.php?${params.toString()}`;
     const link = document.createElement("a");
     link.href = downloadUrl;
     link.download = `clubs_export_${new Date().toISOString().split("T")[0]}.csv`;

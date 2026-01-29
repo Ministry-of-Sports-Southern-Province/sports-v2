@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let currentPage = 1;
-let rowsPerPage = 25;
+let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
 

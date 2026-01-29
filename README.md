@@ -86,15 +86,40 @@ define('DB_USER', 'root');          // Change if needed
 define('DB_PASS', '');               // Change if needed
 ```
 
-### Step 3: Access the System
+### Step 3: Tailwind CSS (Standalone CLI, no Node.js)
+
+Build Tailwind using the **standalone CLI** (no npm or Node.js required):
+
+1. **Download the CLI** from [Tailwind CSS releases](https://github.com/tailwindlabs/tailwindcss/releases/latest):
+   - Windows 64-bit: `tailwindcss-windows-x64.exe`
+   - **Note:** This project uses `tailwind.config.js` (v3 style). If the latest release is v4, download a **v3.x** standalone build from an older release (e.g. [v3.4.16](https://github.com/tailwindlabs/tailwindcss/releases/tag/v3.4.16)).
+   - Place the exe in the project `bin\` folder (create the folder if needed), optionally rename to `tailwindcss.exe`.
+
+2. **Build CSS** (production, minified):
+   ```bat
+   build-css.bat
+   ```
+   Or run the CLI directly:
+   ```bat
+   bin\tailwindcss-windows-x64.exe -i assets\css\input.css -o assets\css\tailwind.css --minify -c tailwind.config.js
+   ```
+
+3. **Watch mode** (rebuild on file changes):
+   ```bat
+   build-css-watch.bat
+   ```
+
+This generates `assets/css/tailwind.css`. If the file is missing, the app falls back to the Tailwind CDN.
+
+### Step 4: Access the System
 
 1. Place the `sports-v2` folder in your web server's document root:
    - WAMP: `c:\wamp64\www\sports-v2`
    - XAMPP: `c:\xampp\htdocs\sports-v2`
 
 2. Access the system in your browser:
-   - Dashboard: `http://localhost/sports-v2/public/dashboard.html`
-   - Registration: `http://localhost/sports-v2/public/register.html`
+   - Dashboard: `http://localhost/sports-v2/public/dashboard.php`
+   - Registration: `http://localhost/sports-v2/public/register.php`
 
 ## Usage Guide
 
