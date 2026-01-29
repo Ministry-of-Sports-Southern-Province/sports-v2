@@ -4,7 +4,8 @@
 
 $base = getenv('BASE_URL') ?: 'http://localhost/sports-v2';
 
-function req($url) {
+function req($url)
+{
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
