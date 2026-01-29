@@ -44,10 +44,15 @@ try {
     $where = "";
     $params = [];
 
-    // Add search filter (use named parameter so we don't mix positional and named placeholders)
+    // Add search filter
+    // NOTE: PDO native prepares (emulate = false) do not support re-using the same named
+    // parameter multiple times in a single statement. Use distinct names and bind the
+    // same value to each to remain compatible with ATTR_EMULATE_PREPARES = false.
     if ($search !== '') {
-        $where .= " AND (c.name LIKE :search OR c.reg_number LIKE :search OR c.chairman_name LIKE :search)";
-        $params['search'] = '%' . $search . '%';
+        $where .= " AND (c.name LIKE :search_name OR c.reg_number LIKE :search_reg OR c.chairman_name LIKE :search_chair)";
+        $params['search_name'] = '%' . $search . '%';
+        $params['search_reg'] = '%' . $search . '%';
+        $params['search_chair'] = '%' . $search . '%';
     }
 
     // Add district filter
