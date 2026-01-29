@@ -40,8 +40,14 @@ $sqlC = "SELECT c.id, c.gn_division_id, c.district_id, gn.name AS gn_name, dv.na
     LIMIT 50";
 $rows = $pdo->query($sqlC)->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as $r) {
-    printf("club %d: gn=%s | district_id=%s | district_from_gn=%s | division=%s\n",
-        $r['id'], $r['gn_division_id'] ?? 'NULL', $r['district_id'] ?? 'NULL', $r['district_from_gn'] ?? 'NULL', $r['division_name'] ?? 'NULL');
+    printf(
+        "club %d: gn=%s | district_id=%s | district_from_gn=%s | division=%s\n",
+        $r['id'],
+        $r['gn_division_id'] ?? 'NULL',
+        $r['district_id'] ?? 'NULL',
+        $r['district_from_gn'] ?? 'NULL',
+        $r['division_name'] ?? 'NULL'
+    );
 }
 
 // Also show total clubs count

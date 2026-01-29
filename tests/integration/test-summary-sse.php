@@ -44,5 +44,5 @@ while ((time() - $start) < $timeout) {
 }
 
 fclose($fp);
-fwrite(STDERR, "FAIL: no SSE data/heartbeat received within {$timeout}s (got: " . substr($buffer,0,1000) . ")\n");
+fwrite(STDERR, "FAIL: no SSE data/heartbeat received within {$timeout}s (got: " . substr($buffer, 0, 1000) . ")\n");
 exit(4);
