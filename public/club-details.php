@@ -224,6 +224,9 @@ $customStyles = '
                     border-bottom: 1px solid #e5e7eb;
                     padding-bottom: 2px;
                     min-height: 14px;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                 }
                 
                 .info-row {
@@ -258,9 +261,11 @@ $customStyles = '
                     font-weight: 500;
                     padding-right: 5px;
                     font-size: 7.5pt;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    white-space: normal;
+                    min-width: 0;
                 }
                 
                 .equipment-item .eq-qty {

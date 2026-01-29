@@ -166,21 +166,35 @@ $customStyles = '
                 print-color-adjust: exact;
             }
             
-            /* Table Styling - Compact for Maximum Rows */
+            /* Table Styling - Compact for Maximum Rows; text wraps to avoid column overflow */
             #printContainer table { width: 100%; border-collapse: collapse; font-size: 7pt; margin-top: 8px; table-layout: fixed; line-height: 1.2; }
             #printContainer table th { 
                 background-color: #1e3a8a !important; 
                 color: white !important; 
                 font-weight: bold; 
                 font-size: 7pt;
-                padding: 3px; 
+                padding: 3px 4px; 
                 border: 1px solid #ccc; 
                 text-align: left; 
                 line-height: 1.1;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
-            #printContainer table td { padding: 2px 3px; border: 1px solid #ccc; font-size: 7pt; color: #333; line-height: 1.2; vertical-align: top; }
+            #printContainer table td { 
+                padding: 3px 4px; 
+                border: 1px solid #ccc; 
+                font-size: 7pt; 
+                color: #333; 
+                line-height: 1.2; 
+                vertical-align: top;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
+                min-width: 0;
+            }
             #printContainer table tr:nth-child(even) { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             
             /* Footer */

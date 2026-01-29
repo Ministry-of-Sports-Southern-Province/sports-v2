@@ -101,21 +101,30 @@ include '../includes/header.php';
             width: 100% !important;
             border-collapse: collapse !important;
             margin-top: 10px;
+            table-layout: fixed;
         }
 
         th {
             background-color: #1e3a8a !important;
             color: white !important;
-            padding: 8px 4px !important;
+            padding: 6px 5px !important;
             border: 1px solid #1e3a8a !important;
             font-size: 9pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         td {
             border: 1px solid #d1d5db !important;
-            padding: 6px 4px !important;
+            padding: 6px 5px !important;
             font-size: 9pt;
             color: #000 !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            min-width: 0;
+            vertical-align: top;
         }
 
         tr:nth-child(even) {

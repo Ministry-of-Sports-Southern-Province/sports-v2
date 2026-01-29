@@ -416,13 +416,14 @@ function displayReport(
                     color: #000;
                 }
                 
-                /* Table Compact Styling */
+                /* Table Compact Styling - text wraps to avoid column overflow */
                 table { 
                     width: 100%; 
                     border-collapse: collapse; 
                     font-size: 7pt; 
                     margin-top: 8px; 
                     line-height: 1.2;
+                    table-layout: fixed;
                 }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
@@ -431,20 +432,27 @@ function displayReport(
                     color: white !important; 
                     font-weight: bold; 
                     font-size: 7pt;
-                    padding: 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     text-align: left; 
                     line-height: 1.1;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
                     -webkit-print-color-adjust: exact; 
                     print-color-adjust: exact;
                 }
                 table td { 
-                    padding: 2px 3px; 
+                    padding: 3px 4px; 
                     border: 1px solid #ccc; 
                     font-size: 7pt; 
                     color: #333; 
                     line-height: 1.2; 
-                    vertical-align: top; 
+                    vertical-align: top;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    word-break: break-word;
+                    min-width: 0;
                 }
                 
                 /* Ensure inline background colors print */
