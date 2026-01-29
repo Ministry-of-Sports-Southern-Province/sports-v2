@@ -12,7 +12,7 @@ $scripts = $scripts ?? [];
 $basePath = $basePath ?? '../';
 ?>
 <!-- Footer -->
-<footer class="bg-gray-800 text-white mt-12">
+<footer class="bg-gray-800 text-white mt-auto">
     <div class="container mx-auto px-4 py-6">
         <div class="text-center">
             <p class="text-sm" data-i18n="footer.copyright">&copy; <?php echo date('Y'); ?> දකුණු පළාත් ක්රීඩා අමාත්යාංශය. සියලුම හිමිකම් ඇවිරිණි.</p>
