@@ -50,6 +50,10 @@ $currentAdmin = getCurrentAdmin();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Favicon: use existing logo.svg to avoid root /favicon.ico requests -->
+    <link rel="icon" href="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" type="image/svg+xml">
+
     <?php foreach ($additionalLinks as $link): ?>
         <?php echo $link . "\n    "; ?>
     <?php endforeach; ?>

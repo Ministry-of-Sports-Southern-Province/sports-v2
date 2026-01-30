@@ -22,23 +22,101 @@ const i18n = {
    * @param {string} lang - Language code (en, si, ta)
    */
   async loadTranslations(lang) {
+    // Detect base path from this script's location
+    // Script URL format: https://domain.com/SCMS-V2/assets/js/i18n.js
+    // We need to extract: /SCMS-V2
+    const basePathFromScript = this.getBasePath();
+
+    // Build candidate URLs
+    const candidates = [];
+
+    // Primary: Use the detected script-based path (most reliable)
+    // This works because we know exactly where the script is and can deduce where assets are
+    candidates.push(`${basePathFromScript}/assets/lang/${lang}.json`);
+
+    console.debug(
+      "i18n: Loading",
+      lang,
+      "translations from base path:",
+      basePathFromScript || "(root)",
+      "URL candidates:",
+      candidates,
+    );
+
+    let lastError = null;
+    for (const url of candidates) {
+      try {
+        console.debug("i18n: Attempting fetch:", url);
+        const response = await fetch(url);
+        if (!response.ok) {
+          lastError = new Error(
+            `Failed to load ${url} - status ${response.status}`,
+          );
+          console.debug("i18n: Load failed, status:", response.status);
+          continue;
+        }
+        console.debug("✓ i18n: Loaded translations from:", url);
+        this.translations = await response.json();
+        this.currentLanguage = lang;
+        localStorage.setItem("language", lang);
+        this.updatePageTranslations();
+        this.updateLanguageSwitcher(lang);
+        return;
+      } catch (error) {
+        console.debug("i18n: Fetch error:", error.message);
+        lastError = error;
+      }
+    }
+
+    console.error("i18n: Failed to load translations:", lastError);
+    // Fallback to Sinhala if loading fails
+    if (lang !== "si") {
+      this.loadTranslations("si");
+    }
+  },
+
+  /**
+   * Calculate the base application path from this script's location
+   * Example: If script is at https://example.com/SCMS-V2/assets/js/i18n.js
+   * This returns: /SCMS-V2
+   * @returns {string} Base application path (e.g., "" for root or "/SCMS-V2" for subdirectory)
+   */
+  getBasePath() {
+    // Get this script's URL
+    const scriptTag =
+      document.currentScript ||
+      document.querySelector('script[src*="i18n.js"]');
+
+    if (!scriptTag || !scriptTag.src) {
+      console.warn("i18n: Could not determine script URL, using root");
+      return "";
+    }
+
+    const scriptUrl = scriptTag.src;
+    console.debug("i18n: Script URL:", scriptUrl);
+
+    // Parse the pathname from the full URL
     try {
-      // Use absolute path from site root
-      const response = await fetch(`/sports-v2/assets/lang/${lang}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to load translations for ${lang}`);
+      const urlObj = new URL(scriptUrl);
+      let pathname = urlObj.pathname;
+
+      // Remove trailing filename: /SCMS-V2/assets/js/i18n.js -> /SCMS-V2/assets/js
+      pathname = pathname.substring(0, pathname.lastIndexOf("/"));
+
+      // Remove /assets/js: /SCMS-V2/assets/js -> /SCMS-V2
+      pathname = pathname.substring(0, pathname.lastIndexOf("/"));
+      pathname = pathname.substring(0, pathname.lastIndexOf("/"));
+
+      // Remove trailing slash if present
+      if (pathname.endsWith("/")) {
+        pathname = pathname.substring(0, pathname.length - 1);
       }
-      this.translations = await response.json();
-      this.currentLanguage = lang;
-      localStorage.setItem("language", lang);
-      this.updatePageTranslations();
-      this.updateLanguageSwitcher(lang);
+
+      console.debug("i18n: Calculated base path:", pathname || "(root)");
+      return pathname;
     } catch (error) {
-      console.error("Error loading translations:", error);
-      // Fallback to Sinhala if loading fails
-      if (lang !== "si") {
-        this.loadTranslations("si");
-      }
+      console.error("i18n: Error calculating base path:", error);
+      return "";
     }
   },
 

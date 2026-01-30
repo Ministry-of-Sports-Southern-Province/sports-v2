@@ -1,0 +1,2 @@
+# Allow all static files in /assets/ to be served directly
+RewriteEngine Off
