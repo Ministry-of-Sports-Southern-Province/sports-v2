@@ -139,6 +139,10 @@ function generateReport(page = 1) {
           grandTotalYearReorganized =
             data.pagination.totals.total_reorganized || 0;
         }
+        // Update totalRows before displaying report so stat card shows correct count
+        if (data.pagination) {
+          totalRows = data.pagination.total || 0;
+        }
         displayReport(data.data, district, year);
         renderPagination(data.pagination);
       } else {
@@ -413,33 +417,21 @@ function displayReport(data, district, year) {
 
             <!-- Summary Statistics (cards) -->
             <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 no-print">
-              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-semibold">D</div>
-                <div>
-                  <div class="text-xs text-gray-600">කොට්ඨාසයන්</div>
-                  <div class="text-2xl font-bold text-blue-900">${totalRows}</div>
-                </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-600">කොට්ඨාසයන්</div>
+                <div class="text-2xl font-bold text-blue-900 mt-2">${totalRows}</div>
               </div>
-              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold">T</div>
-                <div>
-                  <div class="text-xs text-gray-600">මුළු ලියාපදිංචි සමාජ</div>
-                  <div class="text-2xl font-bold text-green-700">${grandTotalClubs}</div>
-                </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-600">මුළු ලියාපදිංචි සමාජ</div>
+                <div class="text-2xl font-bold text-green-700 mt-2">${grandTotalClubs}</div>
               </div>
-              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-yellow-50 text-yellow-700 flex items-center justify-center font-semibold">Y</div>
-                <div>
-                  <div class="text-xs text-gray-600">${yearText} ලියාපදිංචි</div>
-                  <div class="text-2xl font-bold text-yellow-700">${grandTotalYearRegistered}</div>
-                </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-600">${yearText} ලියාපදිංචි</div>
+                <div class="text-2xl font-bold text-yellow-700 mt-2">${grandTotalYearRegistered}</div>
               </div>
-              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center font-semibold">R</div>
-                <div>
-                  <div class="text-xs text-gray-600">${yearText} ප්‍රතිසංවිධාන</div>
-                  <div class="text-2xl font-bold text-purple-700">${grandTotalYearReorganized}</div>
-                </div>
+              <div class="p-4 bg-white rounded shadow-sm">
+                <div class="text-xs text-gray-600">${yearText} ප්‍රතිසංවිධාන</div>
+                <div class="text-2xl font-bold text-purple-700 mt-2">${grandTotalYearReorganized}</div>
               </div>
             </div>
 
