@@ -31,6 +31,9 @@ let currentPage = 1;
 let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
+let grandTotalClubs = 0;
+let grandTotalYearRegistered = 0;
+let grandTotalYearReorganized = 0;
 
 function loadDistricts() {
   return fetch("../api/locations.php?type=district")
@@ -128,6 +131,14 @@ function generateReport(page = 1) {
     .then((res) => res.json())
     .then((data) => {
       if (data.success && data.data) {
+        // Store totals from pagination metadata for display
+        if (data.pagination && data.pagination.totals) {
+          grandTotalClubs = data.pagination.totals.total_clubs || 0;
+          grandTotalYearRegistered =
+            data.pagination.totals.total_registered || 0;
+          grandTotalYearReorganized =
+            data.pagination.totals.total_reorganized || 0;
+        }
         displayReport(data.data, district, year);
         renderPagination(data.pagination);
       } else {
@@ -319,37 +330,24 @@ function displayReport(data, district, year) {
             <tbody>
   `;
 
-  let totalClubs = 0;
-  let totalYearRegistered = 0;
-  let totalYearReorganized = 0;
-
   data.forEach((row, index) => {
     const bgClass = index % 2 === 0 ? "bg-white" : "bg-gray-50";
     tableHTML += `
                 <tr class="${bgClass}">
-                    <td class="border border-gray-300 px-4 py-2 text-center font-medium">${index + 1}</td>
+            <td class="border border-gray-300 px-4 py-2 text-center font-medium">${(currentPage - 1) * rowsPerPage + index + 1}</td>
                     <td class="border border-gray-300 px-4 py-2 font-medium">${row.division_name || "-"}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${row.total_clubs || 0}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${row.year_registered || 0}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${row.year_reorganized || 0}</td>
                 </tr>
     `;
-    totalClubs += row.total_clubs || 0;
-    totalYearRegistered += row.year_registered || 0;
-    totalYearReorganized += row.year_reorganized || 0;
   });
 
+  // Close table (don't include totals row here; summary cards show totals)
   tableHTML += `
-                <tr class="bg-blue-100 font-bold">
-                    <td class="border border-gray-300 px-4 py-2"></td>
-                    <td class="border border-gray-300 px-4 py-2">එකතුව</td>
-                    <td class="border border-gray-300 px-4 py-2 text-center">${totalClubs}</td>
-                    <td class="border border-gray-300 px-4 py-2 text-center">${totalYearRegistered}</td>
-                    <td class="border border-gray-300 px-4 py-2 text-center">${totalYearReorganized}</td>
-                </tr>
-            </tbody>
+          </tbody>
         </table>
-  `;
+      `;
 
   output.innerHTML = `
         <div class="print-section">
@@ -378,23 +376,29 @@ function displayReport(data, district, year) {
                 ${tableHTML}
             </div>
 
-            <!-- Summary Statistics -->
-            <div class="mt-6 p-4 bg-gray-50 rounded no-print">
-                <h4 class="font-bold text-blue-900 mb-2">සාරාංශය</h4>
-                <div class="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                        <span class="text-gray-600">මුළු දිස්ත්‍රික්කයන්:</span>
-                        <div class="text-2xl font-bold text-blue-900">${Math.max(1, data.length)}</div>
-                    </div>
-                    <div>
-                        <span class="text-gray-600">සර්ව ලියාපදිංචි:</span>
-                        <div class="text-2xl font-bold text-green-700">${totalClubs}</div>
-                    </div>
-                    <div>
-                        <span class="text-gray-600">${yearText} ගිණුම්:</span>
-                        <div class="text-2xl font-bold text-purple-700">${totalYearRegistered + totalYearReorganized}</div>
-                    </div>
+            <!-- Summary Statistics (cards) -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
+              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-semibold">D</div>
+                <div>
+                  <div class="text-xs text-gray-600">මුළු දිස්ත්‍රික්කයන්</div>
+                  <div class="text-2xl font-bold text-blue-900">${totalRows}</div>
                 </div>
+              </div>
+              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold">C</div>
+                <div>
+                  <div class="text-xs text-gray-600">සර්ව ලියාපදිංචි</div>
+                  <div class="text-2xl font-bold text-green-700">${grandTotalClubs}</div>
+                </div>
+              </div>
+              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center font-semibold">R</div>
+                <div>
+                  <div class="text-xs text-gray-600">${yearText} ගිණුම්</div>
+                  <div class="text-2xl font-bold text-purple-700">${grandTotalYearRegistered + grandTotalYearReorganized}</div>
+                </div>
+              </div>
             </div>
 
             <!-- Print Footer (Hidden by default) -->

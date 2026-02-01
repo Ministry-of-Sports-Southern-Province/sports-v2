@@ -23,7 +23,7 @@ include '../includes/header.php';
             </div>
         </div>
         <div class="flex flex-wrap gap-3">
-            <button onclick="generateReport()" class="btn btn-primary" data-i18n="button.generate_report">වාර්තාව උත්පාදනය කරන්න</button>
+            <button onclick="resetFilters()" class="btn btn-secondary" data-i18n="button.reset">නැවත සකසන්න</button>
             <button onclick="printReportWithDate()" class="btn btn-success" data-i18n="button.print">මුද්‍රණය කරන්න</button>
         </div>
     </div>

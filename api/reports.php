@@ -284,9 +284,59 @@ try {
         'total_pages' => $printAll ? 1 : $totalPages
     ];
 
-    sendJSONResponse(true, $data, '', 200, [
+    // Add grand totals for district_statistics
+    $metadata = [
         'pagination' => $pagination
-    ]);
+    ];
+
+    if ($type === 'district_statistics') {
+        // Calculate grand totals from all divisions (before pagination)
+        $allDivisionsSql = "SELECT DISTINCT dv.id, dv.name as division_name
+                                FROM divisions dv
+                                LEFT JOIN districts d ON dv.district_id = d.id
+                                WHERE 1=1";
+        $allDivsParams = [];
+
+        if ($district) {
+            $allDivisionsSql .= " AND d.name = :district";
+            $allDivsParams['district'] = $district;
+        }
+
+        $allDivsStmt = $pdo->prepare($allDivisionsSql);
+        $allDivsStmt->execute($allDivsParams);
+        $allDivisions = $allDivsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $grandTotalClubs = 0;
+        $grandTotalRegistered = 0;
+        $grandTotalReorganized = 0;
+
+        foreach ($allDivisions as $div) {
+            $divId = $div['id'];
+
+            // Total clubs
+            $stmt = $pdo->prepare("SELECT COUNT(DISTINCT c.id) as count FROM clubs c LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id WHERE gn.division_id = :div_id");
+            $stmt->execute(['div_id' => $divId]);
+            $grandTotalClubs += (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
+
+            // Year registered
+            $stmt = $pdo->prepare("SELECT COUNT(DISTINCT c.id) as count FROM clubs c LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id WHERE gn.division_id = :div_id AND YEAR(c.registration_date) = :year");
+            $stmt->execute(['div_id' => $divId, 'year' => $year]);
+            $grandTotalRegistered += (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
+
+            // Year reorganized
+            $stmt = $pdo->prepare("SELECT COUNT(DISTINCT c.id) as count FROM clubs c LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id INNER JOIN club_reorganizations cr ON c.id = cr.club_id WHERE gn.division_id = :div_id AND YEAR(cr.reorg_date) = :year");
+            $stmt->execute(['div_id' => $divId, 'year' => $year]);
+            $grandTotalReorganized += (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
+        }
+
+        $metadata['pagination']['totals'] = [
+            'total_clubs' => $grandTotalClubs,
+            'total_registered' => $grandTotalRegistered,
+            'total_reorganized' => $grandTotalReorganized
+        ];
+    }
+
+    sendJSONResponse(true, $data, '', 200, $metadata);
 } catch (Exception $e) {
     sendJSONResponse(false, null, $e->getMessage(), 500);
 }
