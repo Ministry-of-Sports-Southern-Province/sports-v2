@@ -245,14 +245,49 @@ function viewHistory(clubId) {
 }
 
 function renewClub(clubId) {
-  if (!confirm("මෙම සමාජය ප්‍රතිසංවිධාන කිරීමට අවශ්‍යද?")) return;
+  const today = new Date().toISOString().split("T")[0];
+
+  // Get translated strings using i18n
+  const titleText = window.i18n?.t("form.select_date") || "Select Date";
+  const dateLabel = window.i18n?.t("form.registration_date") || "Date";
+  const cancelBtn = window.i18n?.t("button.cancel") || "Cancel";
+  const confirmBtn = window.i18n?.t("button.save") || "Save";
+
+  // Create a modal for date selection
+  const modal = document.createElement("div");
+  modal.className =
+    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+  modal.innerHTML = `
+    <div class="bg-white rounded-lg p-6 w-96 shadow-lg">
+      <h3 class="text-lg font-bold mb-4">${titleText}</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">${dateLabel}</label>
+          <input type="date" id="reorgDateInput" class="form-input w-full" value="${today}">
+        </div>
+        <div class="flex gap-3 justify-end">
+          <button onclick="this.closest('.fixed').remove()" class="btn btn-secondary">${cancelBtn}</button>
+          <button onclick="confirmReorg(${clubId}, document.getElementById('reorgDateInput').value)" class="btn btn-primary">${confirmBtn}</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.getElementById("reorgDateInput").focus();
+}
+
+function confirmReorg(clubId, reorgDate) {
+  if (!reorgDate) {
+    alert("කරුණාකර දිනය තෝරන්න");
+    return;
+  }
 
   fetch("../api/reorganizations.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       club_id: clubId,
-      reorg_date: new Date().toISOString().split("T")[0],
+      reorg_date: reorgDate,
     }),
   })
     .then((res) => res.json())
@@ -263,6 +298,7 @@ function renewClub(clubId) {
             ? window.i18n.t("message.reorg_added_success")
             : "Success",
         );
+        document.querySelector(".fixed")?.remove();
         loadClubs(currentPage);
       } else {
         alert(
