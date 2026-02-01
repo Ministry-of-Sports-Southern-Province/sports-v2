@@ -210,12 +210,16 @@ function printReportWithDate() {
           grandTotalYearReorganized =
             data.pagination.totals.total_reorganized || 0;
         }
+        // Store the original page to restore later
+        const originalPage = currentPage;
+        currentPage = 1; // Reset to page 1 for correct row numbering in print
         displayReport(data.data, districtVal, yearVal);
         window.print();
         // Restore current page view after print
         setTimeout(() => {
           document.title = originalTitle;
-          generateReport(currentPage);
+          currentPage = originalPage; // Restore original page
+          generateReport(originalPage);
         }, 750);
       } else {
         window.print();
@@ -545,6 +549,8 @@ function displayReport(data, district, year) {
                 .print-footer {
                   margin-top: 20px;
                   page-break-inside: avoid;
+                  display: flex;
+                  justify-content: space-between;
                 }
 
                 .print-footer .text-xs {
@@ -553,7 +559,8 @@ function displayReport(data, district, year) {
 
                 .signatures {
                   display: flex;
-                  justify-content: space-around;
+                  justify-content: space-between;
+                  width: 100%;
                   margin-top: 20px;
                 }
 
@@ -582,6 +589,8 @@ function displayReport(data, district, year) {
                 .print-footer {
                     margin-top: 20px;
                     page-break-inside: avoid;
+                    display: flex;
+                    justify-content: space-between;
                 }
 
                 .print-footer .text-xs {
@@ -590,7 +599,8 @@ function displayReport(data, district, year) {
 
                 .signatures {
                     display: flex;
-                    justify-content: space-around;
+                    justify-content: space-between;
+                    width: 100%;
                     margin-top: 20px;
                 }
 
