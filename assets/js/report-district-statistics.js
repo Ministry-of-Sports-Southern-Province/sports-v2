@@ -155,6 +155,22 @@ function generateReport(page = 1) {
     });
 }
 
+// Reset filters function
+function resetFilters() {
+  const districtSelect = document.getElementById("district");
+  const yearSelect = document.getElementById("year");
+
+  if (districtSelect) {
+    districtSelect.value = "";
+  }
+  if (yearSelect) {
+    yearSelect.value = yearSelect.options[0]?.value || "";
+  }
+
+  currentPage = 1;
+  generateReport(1);
+}
+
 // Print function with date
 function printReportWithDate() {
   const originalTitle = document.title;
