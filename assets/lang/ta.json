@@ -166,6 +166,8 @@
   "report.desc_reorganized": "ஆண்டு மற்றும் மாவட்டம் அடிப்படையில் மறுசீரமைக்கப்பட்ட சங்கங்கள் அறிக்கை",
   "report.desc_registered": "மாவட்டம் மற்றும் தேதி வரம்பு அடிப்படையில் பதிவு செய்யப்பட்ட சங்கங்கள் அறிக்கை",
   "report.desc_equipment": "சங்கம் மற்றும் உபகரண வகை அடிப்படையில் உபகரண அறிக்கை",
+  "report.type_district_statistics": "மாவட்ட புள்ளியியல்",
+  "report.desc_district_statistics": "மாவட்டம் அடிப்படையில் பிரிவு-வாரியான சங்க புள்ளிவிவர அறிக்கை",
   "footer.copyright": "தென் மாகாண விளையாட்டு அமைச்சு. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
   "footer.version": "Sports Club Management System v2.0   Developed by Gavindu Gayashan",
   "stats.districts": "மாவட்டங்கள்",

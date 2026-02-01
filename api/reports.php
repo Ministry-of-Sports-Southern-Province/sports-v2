@@ -5,6 +5,7 @@ require_once '../config/database.php';
 try {
     $pdo = getDBConnection();
     $type = $_GET['type'] ?? 'registered';
+    $action = $_GET['action'] ?? '';
     $columns = explode(',', $_GET['columns'] ?? 'reg_number,name,district');
 
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -18,6 +19,17 @@ try {
 
     $data = [];
     $total = 0;
+
+    // Handle get_years action for district statistics
+    if ($type === 'district_statistics' && $action === 'get_years') {
+        $sql = "SELECT DISTINCT YEAR(c.registration_date) as year 
+                FROM clubs c 
+                ORDER BY year DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $years = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        sendJSONResponse(true, $years);
+    }
 
     if ($type === 'reorganized') {
         $year = $_GET['year'] ?? date('Y');
@@ -177,12 +189,92 @@ try {
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         }
+        $stmt = $pdo->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue(':' . $k, $v);
+        }
+        if (!$printAll) {
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        }
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($type === 'district_statistics') {
+        $district = $_GET['district'] ?? '';
+        $year = (int)($_GET['year'] ?? date('Y'));
+
+        // Get all divisions for the selected district (or all districts if not selected)
+        $divisionSql = "SELECT DISTINCT dv.id, dv.name as division_name
+                        FROM divisions dv
+                        LEFT JOIN districts d ON dv.district_id = d.id
+                        WHERE 1=1";
+        $divisionParams = [];
+
+        if ($district) {
+            $divisionSql .= " AND d.name = :district";
+            $divisionParams['district'] = $district;
+        }
+
+        $divisionSql .= " ORDER BY dv.name";
+        $divisionStmt = $pdo->prepare($divisionSql);
+        $divisionStmt->execute($divisionParams);
+        $divisions = $divisionStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($divisions as $div) {
+            $divId = $div['id'];
+            $divName = $div['division_name'];
+
+            // Count total registered clubs in this division
+            $totalClubsSql = "SELECT COUNT(DISTINCT c.id) as count
+                              FROM clubs c
+                              LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
+                              WHERE gn.division_id = :div_id";
+            $totalStmt = $pdo->prepare($totalClubsSql);
+            $totalStmt->execute(['div_id' => $divId]);
+            $totalResult = $totalStmt->fetch(PDO::FETCH_ASSOC);
+            $totalClubs = (int)($totalResult['count'] ?? 0);
+
+            // Count clubs registered in the specific year
+            $yearRegisteredSql = "SELECT COUNT(DISTINCT c.id) as count
+                                  FROM clubs c
+                                  LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
+                                  WHERE gn.division_id = :div_id 
+                                  AND YEAR(c.registration_date) = :year";
+            $yearRegStmt = $pdo->prepare($yearRegisteredSql);
+            $yearRegStmt->execute(['div_id' => $divId, 'year' => $year]);
+            $yearRegResult = $yearRegStmt->fetch(PDO::FETCH_ASSOC);
+            $yearRegistered = (int)($yearRegResult['count'] ?? 0);
+
+            // Count clubs reorganized in the specific year
+            $yearReorganizedSql = "SELECT COUNT(DISTINCT c.id) as count
+                                   FROM clubs c
+                                   LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
+                                   INNER JOIN club_reorganizations cr ON c.id = cr.club_id
+                                   WHERE gn.division_id = :div_id
+                                   AND YEAR(cr.reorg_date) = :year";
+            $yearReorgStmt = $pdo->prepare($yearReorganizedSql);
+            $yearReorgStmt->execute(['div_id' => $divId, 'year' => $year]);
+            $yearReorgResult = $yearReorgStmt->fetch(PDO::FETCH_ASSOC);
+            $yearReorganized = (int)($yearReorgResult['count'] ?? 0);
+
+            $data[] = [
+                'division_name' => $divName,
+                'total_clubs' => $totalClubs,
+                'year_registered' => $yearRegistered,
+                'year_reorganized' => $yearReorganized
+            ];
+        }
+
+        $total = count($data);
+
+        // Apply pagination
+        if (!$printAll) {
+            $data = array_slice($data, $offset, $limit);
+        }
     }
 
     $totalPages = $limit > 0 ? (int)ceil($total / $limit) : 1;
-    if ($totalPages < 1) $totalPages = 1;
     if ($page > $totalPages) $page = $totalPages;
 
     $pagination = [

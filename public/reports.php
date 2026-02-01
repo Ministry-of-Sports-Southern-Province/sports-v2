@@ -23,6 +23,13 @@ include '../includes/header.php';
                 <p class="link-card-desc" data-i18n="report.desc_registered">දිස්ත්රික්කය සහ දින පරාසය අනුව ලියාපදිංචි සමාජ වාර්තාව</p>
             </div>
         </a>
+        <a href="report-district-statistics.php" class="link-card">
+            <div class="text-center">
+                <div class="text-5xl mb-4">📊</div>
+                <h3 class="link-card-title" data-i18n="report.type_district_statistics">දිස්ත්රික් ක්‍රීඩා සමාජ සංඛ්‍යා</h3>
+                <p class="link-card-desc" data-i18n="report.desc_district_statistics">දිස්ත්රික් අනුව කොට්ඨාස දර්ශක සංඛ්‍යා වාර්තාව</p>
+            </div>
+        </a>
         <a href="report-equipment.php" class="link-card">
             <div class="text-center">
                 <div class="text-5xl mb-4">⚽</div>

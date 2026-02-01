@@ -164,6 +164,8 @@
   "report.desc_reorganized": "Reorganized clubs report by year and district",
   "report.desc_registered": "Registered clubs report by district and date range",
   "report.desc_equipment": "Equipment report by club and equipment type",
+  "report.type_district_statistics": "District Statistics",
+  "report.desc_district_statistics": "District-wise club statistics report by division with registration and reorganization counts",
   "footer.copyright": "© 2024 Department of Sports Southern Province. All rights reserved.",
   "footer.version": "Sports Club Management System v2.0 Developed by Gavindu Gayashan",
   "page.welcome_subtitle": "Department of Sports Southern Province",
