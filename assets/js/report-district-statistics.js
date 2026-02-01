@@ -25,6 +25,23 @@ document.addEventListener("DOMContentLoaded", function () {
   if (yearSelect) {
     yearSelect.addEventListener("change", () => generateReport(1));
   }
+
+  // Add language change listener to regenerate report
+  const languageButtons = document.querySelectorAll("[data-language]");
+  languageButtons.forEach((button) => {
+    button.addEventListener("click", (e) => {
+      // Wait for translation to load and then refresh the current report
+      setTimeout(() => {
+        if (currentDisplayedData) {
+          displayReport(
+            currentDisplayedData.data,
+            currentDisplayedData.district,
+            currentDisplayedData.year,
+          );
+        }
+      }, 300);
+    });
+  });
 });
 
 let currentPage = 1;
@@ -34,6 +51,7 @@ let totalRows = 0;
 let grandTotalClubs = 0;
 let grandTotalYearRegistered = 0;
 let grandTotalYearReorganized = 0;
+let currentDisplayedData = null;
 
 function loadDistricts() {
   return fetch("../api/locations.php?type=district")
@@ -331,15 +349,42 @@ function renderPagination(pagination) {
 function displayReport(data, district, year) {
   const output = document.getElementById("reportOutput");
 
+  // Store current data for language switching
+  currentDisplayedData = { data, district, year };
+
   if (!data || data.length === 0) {
+    const noDataMsg =
+      window.i18n?.t("message.no_results") || "No results found";
+    const tryOtherMsg =
+      window.i18n?.t("placeholder.select") || "Select another filter";
     output.innerHTML = `<div class="text-center py-12 text-gray-500">
-      <p class="text-lg">❌ තෙරුවන් දත්ත නොමැත</p>
-      <p class="text-sm mt-2">කරුණාකර වෙනත් ෆිල්ටර් තෝරා උත්සාහ කරන්න</p>
+      <p class="text-lg">❌ ${noDataMsg}</p>
+      <p class="text-sm mt-2">${tryOtherMsg}</p>
     </div>`;
     return;
   }
 
-  const districtText = district || "සියලු දිස්ත්රික්ක";
+  // Get translations with fallbacks
+  const allDistrictsText =
+    window.i18n?.t("filter.all_districts") || "All Districts";
+  const divisionHeader = window.i18n?.t("table.division") || "Division";
+  const totalClubsHeader = window.i18n?.t("stats.total_clubs") || "Total Clubs";
+  const registeredHeader =
+    window.i18n?.t("form.registration_date") || "Registered";
+  const reorganizedHeader =
+    window.i18n?.t("form.reorganization_information") || "Reorganized";
+  const totalLabel = window.i18n?.t("table.total") || "Total";
+  const deptName =
+    window.i18n?.t("header.department_name") || "Department of Sports";
+  const reportTitle =
+    window.i18n?.t("report.type_district_statistics") ||
+    "District Statistics Report";
+  const districtLabel = window.i18n?.t("table.district") || "District";
+  const yearLabel = window.i18n?.t("report.select_year") || "Year";
+  const generatedLabel =
+    window.i18n?.t("form.registration_date") || "Generated Date";
+
+  const districtText = district || allDistrictsText;
   const yearText = year || new Date().getFullYear().toString();
   const reportDate = new Date();
   const formattedDate = reportDate.toLocaleDateString("si-LK", {
@@ -353,10 +398,10 @@ function displayReport(data, district, year) {
             <thead>
                 <tr class="bg-blue-900">
                     <th class="border border-gray-300 px-4 py-2 text-white text-left">#</th>
-                    <th class="border border-gray-300 px-4 py-2 text-white text-left">කොට්ඨාසය</th>
-                    <th class="border border-gray-300 px-4 py-2 text-white text-center">මුළු ලියාපදිංචි සමාජ</th>
-                    <th class="border border-gray-300 px-4 py-2 text-white text-center">${yearText} ලියාපදිංචි</th>
-                    <th class="border border-gray-300 px-4 py-2 text-white text-center">${yearText} ප්‍රතිසංවිධාන</th>
+                    <th class="border border-gray-300 px-4 py-2 text-white text-left">${divisionHeader}</th>
+                    <th class="border border-gray-300 px-4 py-2 text-white text-center">${totalClubsHeader}</th>
+                    <th class="border border-gray-300 px-4 py-2 text-white text-center">${yearText} ${registeredHeader}</th>
+                    <th class="border border-gray-300 px-4 py-2 text-white text-center">${yearText} ${reorganizedHeader}</th>
                 </tr>
             </thead>
             <tbody>
@@ -379,7 +424,7 @@ function displayReport(data, district, year) {
   tableHTML += `
                 <tr class="bg-blue-100 font-bold print-only" style="display:none;">
                     <td class="border border-gray-300 px-4 py-2"></td>
-                    <td class="border border-gray-300 px-4 py-2">එකතුව</td>
+                    <td class="border border-gray-300 px-4 py-2">${totalLabel}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalClubs}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalYearRegistered}</td>
                     <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalYearReorganized}</td>
@@ -392,21 +437,21 @@ function displayReport(data, district, year) {
         <div class="print-section">
             <!-- Screen View Header -->
             <div class="text-center mb-6 no-print">
-                <h2 class="text-2xl font-bold text-blue-900">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</h2>
-                <h3 class="text-xl mt-2 font-semibold text-blue-800">දිස්ත්රික් ක්‍රීඩා සමාජ සංඛ්‍යා වාර්තාව</h3>
+                <h2 class="text-2xl font-bold text-blue-900">${deptName}</h2>
+                <h3 class="text-xl mt-2 font-semibold text-blue-800">${reportTitle}</h3>
                 <div class="border-b-2 border-blue-900 my-3"></div>
-                <p class="text-sm text-gray-700 mt-2"><strong>දිස්ත්රික්කය:</strong> ${districtText}</p>
-                <p class="text-sm text-gray-700"><strong>වර්ෂය:</strong> ${yearText}</p>
-                <p class="text-xs text-gray-500 mt-2">උත්පාදන දිනය: ${formattedDate}</p>
+                <p class="text-sm text-gray-700 mt-2"><strong>${districtLabel}:</strong> ${districtText}</p>
+                <p class="text-sm text-gray-700"><strong>${yearLabel}:</strong> ${yearText}</p>
+                <p class="text-xs text-gray-500 mt-2">${generatedLabel}: ${formattedDate}</p>
             </div>
 
             <!-- Print Header (Hidden by default) -->
             <div class="print-header hidden" style="display: none;">
                 <div class="text-center border-b-2 border-blue-900 pb-3 mb-3">
-                    <div class="text-xs font-bold text-gray-700 uppercase">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</div>
-                    <h1 class="text-lg font-black text-blue-900 my-1">දිස්ත්රික් ක්‍රීඩා සමාජ සංඛ්‍යා වාර්තාව</h1>
-                    <div class="text-xs text-gray-700">දිස්ත්රික්කය: ${districtText} | වර්ෂය: ${yearText}</div>
-                    <div class="text-xs text-gray-600">උත්පාදන දිනය: ${formattedDate}</div>
+                    <div class="text-xs font-bold text-gray-700 uppercase">${deptName}</div>
+                    <h1 class="text-lg font-black text-blue-900 my-1">${reportTitle}</h1>
+                    <div class="text-xs text-gray-700">${districtLabel}: ${districtText} | ${yearLabel}: ${yearText}</div>
+                    <div class="text-xs text-gray-600">${generatedLabel}: ${formattedDate}</div>
                 </div>
             </div>
 
@@ -418,19 +463,19 @@ function displayReport(data, district, year) {
             <!-- Summary Statistics (cards) -->
             <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 no-print">
               <div class="p-4 bg-white rounded shadow-sm">
-                <div class="text-xs text-gray-600">කොට්ඨාසයන්</div>
+                <div class="text-xs text-gray-600">${divisionHeader}</div>
                 <div class="text-2xl font-bold text-blue-900 mt-2">${totalRows}</div>
               </div>
               <div class="p-4 bg-white rounded shadow-sm">
-                <div class="text-xs text-gray-600">මුළු ලියාපදිංචි සමාජ</div>
+                <div class="text-xs text-gray-600">${totalClubsHeader}</div>
                 <div class="text-2xl font-bold text-green-700 mt-2">${grandTotalClubs}</div>
               </div>
               <div class="p-4 bg-white rounded shadow-sm">
-                <div class="text-xs text-gray-600">${yearText} ලියාපදිංචි</div>
+                <div class="text-xs text-gray-600">${yearText} ${registeredHeader}</div>
                 <div class="text-2xl font-bold text-yellow-700 mt-2">${grandTotalYearRegistered}</div>
               </div>
               <div class="p-4 bg-white rounded shadow-sm">
-                <div class="text-xs text-gray-600">${yearText} ප්‍රතිසංවිධාන</div>
+                <div class="text-xs text-gray-600">${yearText} ${reorganizedHeader}</div>
                 <div class="text-2xl font-bold text-purple-700 mt-2">${grandTotalYearReorganized}</div>
               </div>
             </div>
