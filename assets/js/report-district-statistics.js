@@ -186,6 +186,14 @@ function printReportWithDate() {
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
+        // If API returned pagination totals, use them for the print view
+        if (data.pagination && data.pagination.totals) {
+          grandTotalClubs = data.pagination.totals.total_clubs || 0;
+          grandTotalYearRegistered =
+            data.pagination.totals.total_registered || 0;
+          grandTotalYearReorganized =
+            data.pagination.totals.total_reorganized || 0;
+        }
         displayReport(data.data, districtVal, yearVal);
         window.print();
         // Restore current page view after print
@@ -343,8 +351,15 @@ function displayReport(data, district, year) {
     `;
   });
 
-  // Close table (don't include totals row here; summary cards show totals)
+  // Add a totals row that is visible only in print, then close table
   tableHTML += `
+                <tr class="bg-blue-100 font-bold print-only" style="display:none;">
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">එකතුව</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalClubs}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalYearRegistered}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">${grandTotalYearReorganized}</td>
+                </tr>
           </tbody>
         </table>
       `;
@@ -377,26 +392,33 @@ function displayReport(data, district, year) {
             </div>
 
             <!-- Summary Statistics (cards) -->
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 no-print">
               <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-semibold">D</div>
                 <div>
-                  <div class="text-xs text-gray-600">මුළු දිස්ත්‍රික්කයන්</div>
+                  <div class="text-xs text-gray-600">කොට්ඨාසයන්</div>
                   <div class="text-2xl font-bold text-blue-900">${totalRows}</div>
                 </div>
               </div>
               <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold">C</div>
+                <div class="w-12 h-12 rounded-full bg-green-50 text-green-700 flex items-center justify-center font-semibold">T</div>
                 <div>
-                  <div class="text-xs text-gray-600">සර්ව ලියාපදිංචි</div>
+                  <div class="text-xs text-gray-600">මුළු ලියාපදිංචි සමාජ</div>
                   <div class="text-2xl font-bold text-green-700">${grandTotalClubs}</div>
+                </div>
+              </div>
+              <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-yellow-50 text-yellow-700 flex items-center justify-center font-semibold">Y</div>
+                <div>
+                  <div class="text-xs text-gray-600">${yearText} ලියාපදිංචි</div>
+                  <div class="text-2xl font-bold text-yellow-700">${grandTotalYearRegistered}</div>
                 </div>
               </div>
               <div class="p-4 bg-white rounded shadow-sm flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center font-semibold">R</div>
                 <div>
-                  <div class="text-xs text-gray-600">${yearText} ගිණුම්</div>
-                  <div class="text-2xl font-bold text-purple-700">${grandTotalYearRegistered + grandTotalYearReorganized}</div>
+                  <div class="text-xs text-gray-600">${yearText} ප්‍රතිසංවිධාන</div>
+                  <div class="text-2xl font-bold text-purple-700">${grandTotalYearReorganized}</div>
                 </div>
               </div>
             </div>
@@ -419,8 +441,8 @@ function displayReport(data, district, year) {
         <style>
             @media print {
                 @page {
-                    size: A4 portrait;
-                    margin: 10mm;
+                  size: A4 portrait;
+                  margin: 10mm;
                 }
 
                 body {
@@ -488,6 +510,9 @@ function displayReport(data, district, year) {
                     color: #000 !important;
                 }
 
+                /* Print-only rows: hidden on screen, shown in print */
+                .print-only { display: none !important; }
+
                 table tbody tr:nth-child(even) {
                     background-color: #f9fafb !important;
                     -webkit-print-color-adjust: exact;
@@ -499,6 +524,43 @@ function displayReport(data, district, year) {
                     font-weight: bold;
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
+                }
+
+                .print-footer {
+                  margin-top: 20px;
+                  page-break-inside: avoid;
+                }
+
+                .print-footer .text-xs {
+                  font-size: 8pt;
+                }
+
+                .signatures {
+                  display: flex;
+                  justify-content: space-around;
+                  margin-top: 20px;
+                }
+
+                .sig-block {
+                  width: 180px;
+                  text-align: center;
+                }
+
+                .sig-line {
+                  border-bottom: 1px dotted #000;
+                  margin-bottom: 4px;
+                  height: 15px;
+                }
+
+                .sig-label {
+                  font-size: 8pt;
+                  font-weight: bold;
+                  text-transform: uppercase;
+                  color: black;
+                }
+
+                @media print {
+                  .print-only { display: table-row !important; }
                 }
 
                 .print-footer {
