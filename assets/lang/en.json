@@ -272,5 +272,11 @@
   "footer.department_name": "Department of Sports Southern Province",
   "footer.all_rights": "All rights reserved.",
   "placeholder.select_district_first": "Select district first",
-  "placeholder.select_division_first": "Select division first"
+  "placeholder.select_division_first": "Select division first",
+  "filter.month": "This Month",
+  "filter.3months": "3 Months",
+  "filter.year": "This Year",
+  "filter.5years": "5 Years",
+  "filter.10years": "10 Years",
+  "filter.alltime": "All Time"
 }

@@ -2,14 +2,28 @@ let districtChart = null;
 let statusChart = null;
 let registrationChart = null;
 let realtimeFallbackTimer = null;
+let currentRegistrationFilter = "alltime";
 
 document.addEventListener("DOMContentLoaded", function () {
   loadSummaryData();
   startRealtimeSummary();
+  setupFilterButtons();
 });
 
+function setupFilterButtons() {
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      currentRegistrationFilter = this.getAttribute("data-filter");
+      loadRegistrationData(currentRegistrationFilter);
+      updateFilterButtonStyles();
+    });
+  });
+  // Set initial active button
+  updateFilterButtonStyles();
+}
+
 function loadSummaryData() {
-  return fetch("../api/summary.php")
+  return fetch(`../api/summary.php?filter=${currentRegistrationFilter}`)
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
@@ -99,6 +113,39 @@ function clearPollingFallback() {
     clearInterval(realtimeFallbackTimer);
     realtimeFallbackTimer = null;
   }
+}
+
+function updateFilterButtonStyles() {
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    const filter = btn.getAttribute("data-filter");
+    if (filter === currentRegistrationFilter) {
+      btn.classList.remove("bg-gray-200", "hover:bg-gray-300");
+      btn.classList.add("bg-blue-500", "text-white", "hover:bg-blue-600");
+    } else {
+      btn.classList.remove("bg-blue-500", "text-white", "hover:bg-blue-600");
+      btn.classList.add("bg-gray-200", "hover:bg-gray-300");
+      btn.classList.remove("text-white");
+    }
+  });
+}
+
+function loadRegistrationData(filter) {
+  return fetch(`../api/summary.php?filter=${filter}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success && data.data.registrationTrend) {
+        if (!registrationChart) {
+          createRegistrationChart(data.data.registrationTrend);
+        } else {
+          updateRegistrationChart(data.data.registrationTrend);
+        }
+      }
+      return data;
+    })
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
 }
 
 function updateStats(data) {

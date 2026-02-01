@@ -263,5 +263,11 @@
   "login.error_inactive": "මෙම ගිණුම අක්‍රිය කර ඇත",
   "login.error_generic": "දෝෂයක් සිදු විය. කරුණාකර නැවත උත්සාහ කරන්න",
   "footer.department_name": "දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව",
-  "footer.all_rights": "සියලුම හිමිකම් ඇවිරිණි."
+  "footer.all_rights": "සියලුම හිමිකම් ඇවිරිණි.",
+  "filter.month": "මෙම මාසය",
+  "filter.3months": "3 මාස",
+  "filter.year": "මෙම වසර",
+  "filter.5years": "5 අවුරුද්දු",
+  "filter.10years": "10 අවුරුද්දු",
+  "filter.alltime": "සම්පූර්ණ කාලය"
 }

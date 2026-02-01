@@ -68,13 +68,38 @@ try {
         $totalReorgs = 0;
     }
 
-    // Registration trend (last 12 months)
+    // Registration trend with filter support
+    $filter = $_GET['filter'] ?? 'alltime';
+
     try {
+        $whereClause = '';
+
+        switch ($filter) {
+            case 'month':
+                $whereClause = "WHERE registration_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')";
+                break;
+            case '3months':
+                $whereClause = "WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
+                break;
+            case 'year':
+                $whereClause = "WHERE YEAR(registration_date) = YEAR(CURDATE())";
+                break;
+            case '5years':
+                $whereClause = "WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)";
+                break;
+            case '10years':
+                $whereClause = "WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 10 YEAR)";
+                break;
+            case 'alltime':
+            default:
+                $whereClause = '';
+        }
+
         $stmt = $pdo->query("SELECT 
             DATE_FORMAT(registration_date, '%Y-%m') as month,
             COUNT(*) as count
             FROM clubs
-            WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+            $whereClause
             GROUP BY DATE_FORMAT(registration_date, '%Y-%m')
             ORDER BY month");
         $registrationTrend = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -89,7 +114,8 @@ try {
         'totalReorgs' => (int)$totalReorgs,
         'byDistrict' => $byDistrict,
         'byStatus' => $status,
-        'registrationTrend' => $registrationTrend
+        'registrationTrend' => $registrationTrend,
+        'currentFilter' => $filter
     ]);
 } catch (Exception $e) {
     sendJSONResponse(false, null, $e->getMessage(), 500);

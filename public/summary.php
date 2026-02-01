@@ -46,7 +46,17 @@ include '../includes/header.php';
 
     <!-- Charts Row 2 -->
     <div class="section-card mb-6">
-        <h3 class="section-heading" data-i18n="stats.recent_registrations">මෑත ලියාපදිංචි කිරීම්</h3>
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="section-heading" data-i18n="stats.recent_registrations">මෑත ලියාපදිංචි කිරීම්</h3>
+            <div class="flex gap-2 flex-wrap">
+                <button id="filterMonth" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300" data-filter="month" data-i18n="filter.month">මෙම මාසය</button>
+                <button id="filter3Months" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300" data-filter="3months" data-i18n="filter.3months">3 මාස</button>
+                <button id="filterYear" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300" data-filter="year" data-i18n="filter.year">මෙම වසර</button>
+                <button id="filter5Years" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300" data-filter="5years" data-i18n="filter.5years">5 අවුරුද්දු</button>
+                <button id="filter10Years" class="filter-btn px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300" data-filter="10years" data-i18n="filter.10years">10 අවුරුද්දු</button>
+                <button id="filterAllTime" class="filter-btn px-3 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600" data-filter="alltime" data-i18n="filter.alltime">සම්පූර්ණ කාලය</button>
+            </div>
+        </div>
         <div class="relative" style="height: 350px;">
             <canvas id="registrationChart"></canvas>
         </div>

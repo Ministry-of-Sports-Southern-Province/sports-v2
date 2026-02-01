@@ -257,5 +257,11 @@
   "login.error_inactive": "இந்த கணக்கு செயலில் இல்லை",
   "login.error_generic": "பிழை ஏற்பட்டது. தயவுசெய்து மீண்டும் முயற்சிக்கவும்",
   "footer.department_name": "தெற்கு மாகாண விளையாட்டு துறை",
-  "footer.all_rights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன."
+  "footer.all_rights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.",
+  "filter.month": "இந்த மாதம்",
+  "filter.3months": "3 மாதங்கள்",
+  "filter.year": "இந்த வருடம்",
+  "filter.5years": "5 வருடங்கள்",
+  "filter.10years": "10 வருடங்கள்",
+  "filter.alltime": "எல்லா நேரத்திலும்"
 }
