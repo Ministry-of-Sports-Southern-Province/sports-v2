@@ -7,7 +7,7 @@ if exist "bin\tailwindcss.exe" set TAILWIND=bin\tailwindcss.exe
 if exist "bin\tailwindcss-windows-x64.exe" set TAILWIND=bin\tailwindcss-windows-x64.exe
 if "%TAILWIND%"=="" set TAILWIND=tailwindcss
 
-"%TAILWIND%" -i assets\css\input.css -o assets\css\tailwind.css --minify -c tailwind.config.js
+"%TAILWIND%" -i assets\css\input.css -o assets\css\output.css --minify -c tailwind.config.js
 if errorlevel 1 (
   echo.
   echo Tailwind CLI not found. Download the standalone executable:
@@ -16,5 +16,5 @@ if errorlevel 1 (
   echo   Or add tailwindcss to your PATH.
   exit /b 1
 )
-echo Built assets\css\tailwind.css
+echo Built assets\css\output.css
 exit /b 0

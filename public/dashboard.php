@@ -211,7 +211,7 @@ $customStyles = '
 
 // Additional links for Chart.js
 $additionalLinks = [
-    '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>'
+    '<script src="' . htmlspecialchars($basePath ?? '../', ENT_QUOTES, 'UTF-8') . 'assets/js/vendor/chart.min.js"></script>'
 ];
 
 // Include header

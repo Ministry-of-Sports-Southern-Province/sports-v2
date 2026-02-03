@@ -36,19 +36,8 @@ $currentAdmin = getCurrentAdmin();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="<?php echo htmlspecialchars($pageTitle); ?>">ක්‍රීඩා සමාජ කළමනාකරණ පද්ධතිය</title>
 
-    <!-- Tailwind CSS: production build when available, else CDN -->
-    <?php
-    $tailwindPath = __DIR__ . '/../assets/css/tailwind.css';
-    if (file_exists($tailwindPath)): ?>
-        <link href="<?php echo htmlspecialchars($basePath); ?>assets/css/tailwind.css?t=<?php echo filemtime($tailwindPath); ?>" rel="stylesheet">
-    <?php else: ?>
-        <script src="https://cdn.tailwindcss.com"></script>
-    <?php endif; ?>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <link href="<?php echo htmlspecialchars($basePath); ?>assets/css/output.css" rel="stylesheet">
 
     <!-- Favicon: use existing logo.svg to avoid root /favicon.ico requests -->
     <link rel="icon" href="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" type="image/svg+xml">

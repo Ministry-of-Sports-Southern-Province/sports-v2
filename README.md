@@ -16,6 +16,7 @@ A modern sports club management system for the Department of Sports Southern Pro
 
 ### Technical Features
 
+- ✅ **Offline Support** - No CDN dependencies, works without internet
 - ✅ Multilingual support (English, Sinhala, Tamil) - Frontend only
 - ✅ UTF-8 support for Sinhala and Tamil characters
 - ✅ Properly normalized database (7 tables, 3NF compliant)
@@ -31,6 +32,7 @@ A modern sports club management system for the Department of Sports Southern Pro
 - **Backend**: PHP 7.4+
 - **Database**: MySQL 5.7+ / MariaDB 10.3+
 - **Libraries**:
+  - Chart.js 4.4.1 (statistics and charts)
   - Tom Select 2.3.1 (searchable dropdowns)
   - Tailwind CSS 3.x (styling)
 
@@ -86,14 +88,29 @@ define('DB_USER', 'root');          // Change if needed
 define('DB_PASS', '');               // Change if needed
 ```
 
-### Step 3: Tailwind CSS (Standalone CLI, no Node.js)
+### Step 3: Download Vendor Libraries (Offline Support)
+
+The system requires local copies of third-party libraries for offline operation.
+
+**Quick Setup:**
+```bat
+download-vendors.bat
+```
+
+This downloads:
+- Chart.js v4.4.1 (for statistics charts)
+- Tom Select v2.3.1 (for searchable dropdowns)
+
+See `assets/VENDOR_SETUP.md` for manual download instructions.
+
+### Step 4: Build Tailwind CSS (Standalone CLI)
 
 Build Tailwind using the **standalone CLI** (no npm or Node.js required):
 
 1. **Download the CLI** from [Tailwind CSS releases](https://github.com/tailwindlabs/tailwindcss/releases/latest):
    - Windows 64-bit: `tailwindcss-windows-x64.exe`
    - **Note:** This project uses `tailwind.config.js` (v3 style). If the latest release is v4, download a **v3.x** standalone build from an older release (e.g. [v3.4.16](https://github.com/tailwindlabs/tailwindcss/releases/tag/v3.4.16)).
-   - Place the exe in the project `bin\` folder (create the folder if needed), optionally rename to `tailwindcss.exe`.
+   - Place the exe in the project `bin\` folder, optionally rename to `tailwindcss.exe`.
 
 2. **Build CSS** (production, minified):
 
@@ -104,7 +121,7 @@ Build Tailwind using the **standalone CLI** (no npm or Node.js required):
    Or run the CLI directly:
 
    ```bat
-   bin\tailwindcss-windows-x64.exe -i assets\css\input.css -o assets\css\tailwind.css --minify -c tailwind.config.js
+   bin\tailwindcss-windows-x64.exe -i assets\css\input.css -o assets\css\output.css --minify -c tailwind.config.js
    ```
 
 3. **Watch mode** (rebuild on file changes):
@@ -112,9 +129,9 @@ Build Tailwind using the **standalone CLI** (no npm or Node.js required):
    build-css-watch.bat
    ```
 
-This generates `assets/css/tailwind.css`. If the file is missing, the app falls back to the Tailwind CDN.
+This generates `assets/css/output.css` required for the system to work.
 
-### Step 4: Access the System
+### Step 5: Access the System
 
 1. Place the `sports-v2` folder in your web server's document root:
    - WAMP: `c:\wamp64\www\sports-v2`

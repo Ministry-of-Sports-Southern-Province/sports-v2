@@ -63,7 +63,7 @@ include '../includes/header.php';
     </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/vendor/chart.min.js"></script>
 <?php
 $scripts = ['../assets/js/summary.js'];
 include '../includes/footer.php';

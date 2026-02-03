@@ -15,7 +15,7 @@ $customStyles = '.ts-wrapper { width: 100% !important; }';
 
 // Additional CSS/JS links for this page
 $additionalLinks = [
-    '<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">'
+    '<link href="' . htmlspecialchars($basePath) . 'assets/css/vendor/tom-select.css" rel="stylesheet">'
 ];
 
 // Require admin role - only admins can edit clubs
@@ -144,7 +144,7 @@ include '../includes/header.php';
 <?php
 // Scripts to include (in order)
 $scripts = [
-    'https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js',
+    '../assets/js/vendor/tom-select.complete.min.js',
     '../assets/js/edit-club.js'
 ];
 
