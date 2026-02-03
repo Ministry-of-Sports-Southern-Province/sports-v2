@@ -54,6 +54,34 @@ $currentAdmin = getCurrentAdmin();
             transition: font-size 0.3s ease;
         }
 
+        /* Sinhala-specific typography */
+        [lang="si"],
+        [data-i18n],
+        .sinhala-text {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
+        }
+
+        /* Headings with Sinhala support */
+        h1, h2, h3, h4, h5, h6,
+        .page-title,
+        .section-heading {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Form labels and inputs with Sinhala support */
+        .form-label,
+        .form-select,
+        .form-input,
+        .form-textarea {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
+        }
+
+        /* Table text with Sinhala support */
+        table {
+            font-family: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
+        }
+
         .gov-header {
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
@@ -468,6 +496,10 @@ $currentAdmin = getCurrentAdmin();
             padding: 1rem;
         }
 
+        .modal-overlay.hidden {
+            display: none;
+        }
+
         .modal-panel {
             background: #fff;
             border-radius: 0.75rem;
@@ -477,6 +509,14 @@ $currentAdmin = getCurrentAdmin();
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+        }
+
+        @media (max-width: 640px) {
+            .modal-panel {
+                max-width: 100%;
+                max-height: 95vh;
+                margin: 0.5rem;
+            }
         }
 
         .modal-panel .modal-header {

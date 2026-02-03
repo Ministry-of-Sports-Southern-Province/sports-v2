@@ -3,6 +3,129 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Local Offline Font Definitions */
+/* Poppins Font Family */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/Poppins-Regular.woff2') format('woff2'),
+       url('../fonts/Poppins-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/Poppins-Medium.woff2') format('woff2'),
+       url('../fonts/Poppins-Medium.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/Poppins-SemiBold.woff2') format('woff2'),
+       url('../fonts/Poppins-SemiBold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/Poppins-Bold.woff2') format('woff2'),
+       url('../fonts/Poppins-Bold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 900;
+  src: url('../fonts/Poppins-Black.woff2') format('woff2'),
+       url('../fonts/Poppins-Black.woff') format('woff');
+  font-display: swap;
+}
+
+/* Noto Sans Sinhala Font Family */
+@font-face {
+  font-family: 'Noto Sans Sinhala';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/NotoSansSinhala-Regular.woff2') format('woff2'),
+       url('../fonts/NotoSansSinhala-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans Sinhala';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/NotoSansSinhala-Medium.woff2') format('woff2'),
+       url('../fonts/NotoSansSinhala-Medium.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans Sinhala';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/NotoSansSinhala-SemiBold.woff2') format('woff2'),
+       url('../fonts/NotoSansSinhala-SemiBold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Noto Sans Sinhala';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/NotoSansSinhala-Bold.woff2') format('woff2'),
+       url('../fonts/NotoSansSinhala-Bold.woff') format('woff');
+  font-display: swap;
+}
+
+/* Iskoola Pota Font Family */
+@font-face {
+  font-family: 'Iskoola Pota';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/IskoollaPota.woff2') format('woff2'),
+       url('../fonts/IskoollaPota.woff') format('woff');
+  font-display: swap;
+}
+
+/* Sinhala Typography Support */
+@layer base {
+  :root {
+    --font-sans: 'Poppins', 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+    --font-sinhala: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
+  }
+
+  body {
+    @apply font-sans;
+  }
+
+  [lang="si"],
+  [data-i18n],
+  .sinhala-text {
+    font-family: var(--font-sinhala);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sinhala);
+  }
+
+  .form-label,
+  .form-select,
+  .form-input,
+  .form-textarea {
+    font-family: var(--font-sinhala);
+  }
+}
+
 /* Data tables: better visibility, borders, spacing */
 @layer components {
   .data-table {
