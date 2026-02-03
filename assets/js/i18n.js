@@ -212,11 +212,15 @@ const i18n = {
   updateLanguageSwitcher(lang) {
     document.querySelectorAll("[data-language]").forEach((button) => {
       if (button.getAttribute("data-language") === lang) {
-        button.classList.add("bg-blue-600", "text-white");
-        button.classList.remove("bg-gray-200", "text-gray-700");
+        button.classList.add("bg-white", "text-gray-800", "font-semibold");
+        button.classList.remove(
+          "bg-white/10",
+          "text-white",
+          "hover:bg-white/20",
+        );
       } else {
-        button.classList.remove("bg-blue-600", "text-white");
-        button.classList.add("bg-gray-200", "text-gray-700");
+        button.classList.remove("bg-white", "text-gray-800", "font-semibold");
+        button.classList.add("bg-white/10", "text-white", "hover:bg-white/20");
       }
     });
   },

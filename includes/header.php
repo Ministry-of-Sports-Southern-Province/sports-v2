@@ -62,7 +62,12 @@ $currentAdmin = getCurrentAdmin();
         }
 
         /* Headings with Sinhala support */
-        h1, h2, h3, h4, h5, h6,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
         .page-title,
         .section-heading {
             font-family: 'Noto Sans Sinhala', 'Iskoola Pota', 'Poppins', sans-serif;
@@ -649,7 +654,7 @@ $currentAdmin = getCurrentAdmin();
                         <button data-language="en" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
                             EN
                         </button>
-                        <button data-language="si" class="px-3 py-1 rounded text-sm font-medium transition bg-white text-blue-600 font-semibold">
+                        <button data-language="si" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
                             සිං
                         </button>
                         <button data-language="ta" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
