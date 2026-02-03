@@ -260,62 +260,44 @@ function populatePrintContainer(data) {
 
   const district = document.getElementById("district").value;
   const dateRange = document.getElementById("dateRange").value;
-
-  const districtText =
-    district ||
-    (window.i18n ? window.i18n.t("filter.all_districts") : "All Districts");
-  const rangeText =
-    dateRange === "year"
-      ? window.i18n
-        ? window.i18n.t("filter.year")
-        : "This Year"
-      : dateRange === "month"
-        ? window.i18n
-          ? window.i18n.t("filter.month")
-          : "This Month"
-        : window.i18n
-          ? window.i18n.t("filter.alltime")
-          : "All Time";
-
+  const districtText = district || (window.i18n ? window.i18n.t('filter.all_districts') : 'All Districts');
+  const rangeText = dateRange === "year" ? (window.i18n ? window.i18n.t('filter.year') : 'This Year') :
+                     dateRange === "month" ? (window.i18n ? window.i18n.t('filter.month') : 'This Month') :
+                     (window.i18n ? window.i18n.t('filter.alltime') : 'All Time');
   const filterText = `${districtText} | ${rangeText}`;
 
-  printContainer.innerHTML = "";
-
+  printContainer.innerHTML = '';
   if (data.length === 0) {
-    printContainer.innerHTML =
-      '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
+    printContainer.innerHTML = '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
     return;
   }
 
   const firstPageRows = 38;
   const otherPageRows = 42;
-
-  let totalPages = 1;
-  let remainingRows = data.length - firstPageRows;
-  if (remainingRows > 0) {
-    totalPages += Math.ceil(remainingRows / otherPageRows);
-  }
-
+  const pages = [];
   let dataIndex = 0;
 
-  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-    const rowsThisPage = pageNum === 1 ? firstPageRows : otherPageRows;
-    const pageData = data.slice(dataIndex, dataIndex + rowsThisPage);
+  while (dataIndex < data.length) {
+    const isFirstPage = pages.length === 0;
+    const maxRows = isFirstPage ? firstPageRows : otherPageRows;
+    const remainingRows = data.length - dataIndex;
+    let rowsThisPage = Math.min(maxRows, remainingRows);
+    if (remainingRows - rowsThisPage < 10 && !isFirstPage && remainingRows > rowsThisPage) {
+      rowsThisPage = remainingRows;
+    }
+    pages.push(data.slice(dataIndex, dataIndex + rowsThisPage));
     dataIndex += rowsThisPage;
+  }
 
-    const pageDiv = document.createElement("div");
-    pageDiv.className = "print-page";
+  const totalPages = pages.length;
+  pages.forEach((pageData, pageNum) => {
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'print-page';
+    let pageHTML = '';
 
-    let pageHTML = "";
-
-    if (pageNum === 1) {
-      const deptName = window.i18n
-        ? window.i18n.t("header.department_name")
-        : "Department of Sports Southern Province";
-      const reportTitle = window.i18n
-        ? window.i18n.t("report.type_registered")
-        : "Registered Clubs Report";
-
+    if (pageNum === 0) {
+      const deptName = window.i18n ? window.i18n.t('header.department_name') : 'Department of Sports Southern Province';
+      const reportTitle = window.i18n ? window.i18n.t('report.type_registered') : 'Registered Clubs Report';
       pageHTML += `
         <div class="print-header">
           <div class="dept-name">${deptName}</div>
@@ -342,7 +324,7 @@ function populatePrintContainer(data) {
     `;
 
     pageData.forEach((row, idx) => {
-      const globalIdx = dataIndex - pageData.length + idx + 1;
+      const globalIdx = pages.slice(0, pageNum).reduce((sum, p) => sum + p.length, 0) + idx + 1;
       pageHTML += `
         <tr>
           <td style="text-align: center;">${globalIdx}</td>
@@ -356,40 +338,23 @@ function populatePrintContainer(data) {
       `;
     });
 
-    pageHTML += `
-        </tbody>
-      </table>
-    `;
+    pageHTML += `</tbody></table>`;
 
-    if (pageNum === totalPages) {
-      const preparedBy = window.i18n
-        ? window.i18n.t("footer.prepared_by")
-        : "Prepared By";
-      const approvedBy = window.i18n
-        ? window.i18n.t("footer.approved_by")
-        : "Approved By";
-
+    if (pageNum === totalPages - 1) {
+      const preparedBy = window.i18n ? window.i18n.t('footer.prepared_by') : 'Prepared By';
+      const approvedBy = window.i18n ? window.i18n.t('footer.approved_by') : 'Approved By';
       pageHTML += `
         <div class="print-footer">
           <div class="signatures">
-            <div class="sig-block">
-              <div class="sig-line"></div>
-              <div class="sig-label">${preparedBy}</div>
-            </div>
-            <div class="sig-block">
-              <div class="sig-line"></div>
-              <div class="sig-label">${approvedBy}</div>
-            </div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${preparedBy}</div></div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${approvedBy}</div></div>
           </div>
         </div>
       `;
     }
 
-    pageHTML += `
-      <div class="page-number-footer">Page ${pageNum} of ${totalPages}</div>
-    `;
-
+    pageHTML += `<div class="page-number-footer">Page ${pageNum + 1} of ${totalPages}</div>`;
     pageDiv.innerHTML = pageHTML;
     printContainer.appendChild(pageDiv);
-  }
+  });
 }

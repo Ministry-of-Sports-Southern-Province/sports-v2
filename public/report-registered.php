@@ -76,9 +76,6 @@ include '../includes/header.php';
             box-sizing: border-box;
             width: 100%;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 277mm;
         }
 
         .print-page:last-child {
@@ -143,7 +140,7 @@ include '../includes/header.php';
             margin-bottom: 0;
             table-layout: fixed;
             line-height: 1.1;
-            flex: 1;
+            margin: 0;
         }
 
         #printContainer table thead {
@@ -193,15 +190,16 @@ include '../includes/header.php';
         }
 
         .print-footer {
-            margin-top: auto;
+            margin-top: 0;
+            padding-top: 2mm;
             page-break-inside: avoid;
         }
 
         .signatures {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            margin-top: 20px;
+            margin-bottom: 0;
+            margin-top: 2mm;
         }
 
         .sig-block {

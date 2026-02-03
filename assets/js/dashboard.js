@@ -1011,19 +1011,17 @@ async function loadAllClubsForPrint() {
  */
 function populatePrintContainer() {
   const printContainer = document.getElementById("printContainer");
-
   if (!printContainer) return;
 
-  // Get filter info
+  // Use currentClubsData if available, otherwise fetch
+  const data = currentClubsData || [];
+  
   const search = document.getElementById("searchInput").value;
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
   const gnDivisionSelect = document.getElementById("filterGnDivision");
 
-  let filterText = window.i18n
-    ? window.i18n.t("filter.all_clubs")
-    : "All Clubs";
-
+  let filterText = window.i18n ? window.i18n.t("filter.all_clubs") : "All Clubs";
   if (gnDivisionSelect.value) {
     filterText = gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
   } else if (divisionSelect.value) {
@@ -1031,46 +1029,45 @@ function populatePrintContainer() {
   } else if (districtSelect.value) {
     filterText = districtSelect.options[districtSelect.selectedIndex].text;
   }
-
   if (search) {
     filterText += ` - ${window.i18n ? window.i18n.t("placeholder.search") : "Search"}: ${search}`;
   }
 
-  // Clear and rebuild print container with pages
   printContainer.innerHTML = '';
-
-  if (currentClubsData.length === 0) {
+  if (data.length === 0) {
     printContainer.innerHTML = '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
     return;
   }
 
-  // Calculate pages with different row counts for first page (has header)
-  const firstPageRows = 12;
-  const otherPageRows = 15;
-  
-  let totalPages = 1;
-  let remainingRows = currentClubsData.length - firstPageRows;
-  if (remainingRows > 0) {
-    totalPages += Math.ceil(remainingRows / otherPageRows);
+  const firstPageRows = 20;
+  const otherPageRows = 24;
+  const pages = [];
+  let dataIndex = 0;
+
+  while (dataIndex < data.length) {
+    const isFirstPage = pages.length === 0;
+    const maxRows = isFirstPage ? firstPageRows : otherPageRows;
+    const remainingRows = data.length - dataIndex;
+    
+    let rowsThisPage = Math.min(maxRows, remainingRows);
+    
+    if (remainingRows - rowsThisPage < 10 && !isFirstPage && remainingRows > rowsThisPage) {
+      rowsThisPage = remainingRows;
+    }
+    
+    pages.push(data.slice(dataIndex, dataIndex + rowsThisPage));
+    dataIndex += rowsThisPage;
   }
 
-  let dataIndex = 0;
-  
-  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-    const rowsThisPage = pageNum === 1 ? firstPageRows : otherPageRows;
-    const pageData = currentClubsData.slice(dataIndex, dataIndex + rowsThisPage);
-    dataIndex += rowsThisPage;
-
+  const totalPages = pages.length;
+  pages.forEach((pageData, pageNum) => {
     const pageDiv = document.createElement('div');
     pageDiv.className = 'print-page';
-
     let pageHTML = '';
 
-    // Add header only on first page
-    if (pageNum === 1) {
+    if (pageNum === 0) {
       const deptName = window.i18n ? window.i18n.t('header.department_name') : 'Department of Sports Southern Province';
       const reportTitle = window.i18n ? window.i18n.t('page.clubs_report_title') : 'Sports Clubs Report';
-      
       pageHTML += `
         <div class="print-header">
           <div class="dept-name">${deptName}</div>
@@ -1084,26 +1081,26 @@ function populatePrintContainer() {
       <table>
         <thead>
           <tr>
-            <th style="width: 3%;">No.</th>
-            <th style="width: 8%;">Reg No.</th>
-            <th style="width: 6%;">Date</th>
-            <th style="width: 12%;">Club Name</th>
-            <th style="width: 7%;">District</th>
+            <th style="width: 2.5%;">No.</th>
+            <th style="width: 7%;">Reg No.</th>
+            <th style="width: 6.5%;">Date</th>
+            <th style="width: 11.5%;">Club Name</th>
+            <th style="width: 7.5%;">District</th>
             <th style="width: 10%;">Division</th>
-            <th style="width: 10%;">GN Division</th>
+            <th style="width: 10%;">GN Div</th>
             <th style="width: 9%;">Chairman</th>
-            <th style="width: 11%;">Address</th>
-            <th style="width: 9%;">Secretary</th>
-            <th style="width: 11%;">Address</th>
-            <th style="width: 7%;">Last Reorg</th>
-            <th style="width: 7%;">Next Reorg</th>
+            <th style="width: 9%;">Chair Addr</th>
+            <th style="width: 8.5%;">Secretary</th>
+            <th style="width: 9%;">Sec Addr</th>
+            <th style="width: 6.5%;">Last Reorg</th>
+            <th style="width: 6.5%;">Next Reorg</th>
           </tr>
         </thead>
         <tbody>
     `;
 
     pageData.forEach((club, idx) => {
-      const globalIdx = dataIndex - pageData.length + idx + 1;
+      const globalIdx = pages.slice(0, pageNum).reduce((sum, p) => sum + p.length, 0) + idx + 1;
       pageHTML += `
         <tr>
           <td style="text-align: center;">${globalIdx}</td>
@@ -1123,46 +1120,28 @@ function populatePrintContainer() {
       `;
     });
 
-    pageHTML += `
-        </tbody>
-      </table>
-    `;
+    pageHTML += `</tbody></table>`;
 
-    // Add signature footer only on last page
-    if (pageNum === totalPages) {
+    if (pageNum === totalPages - 1) {
       const preparedBy = window.i18n ? window.i18n.t('footer.prepared_by') : 'Prepared By';
       const checkedBy = window.i18n ? window.i18n.t('footer.checked_by') : 'Checked By';
       const approvedBy = window.i18n ? window.i18n.t('footer.approved_by') : 'Approved By';
-      
       pageHTML += `
         <div class="print-footer">
           <div class="signatures">
-            <div class="sig-block">
-              <div class="sig-line"></div>
-              <div class="sig-label">${preparedBy}</div>
-            </div>
-            <div class="sig-block">
-              <div class="sig-line"></div>
-              <div class="sig-label">${checkedBy}</div>
-            </div>
-            <div class="sig-block">
-              <div class="sig-line"></div>
-              <div class="sig-label">${approvedBy}</div>
-            </div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${preparedBy}</div></div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${checkedBy}</div></div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${approvedBy}</div></div>
           </div>
         </div>
       `;
     }
 
-    pageHTML += `
-      <div class="page-number-footer">Page ${pageNum} of ${totalPages}</div>
-    `;
-
+    pageHTML += `<div class="page-number-footer">Page ${pageNum + 1} of ${totalPages}</div>`;
     pageDiv.innerHTML = pageHTML;
     printContainer.appendChild(pageDiv);
-  }
+  });
 
-  // Apply translations to print container
   if (window.i18n && window.i18n.applyTranslations) {
     window.i18n.applyTranslations();
   }
@@ -1173,58 +1152,73 @@ function populatePrintContainer() {
 
 /* JavaScript for Print with Date */
 async function printWithDate() {
-  // Store original title
-  const originalTitle = document.title;
+  try {
+    // Store original title
+    const originalTitle = document.title;
 
-  // Get current date in YYYY-MM-DD format
-  const now = new Date();
-  const dateStr =
-    now.getFullYear() +
-    "-" +
-    String(now.getMonth() + 1).padStart(2, "0") +
-    "-" +
-    String(now.getDate()).padStart(2, "0");
+    // Get current date in YYYY-MM-DD format
+    const now = new Date();
+    const dateStr =
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0");
 
-  // Get filter info if available
-  let filterInfo = "";
-  const district = document.getElementById("filterDistrict")?.value;
-  const division = document.getElementById("filterDivision")?.value;
+    // Get filter info if available
+    let filterInfo = "";
+    const district = document.getElementById("filterDistrict")?.value;
+    const division = document.getElementById("filterDivision")?.value;
 
-  if (district) {
-    const districtText =
-      document.getElementById("filterDistrict")?.selectedOptions[0]?.text;
-    filterInfo = "_" + districtText.replace(/\s+/g, "_");
+    if (district) {
+      const districtText =
+        document.getElementById("filterDistrict")?.selectedOptions[0]?.text;
+      filterInfo = "_" + districtText.replace(/\s+/g, "_");
+    }
+
+    if (division) {
+      const divisionText =
+        document.getElementById("filterDivision")?.selectedOptions[0]?.text;
+      filterInfo += "_" + divisionText.replace(/\s+/g, "_");
+    }
+
+    // Update print filter info if element exists
+    const printFilterEl = document.getElementById("printFilterInfo");
+    if (printFilterEl) {
+      printFilterEl.textContent =
+        "Sports Clubs Report | " +
+        dateStr +
+        (filterInfo ? " | " + filterInfo.replaceAll("_", " ") : "");
+    }
+
+    // Update title (for tab / header only)
+    document.title = "Sports_Clubs_Report_" + dateStr + filterInfo;
+
+    // Ensure print table has all rows (not just current page)
+    const loaded = await loadAllClubsForPrint();
+    if (!loaded) {
+      console.error("Failed to load clubs for print");
+      alert("Error loading data for print. Please try again.");
+      document.title = originalTitle;
+      return;
+    }
+
+    // Populate the print container
+    populatePrintContainer();
+
+    // Wait a moment for content to render, then print
+    setTimeout(() => {
+      window.print();
+      
+      // Restore original title after print
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 500);
+    }, 300);
+  } catch (error) {
+    console.error("Print error:", error);
+    alert("Error preparing print. Please check the console for details.");
   }
-
-  if (division) {
-    const divisionText =
-      document.getElementById("filterDivision")?.selectedOptions[0]?.text;
-    filterInfo += "_" + divisionText.replace(/\s+/g, "_");
-  }
-
-  /* ✅ PUT IT HERE */
-  const printFilterEl = document.getElementById("printFilterInfo");
-  if (printFilterEl) {
-    printFilterEl.textContent =
-      "Sports Clubs Report | " +
-      dateStr +
-      (filterInfo ? " | " + filterInfo.replaceAll("_", " ") : "");
-  }
-
-  // Optional: update title (for tab / header only)
-  document.title = "Sports_Clubs_Report_" + dateStr + filterInfo;
-
-  // Ensure print table has all rows (not just current page)
-  await loadAllClubsForPrint();
-  populatePrintContainer();
-
-  // Print
-  window.print();
-
-  // Restore original title (give browser enough time)
-  setTimeout(() => {
-    document.title = originalTitle;
-  }, 5000);
 }
 
 

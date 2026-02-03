@@ -119,13 +119,17 @@ $customStyles = '
             
             .print-page {
                 border: 2px solid #1e3a8a;
-                padding: 6mm;
+                padding: 5mm 5mm 5mm 5mm;
                 margin-bottom: 10mm;
                 page-break-after: always;
                 page-break-inside: avoid;
                 position: relative;
                 box-sizing: border-box;
-                overflow: hidden;
+                width: 100%;
+                height: 185mm;
+                display: flex;
+                flex-direction: column;
+                overflow: visible;
             }
             
             .print-page:last-child {
@@ -134,14 +138,19 @@ $customStyles = '
             }
             
             .page-number-footer {
-                position: absolute;
-                bottom: 2mm;
-                left: 0;
-                right: 0;
+                position: relative;
+                bottom: auto;
+                left: auto;
+                right: auto;
                 text-align: center;
-                font-size: 8pt;
+                font-size: 7.5pt;
                 color: #374151;
                 font-weight: 500;
+                height: auto;
+                padding: 2mm 0 0 0;
+                margin: 0;
+                margin-top: auto;
+                border-top: 1px solid #ddd;
             }
 
             .report-content {
@@ -152,34 +161,40 @@ $customStyles = '
             /* Header */
             .print-header { 
                 text-align: center; 
-                margin-bottom: 8px; 
+                margin-bottom: 4px; 
                 border-bottom: 2px solid #1e3a8a; 
-                padding-bottom: 4px; 
+                padding-bottom: 3px;
+                padding-top: 2px;
+                flex-shrink: 0;
+                background: #f0f4f8;
+                border-radius: 2px;
             }
             .print-header .dept-name { 
-                font-size: 8pt;
+                font-size: 7.5pt;
                 font-weight: bold; 
-                color: #4b5563; 
+                color: #1e3a8a; 
                 text-transform: uppercase; 
                 margin-bottom: 2px; 
+                line-height: 1;
+                letter-spacing: 0.5px;
             }
             .print-header h1 { 
                 font-size: 14pt;
                 font-weight: 900; 
-                color: #1e3a8a; 
+                color: #000; 
                 text-transform: uppercase; 
-                margin: 2px 0; 
-                letter-spacing: 0.5px; 
-                line-height: 1;
+                margin: 2px 0 3px 0; 
+                letter-spacing: 0.8px; 
+                line-height: 1.1;
             }
             .print-header .report-subtitle {
-                font-size: 9pt;
+                font-size: 8.5pt;
                 font-weight: bold;
-                color: #000;
-                margin-top: 4px;
+                color: #1e3a8a;
+                margin-top: 2px;
                 background: #f3f4f6;
-                padding: 2px 10px;
-                border-radius: 12px;
+                padding: 1px 8px;
+                border-radius: 10px;
                 display: inline-block;
                 border: 1px solid #d1d5db;
                 -webkit-print-color-adjust: exact; 
@@ -190,11 +205,13 @@ $customStyles = '
             #printContainer table { 
                 width: 100%; 
                 border-collapse: collapse; 
-                font-size: 6.5pt; 
-                margin-top: 6px;
-                margin-bottom: 8mm;
-                table-layout: auto;
-                line-height: 1.1;
+                font-size: 6pt; 
+                margin-top: 1px;
+                margin-bottom: 0;
+                table-layout: fixed;
+                line-height: 1;
+                flex-grow: 1;
+                overflow: hidden;
             }
             #printContainer table thead {
                 display: table-header-group;
@@ -209,59 +226,65 @@ $customStyles = '
                 background-color: #1e3a8a !important; 
                 color: white !important; 
                 font-weight: bold; 
-                font-size: 6.5pt;
-                padding: 2px 3px; 
-                border: 1px solid #1e3a8a; 
+                font-size: 6pt;
+                padding: 1px 2px; 
+                border: 0.5px solid #0f3a6d; 
                 text-align: left; 
                 line-height: 1;
-                white-space: nowrap;
+                white-space: normal;
                 overflow: hidden;
-                text-overflow: ellipsis;
+                word-break: break-word;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             #printContainer table td { 
-                padding: 2px 3px; 
-                border: 1px solid #666; 
-                font-size: 6.5pt; 
+                padding: 1px 1.5px; 
+                border: 0.5px solid #999; 
+                font-size: 6pt; 
                 color: #000; 
-                line-height: 1.1; 
+                line-height: 1; 
                 vertical-align: top;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
-                max-width: 80px;
+                overflow: hidden;
+                max-height: 1.3em;
             }
             #printContainer table tr:nth-child(even) { 
-                background-color: #f9fafb !important; 
+                background-color: #f5f5f5 !important; 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             
             /* Footer */
             .print-footer { 
-                margin-top: 15px; 
+                margin-top: 1mm; 
                 page-break-inside: avoid;
+                border-top: 1px solid #ccc;
+                padding-top: 2mm;
+                flex-shrink: 0;
             }
             .signatures { 
                 display: flex; 
                 justify-content: space-between; 
-                margin-bottom: 10px; 
-                margin-top: 20px; 
+                margin-bottom: 0; 
+                margin-top: 2mm;
+                gap: 10px;
             }
             .sig-block { 
-                width: 150px; 
+                flex: 1;
                 text-align: center; 
             }
             .sig-line { 
-                border-bottom: 1px solid #000; 
-                margin-bottom: 3px; 
-                height: 20px; 
+                border-bottom: 0.5px solid #000; 
+                margin-bottom: 2px; 
+                height: 12px; 
             }
             .sig-label { 
-                font-size: 7pt; 
+                font-size: 6pt; 
                 font-weight: bold; 
                 text-transform: uppercase; 
                 color: #000; 
+                line-height: 1;
             }
         }
         
