@@ -272,8 +272,8 @@ function populatePrintContainer(data) {
     return;
   }
 
-  const firstPageRows = 38;
-  const otherPageRows = 42;
+  const firstPageRows = 32;
+  const otherPageRows = 38;
   const pages = [];
   let dataIndex = 0;
 
@@ -311,12 +311,12 @@ function populatePrintContainer(data) {
       <table>
         <thead>
           <tr>
-            <th style="width: 5%;">#</th>
-            <th style="width: 15%;">Reg No.</th>
-            <th style="width: 25%;">Club Name</th>
+            <th style="width: 4%;">#</th>
+            <th style="width: 12%;">Reg No.</th>
+            <th style="width: 28%;">Club Name</th>
             <th style="width: 12%;">District</th>
             <th style="width: 18%;">Chairman</th>
-            <th style="width: 12%;">Phone</th>
+            <th style="width: 13%;">Phone</th>
             <th style="width: 13%;">Reg Date</th>
           </tr>
         </thead>
@@ -328,12 +328,12 @@ function populatePrintContainer(data) {
       pageHTML += `
         <tr>
           <td style="text-align: center;">${globalIdx}</td>
-          <td>${row.reg_number}</td>
-          <td>${row.name}</td>
+          <td>${row.reg_number || "-"}</td>
+          <td>${row.name || "-"}</td>
           <td>${row.district || "-"}</td>
-          <td>${row.chairman}</td>
-          <td>${row.chairman_phone}</td>
-          <td style="text-align: center; white-space: nowrap;">${row.registration_date}</td>
+          <td>${row.chairman || "-"}</td>
+          <td>${row.chairman_phone || "-"}</td>
+          <td style="text-align: center; white-space: nowrap;">${row.registration_date || "-"}</td>
         </tr>
       `;
     });

@@ -68,14 +68,17 @@ include '../includes/header.php';
 
         .print-page {
             border: 2px solid #1e3a8a;
-            padding: 4mm 3mm 8mm 3mm;
+            padding: 4mm 3mm 4mm 3mm;
             margin: 0;
             page-break-after: always;
             page-break-inside: avoid;
             position: relative;
             box-sizing: border-box;
             width: 100%;
-            overflow: hidden;
+            overflow: visible;
+            height: 277mm;
+            display: flex;
+            flex-direction: column;
         }
 
         .print-page:last-child {
@@ -84,13 +87,16 @@ include '../includes/header.php';
 
         .page-number-footer {
             position: absolute;
-            bottom: 3mm;
-            left: 0;
-            right: 0;
+            bottom: 2mm;
+            left: 3mm;
+            right: 3mm;
             text-align: center;
             font-size: 7pt;
             color: #374151;
             font-weight: 500;
+            height: 4mm;
+            padding: 0;
+            margin: 0;
         }
 
         .print-header {
@@ -136,11 +142,11 @@ include '../includes/header.php';
             width: 100%;
             border-collapse: collapse;
             font-size: 6.5pt;
-            margin-top: 4px;
+            margin-top: 2px;
             margin-bottom: 0;
             table-layout: fixed;
             line-height: 1.1;
-            margin: 0;
+            page-break-after: avoid;
         }
 
         #printContainer table thead {
@@ -163,24 +169,25 @@ include '../includes/header.php';
             padding: 2px 3px;
             border: 1px solid #1e3a8a;
             text-align: left;
-            line-height: 1;
-            white-space: nowrap;
+            line-height: 1.2;
+            white-space: normal;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: clip;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            word-break: break-word;
         }
 
         #printContainer table td {
-            padding: 2px 3px;
+            padding: 1.5px 2px;
             border: 1px solid #666;
             font-size: 6.5pt;
             color: #000;
-            line-height: 1.1;
+            line-height: 1.2;
             vertical-align: top;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            max-width: 80px;
+            overflow: hidden;
         }
 
         #printContainer table tr:nth-child(even) {
@@ -189,17 +196,25 @@ include '../includes/header.php';
             print-color-adjust: exact;
         }
 
+        #printContainer table tr:nth-child(odd) {
+            background-color: #ffffff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
         .print-footer {
-            margin-top: 0;
+            margin-top: 2mm;
             padding-top: 2mm;
             page-break-inside: avoid;
+            border-top: 1px solid #ddd;
+            min-height: 20mm;
         }
 
         .signatures {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0;
-            margin-top: 2mm;
+            margin-top: 4mm;
         }
 
         .sig-block {

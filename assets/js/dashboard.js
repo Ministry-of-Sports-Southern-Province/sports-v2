@@ -1,7 +1,8 @@
 /* ================================
    API BASE (relative to public/ so filters & search work)
 ================================ */
-var apiBase = (typeof window.API_BASE !== 'undefined') ? window.API_BASE : '../api';
+var apiBase =
+  typeof window.API_BASE !== "undefined" ? window.API_BASE : "../api";
 
 /* ================================
    PAGINATION STATE
@@ -25,7 +26,11 @@ function getClubFiltersParams() {
   return params;
 }
 
-async function fetchClubs({ page = 1, limit = rowsPerPage, printAll = false } = {}) {
+async function fetchClubs({
+  page = 1,
+  limit = rowsPerPage,
+  printAll = false,
+} = {}) {
   const params = getClubFiltersParams();
   if (printAll) {
     params.append("print_all", "1");
@@ -53,7 +58,7 @@ function loadClubs(page = 1) {
     </tr>`;
 
   fetchClubs({ page: currentPage, limit: rowsPerPage })
-    .then(data => {
+    .then((data) => {
       if (data.success) {
         displayClubs(data.data);
         renderPagination(data.pagination || null);
@@ -118,8 +123,7 @@ function renderPagination(pagination) {
   if (start > 1) {
     const firstBtn = document.createElement("button");
     firstBtn.textContent = "1";
-    firstBtn.className =
-      "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    firstBtn.className = "px-3 py-1 border rounded bg-white hover:bg-gray-50";
     firstBtn.onclick = () => loadClubs(1);
     container.appendChild(firstBtn);
 
@@ -151,8 +155,7 @@ function renderPagination(pagination) {
 
     const lastBtn = document.createElement("button");
     lastBtn.textContent = String(totalPages);
-    lastBtn.className =
-      "px-3 py-1 border rounded bg-white hover:bg-gray-50";
+    lastBtn.className = "px-3 py-1 border rounded bg-white hover:bg-gray-50";
     lastBtn.onclick = () => loadClubs(totalPages);
     container.appendChild(lastBtn);
   }
@@ -180,7 +183,6 @@ function renderPagination(pagination) {
    SEARCH & FILTER EVENTS
 ================================ */
 // (Initialized in the main DOMContentLoaded below)
-
 
 /**
  * Load dashboard statistics
@@ -770,7 +772,9 @@ function displayClubs(clubs) {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                         </svg>
                     </a>
-                    ${(window.currentUserRole === 'admin') ? `
+                    ${
+                      window.currentUserRole === "admin"
+                        ? `
                     <button onclick="editClub(${club.id})" 
                             class="text-green-600 hover:text-green-800 transition" 
                             title="Edit">
@@ -785,7 +789,9 @@ function displayClubs(clubs) {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
                     </button>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                 </div>
             </td>
         `;
@@ -947,7 +953,7 @@ function exportToExcel() {
   const districtId = document.getElementById("filterDistrict").value;
   const divisionId = document.getElementById("filterDivision").value;
   const gnDivisionId = document.getElementById("filterGnDivision").value;
-  const language = localStorage.getItem("language") 
+  const language = localStorage.getItem("language");
 
   // Build query parameters
   const params = new URLSearchParams();
@@ -1015,13 +1021,15 @@ function populatePrintContainer() {
 
   // Use currentClubsData if available, otherwise fetch
   const data = currentClubsData || [];
-  
+
   const search = document.getElementById("searchInput").value;
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
   const gnDivisionSelect = document.getElementById("filterGnDivision");
 
-  let filterText = window.i18n ? window.i18n.t("filter.all_clubs") : "All Clubs";
+  let filterText = window.i18n
+    ? window.i18n.t("filter.all_clubs")
+    : "All Clubs";
   if (gnDivisionSelect.value) {
     filterText = gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
   } else if (divisionSelect.value) {
@@ -1033,9 +1041,10 @@ function populatePrintContainer() {
     filterText += ` - ${window.i18n ? window.i18n.t("placeholder.search") : "Search"}: ${search}`;
   }
 
-  printContainer.innerHTML = '';
+  printContainer.innerHTML = "";
   if (data.length === 0) {
-    printContainer.innerHTML = '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
+    printContainer.innerHTML =
+      '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
     return;
   }
 
@@ -1048,26 +1057,34 @@ function populatePrintContainer() {
     const isFirstPage = pages.length === 0;
     const maxRows = isFirstPage ? firstPageRows : otherPageRows;
     const remainingRows = data.length - dataIndex;
-    
+
     let rowsThisPage = Math.min(maxRows, remainingRows);
-    
-    if (remainingRows - rowsThisPage < 10 && !isFirstPage && remainingRows > rowsThisPage) {
+
+    if (
+      remainingRows - rowsThisPage < 10 &&
+      !isFirstPage &&
+      remainingRows > rowsThisPage
+    ) {
       rowsThisPage = remainingRows;
     }
-    
+
     pages.push(data.slice(dataIndex, dataIndex + rowsThisPage));
     dataIndex += rowsThisPage;
   }
 
   const totalPages = pages.length;
   pages.forEach((pageData, pageNum) => {
-    const pageDiv = document.createElement('div');
-    pageDiv.className = 'print-page';
-    let pageHTML = '';
+    const pageDiv = document.createElement("div");
+    pageDiv.className = "print-page";
+    let pageHTML = "";
 
     if (pageNum === 0) {
-      const deptName = window.i18n ? window.i18n.t('header.department_name') : 'Department of Sports Southern Province';
-      const reportTitle = window.i18n ? window.i18n.t('page.clubs_report_title') : 'Sports Clubs Report';
+      const deptName = window.i18n
+        ? window.i18n.t("header.department_name")
+        : "Department of Sports Southern Province";
+      const reportTitle = window.i18n
+        ? window.i18n.t("page.clubs_report_title")
+        : "Sports Clubs Report";
       pageHTML += `
         <div class="print-header">
           <div class="dept-name">${deptName}</div>
@@ -1100,7 +1117,8 @@ function populatePrintContainer() {
     `;
 
     pageData.forEach((club, idx) => {
-      const globalIdx = pages.slice(0, pageNum).reduce((sum, p) => sum + p.length, 0) + idx + 1;
+      const globalIdx =
+        pages.slice(0, pageNum).reduce((sum, p) => sum + p.length, 0) + idx + 1;
       pageHTML += `
         <tr>
           <td style="text-align: center;">${globalIdx}</td>
@@ -1123,9 +1141,15 @@ function populatePrintContainer() {
     pageHTML += `</tbody></table>`;
 
     if (pageNum === totalPages - 1) {
-      const preparedBy = window.i18n ? window.i18n.t('footer.prepared_by') : 'Prepared By';
-      const checkedBy = window.i18n ? window.i18n.t('footer.checked_by') : 'Checked By';
-      const approvedBy = window.i18n ? window.i18n.t('footer.approved_by') : 'Approved By';
+      const preparedBy = window.i18n
+        ? window.i18n.t("footer.prepared_by")
+        : "Prepared By";
+      const checkedBy = window.i18n
+        ? window.i18n.t("footer.checked_by")
+        : "Checked By";
+      const approvedBy = window.i18n
+        ? window.i18n.t("footer.approved_by")
+        : "Approved By";
       pageHTML += `
         <div class="print-footer">
           <div class="signatures">
@@ -1148,7 +1172,6 @@ function populatePrintContainer() {
 }
 
 // Note: printing is initiated via printWithDate() which loads full data first.
-
 
 /* JavaScript for Print with Date */
 async function printWithDate() {
@@ -1209,7 +1232,7 @@ async function printWithDate() {
     // Wait a moment for content to render, then print
     setTimeout(() => {
       window.print();
-      
+
       // Restore original title after print
       setTimeout(() => {
         document.title = originalTitle;
@@ -1220,5 +1243,3 @@ async function printWithDate() {
     alert("Error preparing print. Please check the console for details.");
   }
 }
-
-
