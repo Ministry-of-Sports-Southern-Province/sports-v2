@@ -1010,13 +1010,9 @@ async function loadAllClubsForPrint() {
  * Populate print container with current data
  */
 function populatePrintContainer() {
-  const printTableBody = document.getElementById("printTableBody");
-  const printFilterInfo = document.getElementById("printFilterInfo");
+  const printContainer = document.getElementById("printContainer");
 
-  if (!printTableBody) return;
-
-  // Clear existing content
-  printTableBody.innerHTML = "";
+  if (!printContainer) return;
 
   // Get filter info
   const search = document.getElementById("searchInput").value;
@@ -1040,45 +1036,131 @@ function populatePrintContainer() {
     filterText += ` - ${window.i18n ? window.i18n.t("placeholder.search") : "Search"}: ${search}`;
   }
 
-  printFilterInfo.textContent = filterText;
+  // Clear and rebuild print container with pages
+  printContainer.innerHTML = '';
 
-  // Populate table with current clubs data
   if (currentClubsData.length === 0) {
-    printTableBody.innerHTML =
-      '<tr><td colspan="12" style="text-align: center; padding: 20px;">No data available</td></tr>';
+    printContainer.innerHTML = '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
     return;
   }
 
-  currentClubsData.forEach((club, index) => {
-    const tr = document.createElement("tr");
+  // Calculate pages with different row counts for first page (has header)
+  const firstPageRows = 12;
+  const otherPageRows = 15;
+  
+  let totalPages = 1;
+  let remainingRows = currentClubsData.length - firstPageRows;
+  if (remainingRows > 0) {
+    totalPages += Math.ceil(remainingRows / otherPageRows);
+  }
 
-    const statusText =
-      club.reorg_status === "active"
-        ? window.i18n
-          ? window.i18n.t("status.active")
-          : "Active"
-        : window.i18n
-          ? window.i18n.t("status.expired")
-          : "Expired";
+  let dataIndex = 0;
+  
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    const rowsThisPage = pageNum === 1 ? firstPageRows : otherPageRows;
+    const pageData = currentClubsData.slice(dataIndex, dataIndex + rowsThisPage);
+    dataIndex += rowsThisPage;
 
-    tr.innerHTML = `
-      <td style="text-align: center;">${index + 1}</td>
-      <td>${escapeHtml(club.reg_number || "-")}</td>
-      <td style="text-align: center;">${formatDate(club.registration_date)}</td>
-      <td>${escapeHtml(club.name)}</td>
-      <td>${escapeHtml(club.district_name || "-")}</td>
-      <td>${escapeHtml(club.division_name || "-")}</td>
-      <td>${escapeHtml(club.gn_division_name || "-")}</td>
-      <td>${escapeHtml(club.chairman_name || "-")}</td>
-      <td>${escapeHtml(club.chairman_address || "-")}</td>
-      <td>${escapeHtml(club.secretary_name || "-")}</td>
-      <td>${escapeHtml(club.secretary_address || "-")}</td>
-      <td style="text-align: center;">${formatDate(club.last_reorg_date)}</td>
-      <td style="text-align: center;">${formatDate(club.next_reorg_due_date)}</td>
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'print-page';
+
+    let pageHTML = '';
+
+    // Add header only on first page
+    if (pageNum === 1) {
+      const deptName = window.i18n ? window.i18n.t('header.department_name') : 'Department of Sports Southern Province';
+      const reportTitle = window.i18n ? window.i18n.t('page.clubs_report_title') : 'Sports Clubs Report';
+      
+      pageHTML += `
+        <div class="print-header">
+          <div class="dept-name">${deptName}</div>
+          <h1>${reportTitle}</h1>
+          <div class="report-subtitle">${filterText}</div>
+        </div>
+      `;
+    }
+
+    pageHTML += `
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 3%;">No.</th>
+            <th style="width: 8%;">Reg No.</th>
+            <th style="width: 6%;">Date</th>
+            <th style="width: 12%;">Club Name</th>
+            <th style="width: 7%;">District</th>
+            <th style="width: 10%;">Division</th>
+            <th style="width: 10%;">GN Division</th>
+            <th style="width: 9%;">Chairman</th>
+            <th style="width: 11%;">Address</th>
+            <th style="width: 9%;">Secretary</th>
+            <th style="width: 11%;">Address</th>
+            <th style="width: 7%;">Last Reorg</th>
+            <th style="width: 7%;">Next Reorg</th>
+          </tr>
+        </thead>
+        <tbody>
     `;
 
-    printTableBody.appendChild(tr);
-  });
+    pageData.forEach((club, idx) => {
+      const globalIdx = dataIndex - pageData.length + idx + 1;
+      pageHTML += `
+        <tr>
+          <td style="text-align: center;">${globalIdx}</td>
+          <td>${escapeHtml(club.reg_number || "-")}</td>
+          <td style="text-align: center; white-space: nowrap;">${formatDate(club.registration_date)}</td>
+          <td>${escapeHtml(club.name)}</td>
+          <td>${escapeHtml(club.district_name || "-")}</td>
+          <td>${escapeHtml(club.division_name || "-")}</td>
+          <td>${escapeHtml(club.gn_division_name || "-")}</td>
+          <td>${escapeHtml(club.chairman_name || "-")}</td>
+          <td>${escapeHtml(club.chairman_address || "-")}</td>
+          <td>${escapeHtml(club.secretary_name || "-")}</td>
+          <td>${escapeHtml(club.secretary_address || "-")}</td>
+          <td style="text-align: center; white-space: nowrap;">${formatDate(club.last_reorg_date)}</td>
+          <td style="text-align: center; white-space: nowrap;">${formatDate(club.next_reorg_due_date)}</td>
+        </tr>
+      `;
+    });
+
+    pageHTML += `
+        </tbody>
+      </table>
+    `;
+
+    // Add signature footer only on last page
+    if (pageNum === totalPages) {
+      const preparedBy = window.i18n ? window.i18n.t('footer.prepared_by') : 'Prepared By';
+      const checkedBy = window.i18n ? window.i18n.t('footer.checked_by') : 'Checked By';
+      const approvedBy = window.i18n ? window.i18n.t('footer.approved_by') : 'Approved By';
+      
+      pageHTML += `
+        <div class="print-footer">
+          <div class="signatures">
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <div class="sig-label">${preparedBy}</div>
+            </div>
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <div class="sig-label">${checkedBy}</div>
+            </div>
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <div class="sig-label">${approvedBy}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    pageHTML += `
+      <div class="page-number-footer">Page ${pageNum} of ${totalPages}</div>
+    `;
+
+    pageDiv.innerHTML = pageHTML;
+    printContainer.appendChild(pageDiv);
+  }
 
   // Apply translations to print container
   if (window.i18n && window.i18n.applyTranslations) {

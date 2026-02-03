@@ -70,7 +70,6 @@ function generateReport(page = 1) {
     });
 }
 
-// Print function with date
 function printReportWithDate() {
   const originalTitle = document.title;
   const now = new Date();
@@ -96,32 +95,17 @@ function printReportWithDate() {
 
   document.title = "Registered_Clubs_Report_" + dateStr + filterInfo;
 
-  // Load full dataset for print, then print, then restore paginated view
-  const districtVal = document.getElementById("district").value;
-  const dateRangeVal = document.getElementById("dateRange").value;
   fetch(buildReportQuery({ printAll: true }))
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        displayReport(data.data, districtVal, dateRangeVal);
+        populatePrintContainer(data.data);
         window.print();
-        // Restore current page view after print
         setTimeout(() => {
           document.title = originalTitle;
           generateReport(currentPage);
         }, 750);
-      } else {
-        window.print();
-        setTimeout(() => {
-          document.title = originalTitle;
-        }, 750);
       }
-    })
-    .catch(() => {
-      window.print();
-      setTimeout(() => {
-        document.title = originalTitle;
-      }, 750);
     });
 }
 
@@ -224,143 +208,8 @@ function displayReport(data, district, dateRange) {
         : "සියලු කාලය";
 
   output.innerHTML = `
-        <style>
-            /* Print Styles for Compact Table */
-            @media print {
-                @page { 
-                    size: A4 portrait; 
-                    margin: 5mm; 
-                }
-                
-                body {
-                    margin: 0;
-                    padding: 0;
-                    background: white;
-                }
-                
-                .no-print {
-                    display: none !important;
-                }
-                
-                .print-header,
-                .print-footer {
-                    display: block !important;
-                }
-                
-                /* Header Compact */
-                .print-header { 
-                    text-align: center; 
-                    margin-bottom: 12px; 
-                    border-bottom: 2px solid #1e3a8a; 
-                    padding-bottom: 6px; 
-                }
-                .print-header .dept-name { 
-                    font-size: 9pt;
-                    font-weight: bold; 
-                    color: #4b5563; 
-                    text-transform: uppercase; 
-                    margin-bottom: 3px; 
-                }
-                .print-header h1 { 
-                    font-size: 16pt;
-                    font-weight: 900; 
-                    color: #1e3a8a; 
-                    margin: 3px 0; 
-                    line-height: 1;
-                }
-                .print-header .text-sm {
-                    font-size: 9pt;
-                    margin-top: 5px;
-                    color: #000;
-                }
-                
-                /* Table Compact Styling - text wraps to avoid column overflow */
-                table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    font-size: 7pt; 
-                    margin-top: 8px; 
-                    line-height: 1.2;
-                    table-layout: fixed;
-                }
-                thead { display: table-header-group; }
-                tfoot { display: table-footer-group; }
-                table th { 
-                    background-color: #1e3a8a !important; 
-                    color: white !important; 
-                    font-weight: bold; 
-                    font-size: 7pt;
-                    padding: 3px 4px; 
-                    border: 1px solid #ccc; 
-                    text-align: left; 
-                    line-height: 1.1;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                    word-break: break-word;
-                    -webkit-print-color-adjust: exact; 
-                    print-color-adjust: exact;
-                }
-                table td { 
-                    padding: 3px 4px; 
-                    border: 1px solid #ccc; 
-                    font-size: 7pt; 
-                    color: #333; 
-                    line-height: 1.2; 
-                    vertical-align: top;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                    word-break: break-word;
-                    min-width: 0;
-                }
-                table tbody tr:nth-child(even) { 
-                    background-color: #f9fafb !important; 
-                    -webkit-print-color-adjust: exact; 
-                    print-color-adjust: exact;
-                }
-                
-                /* Footer Compact */
-                .print-footer { 
-                    margin-top: 15px; 
-                    page-break-inside: avoid;
-                }
-                .signatures { 
-                    display: flex; 
-                    justify-content: space-around; 
-                    margin-top: 20px; 
-                }
-                .sig-block { 
-                    width: 180px; 
-                    text-align: center; 
-                }
-                .sig-line { 
-                    border-bottom: 1px dotted #000; 
-                    margin-bottom: 4px; 
-                    height: 15px; 
-                }
-                .sig-label { 
-                    font-size: 8pt; 
-                    font-weight: bold; 
-                    text-transform: uppercase; 
-                    color: black; 
-                }
-                
-                /* Summary section */
-                .mt-6 {
-                    margin-top: 10px;
-                    font-size: 8pt;
-                    font-weight: bold;
-                }
-            }
-        </style>
-        
-        <div class="print-header" style="display: none;">
-            <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
-            <h1 data-i18n="report.type_registered">ලියාපදිංචි සමාජ වාර්තාව</h1>
-            <div class="text-sm">දිස්ත්රික්කය: ${districtText} | කාල පරාසය: ${rangeText}</div>
-        </div>
-
         <div class="text-center mb-6 no-print">
-            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</h2>
+            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්රීඩා දෙපාර්තමේන්තුව</h2>
             <h3 class="text-xl mt-2">ලියාපදිංචි සමාජ වාර්තාව</h3>
             <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText} | කාල පරාසය: ${rangeText}</p>
             <p class="text-sm text-gray-600">උත්පාදන දිනය: ${new Date().toLocaleDateString("si-LK")}</p>
@@ -398,22 +247,149 @@ function displayReport(data, district, dateRange) {
         <div class="mt-6 text-sm text-gray-600">
             <p>මුළු වාර්තා ගණන: ${data.length}</p>
         </div>
-
-        <div class="print-footer" style="display: none;">
-            <div class="signatures">
-                <div class="sig-block">
-                    <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.prepared_by">Prepared By</div>
-                </div>
-                <div class="sig-block">
-                    <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
-                </div>
-            </div>
-        </div>
     `;
 
   if (window.i18n && window.i18n.applyTranslations) {
     window.i18n.applyTranslations();
+  }
+}
+
+function populatePrintContainer(data) {
+  const printContainer = document.getElementById("printContainer");
+  if (!printContainer) return;
+
+  const district = document.getElementById("district").value;
+  const dateRange = document.getElementById("dateRange").value;
+
+  const districtText =
+    district ||
+    (window.i18n ? window.i18n.t("filter.all_districts") : "All Districts");
+  const rangeText =
+    dateRange === "year"
+      ? window.i18n
+        ? window.i18n.t("filter.year")
+        : "This Year"
+      : dateRange === "month"
+        ? window.i18n
+          ? window.i18n.t("filter.month")
+          : "This Month"
+        : window.i18n
+          ? window.i18n.t("filter.alltime")
+          : "All Time";
+
+  const filterText = `${districtText} | ${rangeText}`;
+
+  printContainer.innerHTML = "";
+
+  if (data.length === 0) {
+    printContainer.innerHTML =
+      '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
+    return;
+  }
+
+  const firstPageRows = 38;
+  const otherPageRows = 42;
+
+  let totalPages = 1;
+  let remainingRows = data.length - firstPageRows;
+  if (remainingRows > 0) {
+    totalPages += Math.ceil(remainingRows / otherPageRows);
+  }
+
+  let dataIndex = 0;
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    const rowsThisPage = pageNum === 1 ? firstPageRows : otherPageRows;
+    const pageData = data.slice(dataIndex, dataIndex + rowsThisPage);
+    dataIndex += rowsThisPage;
+
+    const pageDiv = document.createElement("div");
+    pageDiv.className = "print-page";
+
+    let pageHTML = "";
+
+    if (pageNum === 1) {
+      const deptName = window.i18n
+        ? window.i18n.t("header.department_name")
+        : "Department of Sports Southern Province";
+      const reportTitle = window.i18n
+        ? window.i18n.t("report.type_registered")
+        : "Registered Clubs Report";
+
+      pageHTML += `
+        <div class="print-header">
+          <div class="dept-name">${deptName}</div>
+          <h1>${reportTitle}</h1>
+          <div class="report-subtitle">${filterText}</div>
+        </div>
+      `;
+    }
+
+    pageHTML += `
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 15%;">Reg No.</th>
+            <th style="width: 25%;">Club Name</th>
+            <th style="width: 12%;">District</th>
+            <th style="width: 18%;">Chairman</th>
+            <th style="width: 12%;">Phone</th>
+            <th style="width: 13%;">Reg Date</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    pageData.forEach((row, idx) => {
+      const globalIdx = dataIndex - pageData.length + idx + 1;
+      pageHTML += `
+        <tr>
+          <td style="text-align: center;">${globalIdx}</td>
+          <td>${row.reg_number}</td>
+          <td>${row.name}</td>
+          <td>${row.district || "-"}</td>
+          <td>${row.chairman}</td>
+          <td>${row.chairman_phone}</td>
+          <td style="text-align: center; white-space: nowrap;">${row.registration_date}</td>
+        </tr>
+      `;
+    });
+
+    pageHTML += `
+        </tbody>
+      </table>
+    `;
+
+    if (pageNum === totalPages) {
+      const preparedBy = window.i18n
+        ? window.i18n.t("footer.prepared_by")
+        : "Prepared By";
+      const approvedBy = window.i18n
+        ? window.i18n.t("footer.approved_by")
+        : "Approved By";
+
+      pageHTML += `
+        <div class="print-footer">
+          <div class="signatures">
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <div class="sig-label">${preparedBy}</div>
+            </div>
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <div class="sig-label">${approvedBy}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    pageHTML += `
+      <div class="page-number-footer">Page ${pageNum} of ${totalPages}</div>
+    `;
+
+    pageDiv.innerHTML = pageHTML;
+    printContainer.appendChild(pageDiv);
   }
 }

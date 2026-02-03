@@ -79,7 +79,7 @@ $customStyles = '
         @media print {
             @page { 
                 size: A4 landscape; 
-                margin: 5mm; /* Minimal browser margins for maximum space */
+                margin: 10mm;
             }
             
             body {
@@ -109,19 +109,39 @@ $customStyles = '
                 z-index: 9999;
             }
 
-            /* Report Page Layout (Classic Certificate Style) */
+            /* Report Page Layout */
             .print-page-wrapper {
                 width: 100%;
-                min-height: 195mm; 
-                border: 3px double #1e3a8a;
-                padding: 8mm;
+                padding: 0;
                 box-sizing: border-box;
                 background: white;
-                
-                /* Layout: Header top, Content middle, Footer bottom */
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+            }
+            
+            .print-page {
+                border: 2px solid #1e3a8a;
+                padding: 6mm;
+                margin-bottom: 10mm;
+                page-break-after: always;
+                page-break-inside: avoid;
+                position: relative;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            
+            .print-page:last-child {
+                page-break-after: auto;
+                margin-bottom: 0;
+            }
+            
+            .page-number-footer {
+                position: absolute;
+                bottom: 2mm;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 8pt;
+                color: #374151;
+                font-weight: 500;
             }
 
             .report-content {
@@ -132,78 +152,117 @@ $customStyles = '
             /* Header */
             .print-header { 
                 text-align: center; 
-                margin-bottom: 12px; 
+                margin-bottom: 8px; 
                 border-bottom: 2px solid #1e3a8a; 
-                padding-bottom: 6px; 
+                padding-bottom: 4px; 
             }
             .print-header .dept-name { 
-                font-size: 9pt;
+                font-size: 8pt;
                 font-weight: bold; 
                 color: #4b5563; 
                 text-transform: uppercase; 
-                margin-bottom: 3px; 
+                margin-bottom: 2px; 
             }
             .print-header h1 { 
-                font-size: 16pt;
+                font-size: 14pt;
                 font-weight: 900; 
                 color: #1e3a8a; 
                 text-transform: uppercase; 
-                margin: 3px 0; 
+                margin: 2px 0; 
                 letter-spacing: 0.5px; 
                 line-height: 1;
             }
             .print-header .report-subtitle {
-                font-size: 10pt;
+                font-size: 9pt;
                 font-weight: bold;
                 color: #000;
-                margin-top: 6px;
+                margin-top: 4px;
                 background: #f3f4f6;
-                padding: 3px 12px;
-                border-radius: 15px;
+                padding: 2px 10px;
+                border-radius: 12px;
                 display: inline-block;
                 border: 1px solid #d1d5db;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             
-            /* Table Styling - Compact for Maximum Rows; text wraps to avoid column overflow */
-            #printContainer table { width: 100%; border-collapse: collapse; font-size: 7pt; margin-top: 8px; table-layout: fixed; line-height: 1.2; }
+            /* Table Styling */
+            #printContainer table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                font-size: 6.5pt; 
+                margin-top: 6px;
+                margin-bottom: 8mm;
+                table-layout: auto;
+                line-height: 1.1;
+            }
+            #printContainer table thead {
+                display: table-header-group;
+            }
+            #printContainer table tbody {
+                display: table-row-group;
+            }
+            #printContainer table tr {
+                page-break-inside: avoid;
+            }
             #printContainer table th { 
                 background-color: #1e3a8a !important; 
                 color: white !important; 
                 font-weight: bold; 
-                font-size: 7pt;
-                padding: 3px 4px; 
-                border: 1px solid #ccc; 
+                font-size: 6.5pt;
+                padding: 2px 3px; 
+                border: 1px solid #1e3a8a; 
                 text-align: left; 
-                line-height: 1.1;
-                word-wrap: break-word;
-                overflow-wrap: break-word;
-                word-break: break-word;
+                line-height: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             #printContainer table td { 
-                padding: 3px 4px; 
-                border: 1px solid #ccc; 
-                font-size: 7pt; 
-                color: #333; 
-                line-height: 1.2; 
+                padding: 2px 3px; 
+                border: 1px solid #666; 
+                font-size: 6.5pt; 
+                color: #000; 
+                line-height: 1.1; 
                 vertical-align: top;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
-                word-break: break-word;
-                min-width: 0;
+                max-width: 80px;
             }
-            #printContainer table tr:nth-child(even) { background-color: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+            #printContainer table tr:nth-child(even) { 
+                background-color: #f9fafb !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
             
             /* Footer */
-            .print-footer { margin-top: 12px; width: 100%; }
-            .signatures { display: flex; justify-content: space-between; margin-bottom: 20px; margin-top: 25px; }
-            .sig-block { width: 180px; text-align: center; }
-            .sig-line { border-bottom: 1px dotted #000; margin-bottom: 4px; height: 15px; }
-            .sig-label { font-size: 8pt; font-weight: bold; text-transform: uppercase; color: black; }
-            .footer-bottom { border-top: 2px solid #1e3a8a; padding-top: 4px; text-align: center; font-size: 7pt; color: #555; }
+            .print-footer { 
+                margin-top: 15px; 
+                page-break-inside: avoid;
+            }
+            .signatures { 
+                display: flex; 
+                justify-content: space-between; 
+                margin-bottom: 10px; 
+                margin-top: 20px; 
+            }
+            .sig-block { 
+                width: 150px; 
+                text-align: center; 
+            }
+            .sig-line { 
+                border-bottom: 1px solid #000; 
+                margin-bottom: 3px; 
+                height: 20px; 
+            }
+            .sig-label { 
+                font-size: 7pt; 
+                font-weight: bold; 
+                text-transform: uppercase; 
+                color: #000; 
+            }
         }
         
         
@@ -339,57 +398,7 @@ include '../includes/header.php';
 
 <!-- Hidden Print Container -->
 <div id="printContainer">
-    <div class="print-page-wrapper">
-        <div class="print-header">
-            <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
-            <h1 data-i18n="page.dashboard_title">Sports Clubs Dashboard</h1>
-            <div class="report-subtitle" id="printFilterInfo"></div>
-        </div>
-
-        <div class="report-content">
-            <table id="printTable">
-                <thead>
-                    <tr>
-                        <th data-i18n="table.no"></th>
-                        <th data-i18n="table.reg_number">Reg No.</th>
-                        <th data-i18n="table.registration_date"></th>
-                        <th data-i18n="table.club_name">Club Name</th>
-                        <th data-i18n="table.district">District</th>
-                        <th data-i18n="table.division">Division</th>
-                        <th data-i18n="table.gn_division">GN Division</th>
-                        <th data-i18n="table.chairman_name">Chairman's name</th>
-                        <th data-i18n="table.chairman_address">Address</th>
-                        <th data-i18n="table.secretary_name">Secretary's name</th>
-                        <th data-i18n="table.secretary_address">Address</th>
-                        <th data-i18n="table.last_reorg_date">Last Reorg Date</th>
-                        <th data-i18n="table.next_reorg_due_date">Next Reorg Due Date</th>
-                    </tr>
-                </thead>
-                <tbody id="printTableBody">
-                </tbody>
-            </table>
-        </div>
-
-        <div class="print-footer">
-            <div class="signatures">
-                <div class="sig-block">
-                    <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.prepared_by">Prepared By</div>
-                </div>
-                <div class="sig-block">
-                    <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.checked_by">Checked By</div>
-                </div>
-                <div class="sig-block">
-                    <div class="sig-line"></div>
-                    <div class="sig-label" data-i18n="footer.approved_by">Approved By</div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p data-i18n="footer.report_note">This report was generated by the Department of Sports Southern Province</p>
-            </div>
-        </div>
-    </div>
+    <!-- Pages will be generated dynamically by JavaScript -->
 </div>
 
 
