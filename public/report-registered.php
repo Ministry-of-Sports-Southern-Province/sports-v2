@@ -68,7 +68,7 @@ include '../includes/header.php';
 
         .print-page {
             border: 2px solid #1e3a8a;
-            padding: 4mm 3mm;
+            padding: 4mm 3mm 8mm 3mm;
             margin: 0;
             page-break-after: always;
             page-break-inside: avoid;
@@ -87,7 +87,7 @@ include '../includes/header.php';
 
         .page-number-footer {
             position: absolute;
-            bottom: 2mm;
+            bottom: 3mm;
             left: 0;
             right: 0;
             text-align: center;
