@@ -53,75 +53,44 @@ function loadClubData(clubId) {
 function displayCurrentInfo(club) {
   const container = document.getElementById("currentInfoContent");
   container.innerHTML = `
-        <div class="info-grid">
-      <div class="detail-card">
-        <h2 data-i18n="form.club_information">Club Information</h2>
-        <div class="info-row">
-          <div><label data-i18n="form.reg_number">Registration Number</label><p>${escapeHtml(
-            club.reg_number,
-          )}</p></div>
-          <div><label data-i18n="form.registration_date">Registration Date</label><p>${formatDate(
-            club.registration_date,
-          )}</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <p class="font-semibold text-gray-700">Club Name:</p>
+                <p class="text-gray-900">${escapeHtml(club.name)}</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">Registration Number:</p>
+                <p class="text-gray-900">${escapeHtml(club.reg_number)}</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">Registration Date:</p>
+                <p class="text-gray-900">${club.registration_date || "-"}</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">District:</p>
+                <p class="text-gray-900" id="currentDistrict">Loading...</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">Division:</p>
+                <p class="text-gray-900" id="currentDivision">Loading...</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">GN Division:</p>
+                <p class="text-gray-900" id="currentGnDivision">Loading...</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">Chairman:</p>
+                <p class="text-gray-900">${escapeHtml(club.chairman_name)}</p>
+                <p class="text-xs text-gray-600">Phone: ${escapeHtml(club.chairman_phone)}</p>
+                <p class="text-xs text-gray-600">${escapeHtml(club.chairman_address)}</p>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-700">Secretary:</p>
+                <p class="text-gray-900">${escapeHtml(club.secretary_name)}</p>
+                <p class="text-xs text-gray-600">Phone: ${escapeHtml(club.secretary_phone)}</p>
+                <p class="text-xs text-gray-600">${escapeHtml(club.secretary_address)}</p>
+            </div>
         </div>
-        <div class="info-row">
-          <div class="full-width"><label data-i18n="form.club_name">Club Name</label><p>${escapeHtml(
-            club.name,
-          )}</p></div>
-        </div>
-      </div>
-
-      <div class="detail-card">
-        <h2 data-i18n="form.location_information">Location Information</h2>
-        <div class="info-row">
-          <div><label data-i18n="form.district">District</label><p>${escapeHtml(
-            club.district_name || "-",
-          )}</p></div>
-          <div><label data-i18n="form.division">Division</label><p>${escapeHtml(
-            club.division_name || "-",
-          )}</p></div>
-        </div>
-        <div class="info-row">
-          <div class="full-width"><label data-i18n="form.gn_division">GN Division</label><p>${escapeHtml(
-            club.gn_division_name || "-",
-          )}</p></div>
-        </div>
-      </div>
-
-      <div class="detail-card">
-        <h2 data-i18n="form.chairman_information">Chairman Information</h2>
-        <div class="info-row">
-          <div><label data-i18n="form.chairman_name">Chairman Name</label><p>${escapeHtml(
-            club.chairman_name,
-          )}</p></div>
-          <div><label data-i18n="form.chairman_phone">Chairman Phone</label><p>${escapeHtml(
-            club.chairman_phone,
-          )}</p></div>
-        </div>
-        <div class="info-row">
-          <div class="full-width"><label data-i18n="form.chairman_address">Chairman Address</label><p>${escapeHtml(
-            club.chairman_address,
-          )}</p></div>
-        </div>
-      </div>
-
-      <div class="detail-card">
-        <h2 data-i18n="form.secretary_information">Secretary Information</h2>
-        <div class="info-row">
-          <div><label data-i18n="form.secretary_name">Secretary Name</label><p>${escapeHtml(
-            club.secretary_name,
-          )}</p></div>
-          <div><label data-i18n="form.secretary_phone">Secretary Phone</label><p>${escapeHtml(
-            club.secretary_phone,
-          )}</p></div>
-        </div>
-        <div class="info-row">
-          <div class="full-width"><label data-i18n="form.secretary_address">Secretary Address</label><p>${escapeHtml(
-            club.secretary_address,
-          )}</p></div>
-        </div>
-      </div>
-    </div>
     `;
 
   // Fetch and display location names
