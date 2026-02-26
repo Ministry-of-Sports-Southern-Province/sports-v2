@@ -230,7 +230,7 @@ function handleDistrictChange(districtId, selectInstance) {
     // Get district info and update reg number prefix
     const option = selectInstance.options[districtId];
     if (option && option.sinhala_letter) {
-      const prefix = `දපස/ක්‍රිඩා/${option.sinhala_letter}/`;
+      const prefix = `දපස/ක්‍රීඩා/${option.sinhala_letter}-`;
       document.getElementById("regNumberPrefix").value = prefix;
       updateFullRegNumber();
 
@@ -253,7 +253,7 @@ function handleDistrictChange(districtId, selectInstance) {
         }
       });
   } else {
-    document.getElementById("regNumberPrefix").value = "දපස/ක්‍රිඩා/";
+    document.getElementById("regNumberPrefix").value = "දපස/ක්‍රීඩා/";
     updateFullRegNumber();
 
     // Disable and clear registration number field
@@ -321,7 +321,7 @@ function createNewLocation(type, name, parentId, callback) {
 
         // If district was created, update reg number prefix
         if (type === "district" && data.data.sinhala_letter) {
-          const prefix = `දපස/ක්‍රිඩා/${data.data.sinhala_letter}/`;
+          const prefix = `දපස/ක්රීඩා/${data.data.sinhala_letter}-`;
           document.getElementById("regNumberPrefix").value = prefix;
           updateFullRegNumber();
         }
@@ -564,6 +564,12 @@ function validateRegNumber() {
     return false;
   }
 
+  // Check for whitespaces in manual number
+  if (/\s/.test(manual)) {
+    window.i18n.showError(errorSpan, "reg_number_no_spaces");
+    return false;
+  }
+
   // Update full reg number
   updateFullRegNumber();
   const fullRegNumber = document.getElementById("regNumberFull").value;
@@ -591,6 +597,12 @@ function validateRegNumber() {
         statusDiv.innerHTML =
           '<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
         return true;
+      } else if (data.data && data.data.format_error) {
+        window.i18n.showError(errorSpan, "reg_number_format_invalid");
+        statusDiv.innerHTML =
+          '<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        console.log("Format error debug:", data.data.debug);
+        return false;
       } else {
         window.i18n.showError(errorSpan, "reg_number_duplicate");
         statusDiv.innerHTML =
@@ -1062,3 +1074,5 @@ function populateFormWithClubData(club) {
     }, 1500);
   }
 }
+
+

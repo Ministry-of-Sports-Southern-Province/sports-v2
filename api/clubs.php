@@ -81,6 +81,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
     $registrationDate = $data['registration_date'] ?? null;
 
     $equipment = json_decode($data['equipment'] ?? '[]', true);
+    $reorganizations = json_decode($data['reorganizations'] ?? '[]', true);
     $gnDivisionId = empty($gnDivisionId) ? null : $gnDivisionId;
 
     // Auto-create divisions and GN divisions if they don't exist (when names are provided instead of IDs)
@@ -155,28 +156,12 @@ function handleClubRegistration($pdo, $isUpdate = false)
     // GN Division is optional
 
     // Validate chairman info
-    if (empty($chairmanName)) {
-        $errors[] = 'Chairman name is required';
-    }
-    if (empty($chairmanAddress)) {
-        $errors[] = 'Chairman address is required';
-    }
-    if (empty($chairmanPhone)) {
-        $errors[] = 'Chairman phone is required';
-    } elseif (!validatePhone($chairmanPhone)) {
+    if (!empty($chairmanPhone) && !validatePhone($chairmanPhone)) {
         $errors[] = 'Chairman phone must be exactly 10 digits';
     }
 
     // Validate secretary info
-    if (empty($secretaryName)) {
-        $errors[] = 'Secretary name is required';
-    }
-    if (empty($secretaryAddress)) {
-        $errors[] = 'Secretary address is required';
-    }
-    if (empty($secretaryPhone)) {
-        $errors[] = 'Secretary phone is required';
-    } elseif (!validatePhone($secretaryPhone)) {
+    if (!empty($secretaryPhone) && !validatePhone($secretaryPhone)) {
         $errors[] = 'Secretary phone must be exactly 10 digits';
     }
 
@@ -290,6 +275,31 @@ function handleClubRegistration($pdo, $isUpdate = false)
                         'equipment_type_id' => $eq['equipment_type_id'],
                         'quantity' => $eq['quantity']
                     ]);
+                }
+            }
+        }
+
+        // Handle reorganization dates
+        if ($isUpdate) {
+            // Delete existing reorganization dates
+            $deleteReorg = $pdo->prepare("DELETE FROM club_reorganizations WHERE club_id = :club_id");
+            $deleteReorg->execute(['club_id' => $clubId]);
+        }
+
+        // Insert reorganization dates if provided
+        if (is_array($reorganizations) && count($reorganizations) > 0) {
+            $reorgSql = "INSERT INTO club_reorganizations (club_id, reorg_date) VALUES (:club_id, :reorg_date)";
+            $reorgStmt = $pdo->prepare($reorgSql);
+
+            foreach ($reorganizations as $reorg) {
+                if (isset($reorg['date']) && !empty($reorg['date'])) {
+                    // Validate date format and not in future
+                    if (validateDate($reorg['date'], false)) {
+                        $reorgStmt->execute([
+                            'club_id' => $clubId,
+                            'reorg_date' => $reorg['date']
+                        ]);
+                    }
                 }
             }
         }
@@ -426,6 +436,18 @@ function handleGetClub($pdo)
         $equipment = $stmt->fetchAll();
 
         $club['equipment'] = $equipment;
+
+        // Get club reorganization dates
+        $stmt = $pdo->prepare("
+            SELECT id, reorg_date
+            FROM club_reorganizations
+            WHERE club_id = :club_id
+            ORDER BY reorg_date DESC
+        ");
+        $stmt->execute(['club_id' => $clubId]);
+        $reorganizations = $stmt->fetchAll();
+
+        $club['reorganizations'] = $reorganizations;
 
         sendJSONResponse(true, $club, 'Club details retrieved successfully');
     } catch (PDOException $e) {

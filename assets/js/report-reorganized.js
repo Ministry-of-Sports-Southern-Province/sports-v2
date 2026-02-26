@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("district")
     .addEventListener("change", () => generateReport(1));
+
+  // Register callback for language changes to regenerate report
+  if (window.i18n && typeof window.i18n.onLanguageChange === "function") {
+    window.i18n.onLanguageChange(() => {
+      generateReport(currentPage);
+    });
+  }
 });
 
 let currentPage = 1;
@@ -216,7 +223,9 @@ function renderPagination(pagination) {
 
 function displayReport(data, year, district) {
   const output = document.getElementById("reportOutput");
-  const districtText = district || "සියලු දිස්ත්රික්ක";
+  const districtText =
+    district ||
+    (window.i18n ? window.i18n.t("filter.all_districts") : "All Districts");
 
   output.innerHTML = `
         <div class="print-header" style="display: none;">
@@ -226,21 +235,21 @@ function displayReport(data, year, district) {
         </div>
 
         <div class="text-center mb-6 no-print">
-            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්රීඩා දෙපාර්තමේන්තුව</h2>
-            <h3 class="text-xl mt-2">ප්රතිසංවිධාන සමාජ වාර්තාව - ${year}</h3>
-            <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText}</p>
-            <p class="text-sm text-gray-600">උත්පාදන දිනය: ${new Date().toLocaleDateString("si-LK")}</p>
+            <h2 class="text-2xl font-bold">${window.i18n ? window.i18n.t("header.department_name") : "Department of Sports Southern Province"}</h2>
+            <h3 class="text-xl mt-2">${window.i18n ? window.i18n.t("report.type_reorganized") : "Reorganized Clubs Report"} - ${year}</h3>
+            <p class="text-sm text-gray-600 mt-2">${window.i18n ? window.i18n.t("table.district") : "District"}: ${districtText}</p>
+            <p class="text-sm text-gray-600">${window.i18n ? window.i18n.t("report.generated_date") : "Generated Date"}: ${new Date().toLocaleDateString()}</p>
         </div>
         <table class="report-table min-w-full border-collapse">
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>ලියාපදිංචි අංකය</th>
-                    <th>සමාජ නාමය</th>
-                    <th>දිස්ත්රික්කය</th>
-                    <th>සභාපති</th>
-                    <th>දුරකථනය</th>
-                    <th>ප්රතිසංවිධාන දිනය</th>
+                    <th>${window.i18n ? window.i18n.t("table.reg_number") : "Reg No"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.club_name") : "Club Name"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.district") : "District"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.chairman") : "Chairman"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.phone") : "Phone"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.reorg_date") : "Reorganization Date"}</th>
                 </tr>
             </thead>
             <tbody>
@@ -262,7 +271,7 @@ function displayReport(data, year, district) {
             </tbody>
         </table>
         <div class="mt-6 text-sm text-gray-600">
-            <p>මුළු වාර්තා ගණන: ${data.length}</p>
+            <p>${window.i18n ? window.i18n.t("report.total_records") : "Total Records"}: ${data.length}</p>
         </div>
 
         <div class="print-footer" style="display: none;">
@@ -346,12 +355,12 @@ function populatePrintContainer(data, year, district) {
         <thead>
           <tr>
             <th style="width: 4%;">#</th>
-            <th style="width: 12%;">Reg No.</th>
-            <th style="width: 28%;">Club Name</th>
-            <th style="width: 12%;">District</th>
-            <th style="width: 18%;">Chairman</th>
-            <th style="width: 13%;">Phone</th>
-            <th style="width: 13%;">Reorg Date</th>
+            <th style="width: 12%;">${window.i18n ? window.i18n.t("table.reg_number") : "Reg No."}</th>
+            <th style="width: 28%;">${window.i18n ? window.i18n.t("table.club_name") : "Club Name"}</th>
+            <th style="width: 12%;">${window.i18n ? window.i18n.t("table.district") : "District"}</th>
+            <th style="width: 18%;">${window.i18n ? window.i18n.t("table.chairman") : "Chairman"}</th>
+            <th style="width: 13%;">${window.i18n ? window.i18n.t("table.phone") : "Phone"}</th>
+            <th style="width: 13%;">${window.i18n ? window.i18n.t("table.reorg_date") : "Reorg Date"}</th>
           </tr>
         </thead>
         <tbody>

@@ -391,12 +391,51 @@ async function populateForm(club) {
       });
     }, 300);
   }
+
+  // Reorganization dates
+  if (club.reorganizations && club.reorganizations.length > 0) {
+    club.reorganizations.forEach((reorg) => {
+      addReorgDateField(reorg.reorg_date);
+    });
+  }
+}
+
+/**
+ * Add reorganization date field
+ */
+function addReorgDateField(date = '') {
+  const container = document.getElementById('reorgDatesContainer');
+  const index = container.children.length;
+  
+  const div = document.createElement('div');
+  div.className = 'flex items-center gap-3';
+  div.innerHTML = `
+    <input type="date" 
+      class="form-input flex-1 reorg-date-input" 
+      value="${date}" 
+      max="${new Date().toISOString().split('T')[0]}">
+    <button type="button" 
+      class="btn btn-outline text-red-600 hover:bg-red-50 remove-reorg-btn">
+      <span data-i18n="button.remove">ඉවත් කරන්න</span>
+    </button>
+  `;
+  
+  // Add remove functionality
+  div.querySelector('.remove-reorg-btn').addEventListener('click', function() {
+    div.remove();
+  });
+  
+  container.appendChild(div);
 }
 
 /**
  * Setup form submission
  */
 function setupFormSubmission() {
+  // Add reorganization date button handler
+  document.getElementById('addReorgDateBtn').addEventListener('click', function() {
+    addReorgDateField();
+  });
   document
     .getElementById("editClubForm")
     .addEventListener("submit", async function (e) {
@@ -419,7 +458,7 @@ function setupFormSubmission() {
         "registration_date",
         document.getElementById("registrationDate").value,
       );
-      formData.append("date_entry_type", "auto");
+      formData.append("date_entry_type", "manual");
 
       // Location
       formData.append(
@@ -482,6 +521,15 @@ function setupFormSubmission() {
 
       formData.append("equipment", JSON.stringify(selectedEquipment));
 
+      // Reorganization dates
+      const reorgDates = [];
+      document.querySelectorAll('.reorg-date-input').forEach((input) => {
+        if (input.value) {
+          reorgDates.push({ date: input.value });
+        }
+      });
+      formData.append("reorganizations", JSON.stringify(reorgDates));
+
       // Disable submit button
       const submitBtn = document.getElementById("submitBtn");
       const originalText = submitBtn.textContent;
@@ -539,7 +587,7 @@ function validatePhone(role) {
   const errorSpan = document.getElementById(`${role}PhoneError`);
   const phone = phoneInput.value.trim();
 
-  if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+  if (phone !== "" && !/^\d{10}$/.test(phone)) {
     if (errorSpan) {
       errorSpan.textContent = window.i18n
         ? window.i18n.t("validation.phone_10_digits")

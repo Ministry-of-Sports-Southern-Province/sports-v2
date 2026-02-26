@@ -119,17 +119,18 @@ $customStyles = '
             
             .print-page {
                 border: 2px solid #1e3a8a;
-                padding: 5mm 5mm 5mm 5mm;
+                padding: 3mm 3mm 3mm 3mm;
                 margin-bottom: 10mm;
                 page-break-after: always;
                 page-break-inside: avoid;
                 position: relative;
                 box-sizing: border-box;
                 width: 100%;
-                height: 185mm;
+                min-height: 185mm;
+                max-height: 297mm;
                 display: flex;
                 flex-direction: column;
-                overflow: visible;
+                overflow: hidden;
             }
             
             .print-page:last-child {
@@ -208,10 +209,10 @@ $customStyles = '
                 font-size: 6pt; 
                 margin-top: 1px;
                 margin-bottom: 0;
-                table-layout: fixed;
+                table-layout: auto;
                 line-height: 1;
                 flex-grow: 1;
-                overflow: hidden;
+                overflow: visible;
             }
             #printContainer table thead {
                 display: table-header-group;
@@ -230,24 +231,25 @@ $customStyles = '
                 padding: 1px 2px; 
                 border: 0.5px solid #0f3a6d; 
                 text-align: left; 
-                line-height: 1;
+                line-height: 1.2;
                 white-space: normal;
-                overflow: hidden;
+                overflow: visible;
                 word-break: break-word;
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
             }
             #printContainer table td { 
-                padding: 1px 1.5px; 
+                padding: 0.8px 1px; 
                 border: 0.5px solid #999; 
-                font-size: 6pt; 
+                font-size: 5pt; 
                 color: #000; 
-                line-height: 1; 
+                line-height: 1.2; 
                 vertical-align: top;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
-                overflow: hidden;
-                max-height: 1.3em;
+                overflow: visible;
+                max-height: none;
+                white-space: normal;
             }
             #printContainer table tr:nth-child(even) { 
                 background-color: #f5f5f5 !important; 

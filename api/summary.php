@@ -2,6 +2,21 @@
 header('Content-Type: application/json; charset=UTF-8');
 require_once '../config/database.php';
 
+// Cache file path - include filter parameter in cache key
+$filter = $_GET['filter'] ?? 'alltime';
+$cacheFile = sys_get_temp_dir() . '/sports_summary_cache_' . $filter . '.json';
+$cacheTTL = 60; // Cache for 60 seconds
+
+// Try to serve from cache
+if (file_exists($cacheFile)) {
+    $cacheAge = time() - filemtime($cacheFile);
+    if ($cacheAge < $cacheTTL) {
+        header('X-Cache: HIT');
+        readfile($cacheFile);
+        exit;
+    }
+}
+
 try {
     $pdo = getDBConnection();
 
@@ -69,7 +84,7 @@ try {
     }
 
     // Registration trend with filter support
-    $filter = $_GET['filter'] ?? 'alltime';
+    // $filter is already defined above from cache key
 
     try {
         $whereClause = '';
@@ -77,12 +92,14 @@ try {
         switch ($filter) {
             case 'month':
                 $whereClause = "WHERE registration_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')";
+                $whereClause .= " AND registration_date < DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)";
                 break;
             case '3months':
                 $whereClause = "WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)";
                 break;
             case 'year':
-                $whereClause = "WHERE YEAR(registration_date) = YEAR(CURDATE())";
+                $whereClause = "WHERE registration_date >= DATE_FORMAT(CURDATE(), '%Y-01-01')";
+                $whereClause .= " AND registration_date < DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR)";
                 break;
             case '5years':
                 $whereClause = "WHERE registration_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)";
@@ -107,7 +124,7 @@ try {
         $registrationTrend = [];
     }
 
-    sendJSONResponse(true, [
+    $response = [
         'total' => (int)$total,
         'active' => (int)$status['active'],
         'expired' => (int)$status['expired'],
@@ -116,7 +133,13 @@ try {
         'byStatus' => $status,
         'registrationTrend' => $registrationTrend,
         'currentFilter' => $filter
-    ]);
+    ];
+
+    // Save to cache
+    $output = json_encode(['success' => true, 'data' => $response, 'timestamp' => time()], JSON_UNESCAPED_UNICODE);
+    @file_put_contents($cacheFile, $output);
+
+    sendJSONResponse(true, $response);
 } catch (Exception $e) {
     sendJSONResponse(false, null, $e->getMessage(), 500);
 }

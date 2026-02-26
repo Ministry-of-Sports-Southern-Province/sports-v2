@@ -26,22 +26,18 @@ document.addEventListener("DOMContentLoaded", function () {
     yearSelect.addEventListener("change", () => generateReport(1));
   }
 
-  // Add language change listener to regenerate report
-  const languageButtons = document.querySelectorAll("[data-language]");
-  languageButtons.forEach((button) => {
-    button.addEventListener("click", (e) => {
-      // Wait for translation to load and then refresh the current report
-      setTimeout(() => {
-        if (currentDisplayedData) {
-          displayReport(
-            currentDisplayedData.data,
-            currentDisplayedData.district,
-            currentDisplayedData.year,
-          );
-        }
-      }, 300);
+  // Register callback for language changes to regenerate report
+  if (window.i18n && typeof window.i18n.onLanguageChange === "function") {
+    window.i18n.onLanguageChange(() => {
+      if (currentDisplayedData) {
+        displayReport(
+          currentDisplayedData.data,
+          currentDisplayedData.district,
+          currentDisplayedData.year,
+        );
+      }
     });
-  });
+  }
 });
 
 let currentPage = 1;

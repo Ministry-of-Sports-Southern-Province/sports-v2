@@ -11,6 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Generate initial report
   generateReport(1);
+
+  // Register callback for language changes to regenerate report
+  if (window.i18n && typeof window.i18n.onLanguageChange === "function") {
+    window.i18n.onLanguageChange(() => {
+      generateReport(currentPage);
+    });
+  }
 });
 
 let currentPage = 1;
@@ -199,31 +206,39 @@ function renderPagination(pagination) {
 
 function displayReport(data, district, dateRange) {
   const output = document.getElementById("reportOutput");
-  const districtText = district || "සියලු දිස්ත්රික්ක";
+  const districtText =
+    district ||
+    (window.i18n ? window.i18n.t("filter.all_districts") : "All Districts");
   const rangeText =
     dateRange === "year"
-      ? "මෙම වර්ෂය"
+      ? window.i18n
+        ? window.i18n.t("filter.year")
+        : "This Year"
       : dateRange === "month"
-        ? "මෙම මාසය"
-        : "සියලු කාලය";
+        ? window.i18n
+          ? window.i18n.t("filter.month")
+          : "This Month"
+        : window.i18n
+          ? window.i18n.t("filter.alltime")
+          : "All Time";
 
   output.innerHTML = `
         <div class="text-center mb-6 no-print">
-            <h2 class="text-2xl font-bold">දකුණු පළාත් ක්රීඩා දෙපාර්තමේන්තුව</h2>
-            <h3 class="text-xl mt-2">ලියාපදිංචි සමාජ වාර්තාව</h3>
-            <p class="text-sm text-gray-600 mt-2">දිස්ත්රික්කය: ${districtText} | කාල පරාසය: ${rangeText}</p>
-            <p class="text-sm text-gray-600">උත්පාදන දිනය: ${new Date().toLocaleDateString("si-LK")}</p>
+            <h2 class="text-2xl font-bold">${window.i18n ? window.i18n.t("header.department_name") : "Department of Sports Southern Province"}</h2>
+            <h3 class="text-xl mt-2">${window.i18n ? window.i18n.t("report.type_registered") : "Registered Clubs Report"}</h3>
+            <p class="text-sm text-gray-600 mt-2">${window.i18n ? window.i18n.t("table.district") : "District"}: ${districtText} | ${window.i18n ? window.i18n.t("filter.date_range") : "Date Range"}: ${rangeText}</p>
+            <p class="text-sm text-gray-600">${window.i18n ? window.i18n.t("report.generated_date") : "Generated Date"}: ${new Date().toLocaleDateString()}</p>
         </div>
         <table class="report-table min-w-full border-collapse">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>ලියාපදිංචි අංකය</th>
-                    <th>සමාජ නාමය</th>
-                    <th>දිස්ත්රික්කය</th>
-                    <th>සභාපති</th>
-                    <th>දුරකථනය</th>
-                    <th>ලියාපදිංචි දිනය</th>
+                    <th>${window.i18n ? window.i18n.t("table.no") : "#"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.reg_number") : "Reg No"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.club_name") : "Club Name"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.district") : "District"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.chairman") : "Chairman"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.phone") : "Phone"}</th>
+                    <th>${window.i18n ? window.i18n.t("table.registration_date") : "Reg Date"}</th>
                 </tr>
             </thead>
             <tbody>
@@ -331,13 +346,13 @@ function populatePrintContainer(data) {
       <table>
         <thead>
           <tr>
-            <th style="width: 4%;">#</th>
-            <th style="width: 12%;">Reg No.</th>
-            <th style="width: 28%;">Club Name</th>
-            <th style="width: 12%;">District</th>
-            <th style="width: 18%;">Chairman</th>
-            <th style="width: 13%;">Phone</th>
-            <th style="width: 13%;">Reg Date</th>
+            <th style="width: 4%;">${window.i18n ? window.i18n.t("table.no") : "#"}</th>
+            <th style="width: 12%;">${window.i18n ? window.i18n.t("table.reg_number") : "Reg No."}</th>
+            <th style="width: 28%;">${window.i18n ? window.i18n.t("table.club_name") : "Club Name"}</th>
+            <th style="width: 12%;">${window.i18n ? window.i18n.t("table.district") : "District"}</th>
+            <th style="width: 18%;">${window.i18n ? window.i18n.t("table.chairman") : "Chairman"}</th>
+            <th style="width: 13%;">${window.i18n ? window.i18n.t("table.phone") : "Phone"}</th>
+            <th style="width: 13%;">${window.i18n ? window.i18n.t("table.registration_date") : "Reg Date"}</th>
           </tr>
         </thead>
         <tbody>

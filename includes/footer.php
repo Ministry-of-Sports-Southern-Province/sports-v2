@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -15,8 +16,8 @@ $basePath = $basePath ?? '../';
 <footer class="bg-gray-800 text-white mt-auto">
     <div class="container mx-auto px-4 py-6">
         <div class="text-center">
-            <p class="text-sm" data-i18n="footer.copyright">&copy; <?php echo date('Y'); ?> දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව. සියලුම හිමිකම් ඇවිරිණි.</p>
-            <p class="text-xs text-gray-400 mt-2" data-i18n="footer.version">Sports Club Management System v2.0 Developed by Gavindu Gayashan</p>
+            <p class="text-sm" data-i18n="footer.copyright"></p>
+            <p class="text-xs text-gray-400 mt-2">Sports Club Management System v2.0 Developed by <a href="https://github.com/Ministry-of-Sports-Southern-Province" target="_blank"><b><i>DPSP-DevOps</b></i></a></p>
         </div>
     </div>
 </footer>

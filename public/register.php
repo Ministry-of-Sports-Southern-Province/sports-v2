@@ -65,7 +65,7 @@ include '../includes/header.php';
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.reg_number">ලියාපදිංචි අංකය</label>
                 <div class="flex gap-2 items-center">
-                    <input type="text" id="regNumberPrefix" readonly class="form-input flex-grow bg-slate-100" placeholder="දපස/ක්‍රිඩා/" value="දපස/ක්‍රිඩා/">
+                    <input type="text" id="regNumberPrefix" readonly class="form-input flex-grow bg-slate-100" placeholder="දපස/ක්‍රීඩා/" value="දපස/ක්‍රීඩා/">
                     <input type="text" id="regNumberManual" name="regNumberManual" required disabled class="form-input w-40" pattern="[0-9]+" data-i18n-placeholder="placeholder.enter_number">
                     <div id="regNumberStatus" class="flex items-center px-2"></div>
                 </div>
@@ -86,17 +86,17 @@ include '../includes/header.php';
 
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.chairman_name">සභාපතිගේ නම</label>
-                <input type="text" id="chairmanName" name="chairmanName" required class="form-input" data-i18n-placeholder="placeholder.enter_name">
+                <input type="text" id="chairmanName" name="chairmanName" class="form-input" data-i18n-placeholder="placeholder.enter_name">
                 <span id="chairmanNameError" class="form-error hidden"></span>
             </div>
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.chairman_address">සභාපතිගේ ලිපිනය</label>
-                <textarea id="chairmanAddress" name="chairmanAddress" rows="3" required class="form-textarea" data-i18n-placeholder="placeholder.enter_address"></textarea>
+                <textarea id="chairmanAddress" name="chairmanAddress" rows="3" class="form-textarea" data-i18n-placeholder="placeholder.enter_address"></textarea>
                 <span id="chairmanAddressError" class="form-error hidden"></span>
             </div>
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.chairman_phone">සභාපතිගේ දුරකථන අංකය</label>
-                <input type="tel" id="chairmanPhone" name="chairmanPhone" required maxlength="10" pattern="[0-9]{10}" class="form-input" data-i18n-placeholder="placeholder.enter_phone">
+                <input type="tel" id="chairmanPhone" name="chairmanPhone" maxlength="10" pattern="[0-9]{10}" class="form-input" data-i18n-placeholder="placeholder.enter_phone">
                 <span id="chairmanPhoneError" class="form-error hidden"></span>
             </div>
         </div>
@@ -107,17 +107,17 @@ include '../includes/header.php';
 
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.secretary_name">ලේකම්ගේ නම</label>
-                <input type="text" id="secretaryName" name="secretaryName" required class="form-input" data-i18n-placeholder="placeholder.enter_name">
+                <input type="text" id="secretaryName" name="secretaryName" class="form-input" data-i18n-placeholder="placeholder.enter_name">
                 <span id="secretaryNameError" class="form-error hidden"></span>
             </div>
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.secretary_address">ලේකම්ගේ ලිපිනය</label>
-                <textarea id="secretaryAddress" name="secretaryAddress" rows="3" required class="form-textarea" data-i18n-placeholder="placeholder.enter_address"></textarea>
+                <textarea id="secretaryAddress" name="secretaryAddress" rows="3" class="form-textarea" data-i18n-placeholder="placeholder.enter_address"></textarea>
                 <span id="secretaryAddressError" class="form-error hidden"></span>
             </div>
             <div class="mb-4">
                 <label class="form-label" data-i18n="form.secretary_phone">ලේකම්ගේ දුරකථන අංකය</label>
-                <input type="tel" id="secretaryPhone" name="secretaryPhone" required maxlength="10" pattern="[0-9]{10}" class="form-input" data-i18n-placeholder="placeholder.enter_phone">
+                <input type="tel" id="secretaryPhone" name="secretaryPhone" maxlength="10" pattern="[0-9]{10}" class="form-input" data-i18n-placeholder="placeholder.enter_phone">
                 <span id="secretaryPhoneError" class="form-error hidden"></span>
             </div>
         </div>

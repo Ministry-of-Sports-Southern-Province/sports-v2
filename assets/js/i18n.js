@@ -6,6 +6,7 @@
 const i18n = {
   currentLanguage: "si", // Default to Sinhala
   translations: {},
+  languageChangeCallbacks: [], // Store callbacks for language changes
 
   /**
    * Initialize i18n system
@@ -61,6 +62,14 @@ const i18n = {
         localStorage.setItem("language", lang);
         this.updatePageTranslations();
         this.updateLanguageSwitcher(lang);
+        // Call all registered language change callbacks
+        this.languageChangeCallbacks.forEach((callback) => {
+          try {
+            callback(lang);
+          } catch (error) {
+            console.error("Error in language change callback:", error);
+          }
+        });
         return;
       } catch (error) {
         console.debug("i18n: Fetch error:", error.message);
@@ -262,6 +271,17 @@ const i18n = {
     if (element) {
       element.classList.add("hidden");
       element.textContent = "";
+    }
+  },
+
+  /**
+   * Register a callback to be called when language changes
+   * Pages with dynamic content can call this to regenerate their content
+   * @param {Function} callback - Function to call when language changes, receives lang code as parameter
+   */
+  onLanguageChange(callback) {
+    if (typeof callback === "function") {
+      this.languageChangeCallbacks.push(callback);
     }
   },
 };

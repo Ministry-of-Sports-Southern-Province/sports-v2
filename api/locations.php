@@ -38,6 +38,7 @@ try {
 function handleGetRequest($pdo)
 {
     $type = $_GET['type'] ?? '';
+    $id = $_GET['id'] ?? null;
     $search = $_GET['search'] ?? '';
     $parentId = $_GET['parent_id'] ?? null;
 
@@ -45,6 +46,30 @@ function handleGetRequest($pdo)
     $validTypes = ['district', 'division', 'gn_division'];
     if (!in_array($type, $validTypes)) {
         sendJSONResponse(false, null, 'Invalid location type', 400);
+    }
+
+    // If ID is provided, fetch single record
+    if ($id) {
+        switch ($type) {
+            case 'district':
+                $stmt = $pdo->prepare("SELECT id, name, sinhala_letter FROM districts WHERE id = :id");
+                break;
+            case 'division':
+                $stmt = $pdo->prepare("SELECT id, name, district_id FROM divisions WHERE id = :id");
+                break;
+            case 'gn_division':
+                $stmt = $pdo->prepare("SELECT id, name, division_id FROM grama_niladhari_divisions WHERE id = :id");
+                break;
+        }
+        $stmt->execute(['id' => $id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            sendJSONResponse(true, $result);
+        } else {
+            sendJSONResponse(false, null, 'Location not found', 404);
+        }
+        return;
     }
 
     // Build query based on type

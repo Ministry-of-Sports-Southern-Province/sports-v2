@@ -236,85 +236,201 @@ function renderPagination(pagination) {
   }
 }
 
+function escapeHtml(text) {
+  if (text == null) return "";
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
 function filterClubs() {
   loadClubs(1);
 }
 
 function viewHistory(clubId) {
-  window.location.href = "club-details.php?id=" + clubId;
+    // Fetch and show history in modal
+    fetch(`../api/reorganize-club.php?club_id=${clubId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data.length > 0) {
+                showHistoryListModal(data.data, clubId);
+            } else {
+                alert('No reorganization history found for this club.');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading history:', error);
+            alert('Failed to load reorganization history.');
+        });
+}
+
+function showHistoryListModal(history, clubId) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50 p-4';
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl" style="max-height: 90vh; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+            <div class="bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center flex-shrink-0">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900">Reorganization History</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1">
+                ${history.map((item, index) => `
+                    <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 cursor-pointer" onclick="showHistoryDetailModal(${index}, ${clubId})">
+                                <p class="font-semibold text-blue-900 text-lg">${formatDate(item.reorg_date)}</p>
+                                <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-600 font-medium">Previous:</p>
+                                        <p class="text-gray-900">${escapeHtml(item.prev_name)}</p>
+                                        <p class="text-gray-600 text-xs mt-1">Chairman: ${escapeHtml(item.prev_chairman_name)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-600 font-medium">Current:</p>
+                                        <p class="text-gray-900">${escapeHtml(item.current_name)}</p>
+                                        <p class="text-gray-600 text-xs mt-1">Chairman: ${escapeHtml(item.current_chairman_name)}</p>
+                                    </div>
+                                </div>
+                                ${item.notes ? `<p class="text-xs text-gray-500 mt-2 italic">Notes: ${escapeHtml(item.notes)}</p>` : ''}
+                            </div>
+                            <div class="flex items-center gap-2 ml-4">
+                                <button onclick="showHistoryDetailModal(${index}, ${clubId})" class="text-blue-600 hover:text-blue-800">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                                <button onclick="deleteReorganizationRecord(${item.id}, ${clubId}, event)" class="text-red-600 hover:text-red-800 text-sm px-2 py-1">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="bg-gray-50 border-t px-4 sm:px-6 py-4 flex justify-start flex-shrink-0">
+                <button onclick="this.closest('.fixed').remove()" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    `;
+    
+    // Store history globally for detail modal
+    window.clubReorgHistory = history;
+    
+    document.body.appendChild(modal);
+}
+
+function showHistoryDetailModal(index, clubId) {
+    const item = window.clubReorgHistory[index];
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50 p-4';
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.remove();
+    };
+    
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl" style="max-height: 90vh; display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+            <div class="bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center flex-shrink-0">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900">Reorganization Details</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1">
+                <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <p class="font-semibold text-blue-900">Reorganization Date: ${formatDate(item.reorg_date)}</p>
+                    ${item.notes ? `<p class="text-sm text-gray-700 mt-2"><strong>Notes:</strong> ${escapeHtml(item.notes)}</p>` : ''}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border rounded-lg p-4 bg-red-50">
+                        <h4 class="font-bold text-red-900 mb-4">Previous (Before)</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-600 uppercase">Club Name</p>
+                                <p class="text-gray-900">${escapeHtml(item.prev_name)}</p>
+                            </div>
+                            <div class="border-t pt-3">
+                                <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Chairman</p>
+                                <p class="text-gray-900 font-medium">${escapeHtml(item.prev_chairman_name)}</p>
+                                <p class="text-sm text-gray-600 mt-1">${escapeHtml(item.prev_chairman_address)}</p>
+                                <p class="text-sm text-gray-600">📞 ${escapeHtml(item.prev_chairman_phone)}</p>
+                            </div>
+                            <div class="border-t pt-3">
+                                <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Secretary</p>
+                                <p class="text-gray-900 font-medium">${escapeHtml(item.prev_secretary_name)}</p>
+                                <p class="text-sm text-gray-600 mt-1">${escapeHtml(item.prev_secretary_address)}</p>
+                                <p class="text-sm text-gray-600">📞 ${escapeHtml(item.prev_secretary_phone)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 bg-green-50">
+                        <h4 class="font-bold text-green-900 mb-4">Current (After)</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-600 uppercase">Club Name</p>
+                                <p class="text-gray-900">${escapeHtml(item.current_name)}</p>
+                            </div>
+                            <div class="border-t pt-3">
+                                <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Chairman</p>
+                                <p class="text-gray-900 font-medium">${escapeHtml(item.current_chairman_name)}</p>
+                                <p class="text-sm text-gray-600 mt-1">Current address and phone</p>
+                            </div>
+                            <div class="border-t pt-3">
+                                <p class="text-xs font-semibold text-gray-600 uppercase mb-2">Secretary</p>
+                                <p class="text-gray-900 font-medium">${escapeHtml(item.current_secretary_name)}</p>
+                                <p class="text-sm text-gray-600 mt-1">Current address and phone</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 border-t px-4 sm:px-6 py-4 flex justify-start flex-shrink-0">
+                <button onclick="this.closest('.fixed').remove(); showHistoryListModal(window.clubReorgHistory, ${clubId})" class="btn btn-outline">
+                    ← Back to List
+                </button>
+                <button onclick="this.closest('.fixed').remove()" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
 }
 
 function renewClub(clubId) {
-  const today = new Date().toISOString().split("T")[0];
-
-  // Get translated strings using i18n
-  const titleText = window.i18n?.t("form.select_date") || "Select Date";
-  const dateLabel = window.i18n?.t("form.registration_date") || "Date";
-  const cancelBtn = window.i18n?.t("button.cancel") || "Cancel";
-  const confirmBtn = window.i18n?.t("button.save") || "Save";
-
-  // Create a modal for date selection
-  const modal = document.createElement("div");
-  modal.className =
-    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-  modal.innerHTML = `
-    <div class="bg-white rounded-lg p-6 w-96 shadow-lg">
-      <h3 class="text-lg font-bold mb-4">${titleText}</h3>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">${dateLabel}</label>
-          <input type="date" id="reorgDateInput" class="form-input w-full" value="${today}">
-        </div>
-        <div class="flex gap-3 justify-end">
-          <button onclick="this.closest('.fixed').remove()" class="btn btn-secondary">${cancelBtn}</button>
-          <button onclick="confirmReorg(${clubId}, document.getElementById('reorgDateInput').value)" class="btn btn-primary">${confirmBtn}</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  document.getElementById("reorgDateInput").focus();
-}
-
-function confirmReorg(clubId, reorgDate) {
-  if (!reorgDate) {
-    alert("කරුණාකර දිනය තෝරන්න");
-    return;
-  }
-
-  fetch("../api/reorganizations.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      club_id: clubId,
-      reorg_date: reorgDate,
-    }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        alert(
-          window.i18n
-            ? window.i18n.t("message.reorg_added_success")
-            : "Success",
-        );
-        document.querySelector(".fixed")?.remove();
-        loadClubs(currentPage);
-      } else {
-        alert(
-          data.message ||
-            (window.i18n ? window.i18n.t("message.error_generic") : "Error"),
-        );
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      alert(window.i18n ? window.i18n.t("message.error_generic") : "Error");
-    });
+  window.location.href = "reorganize-club.php?id=" + clubId;
 }
 
 function deleteReorg(clubId) {
-  if (!confirm("අවසාන ප්‍රතිසංවිධාන දිනය ඉවත් කිරීමට අවශ්‍යද?")) return;
+  if (
+    !confirm(
+      window.i18n
+        ? window.i18n.t("message.confirm_delete_reorg")
+        : "Are you sure you want to delete the reorganization date?",
+    )
+  )
+    return;
 
   fetch("../api/reorganizations.php", {
     method: "DELETE",
@@ -340,5 +456,40 @@ function deleteReorg(clubId) {
     .catch((err) => {
       console.error(err);
       alert(window.i18n ? window.i18n.t("message.error_generic") : "Error");
+    });
+}
+
+/**
+ * Delete a specific reorganization record
+ */
+function deleteReorganizationRecord(reorgId, clubId, event) {
+  event.stopPropagation();
+  
+  if (!confirm("Are you sure you want to delete this reorganization record? This action cannot be undone.")) {
+    return;
+  }
+
+  fetch("../api/reorganize-club.php", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: reorgId }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Reorganization deleted successfully!");
+        // Close any open modals
+        document.querySelectorAll('.fixed').forEach(modal => modal.remove());
+        // Reload the club list
+        loadClubs(currentPage);
+      } else {
+        alert(data.message || "Failed to delete reorganization");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred while deleting the reorganization");
     });
 }

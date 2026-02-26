@@ -5,6 +5,7 @@
  * Server-side Excel export using CSV format (compatible with Excel)
  */
 
+@set_time_limit(120);
 header('Content-Type: text/csv; charset=UTF-8');
 require_once '../config/database.php';
 
@@ -37,20 +38,7 @@ try {
     }
 
     // Build query
-    $sql = "SELECT 
-                c.id,
-                c.reg_number,
-                c.name,
-                c.registration_date,
-                c.chairman_name,
-                c.chairman_address,
-                c.secretary_name,
-                c.secretary_address,
-                d.name as district_name,
-                dv.name as division_name,
-                gn.name as gn_division_name,
-                MAX(cr.reorg_date) as last_reorg_date
-            FROM clubs c
+    $baseFrom = "FROM clubs c
             LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
             LEFT JOIN divisions dv ON gn.division_id = dv.id
             LEFT JOIN districts d ON dv.district_id = d.id
@@ -61,7 +49,7 @@ try {
 
     // Add search filter
     if ($search !== '') {
-        $sql .= " AND (c.name LIKE ? OR c.reg_number LIKE ? OR c.chairman_name LIKE ?)";
+        $baseFrom .= " AND (c.name LIKE ? OR c.reg_number LIKE ? OR c.chairman_name LIKE ?)";
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';
         $params[] = '%' . $search . '%';
@@ -69,29 +57,58 @@ try {
 
     // Add district filter
     if ($districtId) {
-        $sql .= " AND d.id = ?";
+        $baseFrom .= " AND d.id = ?";
         $params[] = $districtId;
     }
 
     // Add division filter
     if ($divisionId) {
-        $sql .= " AND dv.id = ?";
+        $baseFrom .= " AND dv.id = ?";
         $params[] = $divisionId;
     }
 
     // Add GN division filter
     if ($gnDivisionId) {
-        $sql .= " AND gn.id = ?";
+        $baseFrom .= " AND gn.id = ?";
         $params[] = $gnDivisionId;
     }
 
-    $sql .= " GROUP BY c.id ORDER BY c.registration_date DESC, c.created_at DESC";
+    $countSql = "SELECT COUNT(DISTINCT c.id) " . $baseFrom;
+    $countStmt = $pdo->prepare($countSql);
+    $countStmt->execute($params);
+    $total = (int)($countStmt->fetchColumn() ?: 0);
 
+    $maxExport = 5000;
+    if ($total > $maxExport) {
+        http_response_code(400);
+        exit('Too many rows to export. Please apply filters.');
+    }
+
+    $sql = "SELECT 
+                c.id,
+                c.reg_number,
+                c.name,
+                c.registration_date,
+                c.chairman_name,
+                c.chairman_address,
+                c.chairman_phone,
+                c.secretary_name,
+                c.secretary_address,
+                c.secretary_phone,
+                d.name as district_name,
+                dv.name as division_name,
+                gn.name as gn_division_name,
+                MAX(cr.reorg_date) as last_reorg_date
+            " . $baseFrom . "
+            GROUP BY c.id
+            ORDER BY c.registration_date DESC, c.created_at DESC
+            LIMIT ?";
+
+    $params[] = $maxExport;
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
-    $clubs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (empty($clubs)) {
+    if ($total === 0) {
         http_response_code(400);
         exit('No data to export');
     }
@@ -115,16 +132,16 @@ try {
         t('table.division', 'Division'),
         t('table.gn_division', 'GN Division'),
         t('table.chairman_name', 'Chairman Name'),
-        t('table.chairman_address', 'Chairman Address'),
+        t('table.chairman_address', 'Chairman Address and Phone'),
         t('table.secretary_name', 'Secretary Name'),
-        t('table.secretary_address', 'Secretary Address'),
+        t('table.secretary_address', 'Secretary Address and Phone'),
         t('table.last_reorg_date', 'Last Reorganization Date'),
         t('table.next_reorg_due_date', 'Next Reorganization Due Date'),
     ];
     fputcsv($output, $headers);
 
     // Write data rows
-    foreach ($clubs as $club) {
+    while ($club = $stmt->fetch(PDO::FETCH_ASSOC)) {
         // Calculate next reorganization due date
         $nextReorgDate = '';
         if ($club['last_reorg_date']) {
@@ -150,9 +167,9 @@ try {
             $club['division_name'] ?? '',
             $club['gn_division_name'] ?? '',
             $club['chairman_name'] ?? '',
-            $club['chairman_address'] ?? '',
+            ($club['chairman_address'] ?? '') . ' ' . ($club['chairman_phone'] ? '(' . $club['chairman_phone'] . ')' : ''),
             $club['secretary_name'] ?? '',
-            $club['secretary_address'] ?? '',
+            ($club['secretary_address'] ?? '') . ' ' . ($club['secretary_phone'] ? '(' . $club['secretary_phone'] . ')' : ''),
             $club['last_reorg_date'] ? date('Y-m-d', strtotime($club['last_reorg_date'])) : '',
             $nextReorgDate,
         ];

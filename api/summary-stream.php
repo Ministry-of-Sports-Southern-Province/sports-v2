@@ -102,11 +102,13 @@ try {
 }
 
 $lastHash = null;
-$heartbeatInterval = 15; // seconds
-$pollInterval = 3; // seconds (how often we check for changes)
+$heartbeatInterval = 30; // seconds
+$pollInterval = 10; // seconds (how often we check for changes)
 $elapsedSinceHeartbeat = 0;
+$maxConnectionTime = 600; // 10 minutes max per client
+$startTime = time();
 
-while (!connection_aborted()) {
+while (!connection_aborted() && (time() - $startTime) < $maxConnectionTime) {
     $snapshot = load_summary_snapshot($pdo);
     $hash = md5(json_encode($snapshot, JSON_UNESCAPED_UNICODE));
 

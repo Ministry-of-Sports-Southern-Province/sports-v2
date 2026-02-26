@@ -25,10 +25,13 @@ try {
             sendJSONResponse(false, null, 'Club ID required', 400);
         }
 
-        $sql = "SELECT id, reorg_date, created_at 
-                FROM club_reorganizations 
-                WHERE club_id = :club_id 
-                ORDER BY reorg_date DESC";
+        $sql = "SELECT cr.id, cr.reorg_date, cr.created_at,
+                       c.chairman_name, c.chairman_address, c.chairman_phone,
+                       c.secretary_name, c.secretary_address, c.secretary_phone
+                FROM club_reorganizations cr
+                JOIN clubs c ON cr.club_id = c.id
+                WHERE cr.club_id = :club_id 
+                ORDER BY cr.reorg_date DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['club_id' => $clubId]);
         $reorgs = $stmt->fetchAll(PDO::FETCH_ASSOC);

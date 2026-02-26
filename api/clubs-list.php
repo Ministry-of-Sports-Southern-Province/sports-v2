@@ -27,6 +27,7 @@ try {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
     $printAll = isset($_GET['print_all']) && (string)$_GET['print_all'] === '1';
+    $maxPrintAll = 2000;
 
     if ($page < 1) $page = 1;
     if ($limit < 1) $limit = 10;
@@ -90,6 +91,9 @@ try {
     $countStmt = $pdo->prepare($countSql);
     $countStmt->execute($params);
     $total = (int)($countStmt->fetchColumn() ?: 0);
+    if ($printAll && $total > $maxPrintAll) {
+        sendJSONResponse(false, null, 'Too many rows to print all. Please apply filters.', 400);
+    }
     $totalPages = $limit > 0 ? (int)ceil($total / $limit) : 1;
     if ($totalPages < 1) $totalPages = 1;
     if ($page > $totalPages) $page = $totalPages;
@@ -106,6 +110,7 @@ try {
                 c.chairman_phone,
                 c.secretary_name,
                 c.secretary_address,
+                c.secretary_phone,
                 d.name as district_name,
                 dv.name as division_name,
                 gn.name as gn_division_name,

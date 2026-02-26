@@ -202,6 +202,12 @@ function loadStatistics() {
         if (stats.clubs_by_district && stats.clubs_by_district.length > 0) {
           const container = document.getElementById("statisticsContainer");
 
+          // Remove only dynamically added district cards (keep the first Total Clubs card)
+          const districtCards = container.querySelectorAll(
+            ".stat-card:not(:first-child)",
+          );
+          districtCards.forEach((card) => card.remove());
+
           // Define colors for districts (cycle through these)
           const colors = [
             { border: "#10b981", text: "text-green-600" }, // Green
@@ -757,9 +763,9 @@ function displayClubs(clubs) {
             <td class="text-slate-700">${escapeHtml(club.division_name || "")}</td>
             <td class="text-slate-700">${escapeHtml(club.gn_division_name || "")}</td>
             <td class="text-slate-700">${escapeHtml(club.chairman_name || "")}</td>
-            <td class="text-slate-700">${escapeHtml(club.chairman_address || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.chairman_address || "")} ${club.chairman_phone ? "(" + escapeHtml(club.chairman_phone) + ")" : ""}</td>
             <td class="text-slate-700">${escapeHtml(club.secretary_name || "")}</td>
-            <td class="text-slate-700">${escapeHtml(club.secretary_address || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.secretary_address || "")} ${club.secretary_phone ? "(" + escapeHtml(club.secretary_phone) + ")" : ""}</td>
             <td class="whitespace-nowrap text-slate-700">${club.last_reorg_date ? formatDate(club.last_reorg_date) : "-"}</td>
             <td class="whitespace-nowrap text-slate-700">${nextReorgDate || "-"}</td>
             <td class="whitespace-nowrap">
@@ -775,6 +781,13 @@ function displayClubs(clubs) {
                     ${
                       window.currentUserRole === "admin"
                         ? `
+                    <a href="reorganize-club.php?id=${club.id}" 
+                       class="text-purple-600 hover:text-purple-800 transition" 
+                       title="Reorganize">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </a>
                     <button onclick="editClub(${club.id})" 
                             class="text-green-600 hover:text-green-800 transition" 
                             title="Edit">
@@ -1099,18 +1112,18 @@ function populatePrintContainer() {
         <thead>
           <tr>
             <th style="width: 2.5%;">No.</th>
-            <th style="width: 7%;">Reg No.</th>
-            <th style="width: 6.5%;">Date</th>
-            <th style="width: 11.5%;">Club Name</th>
-            <th style="width: 7.5%;">District</th>
-            <th style="width: 10%;">Division</th>
-            <th style="width: 10%;">GN Div</th>
-            <th style="width: 9%;">Chairman</th>
-            <th style="width: 9%;">Chair Addr</th>
-            <th style="width: 8.5%;">Secretary</th>
-            <th style="width: 9%;">Sec Addr</th>
-            <th style="width: 6.5%;">Last Reorg</th>
-            <th style="width: 6.5%;">Next Reorg</th>
+            <th style="width: 6%;">Reg No.</th>
+            <th style="width: 5.5%;">Date</th>
+            <th style="width: 10%;">Club Name</th>
+            <th style="width: 6.5%;">District</th>
+            <th style="width: 8%;">Division</th>
+            <th style="width: 8%;">GN Div</th>
+            <th style="width: 7%;">Chairman</th>
+            <th style="width: 9%;">Chair Addr & Phone</th>
+            <th style="width: 7%;">Secretary</th>
+            <th style="width: 9%;">Sec Addr & Phone</th>
+            <th style="width: 5.5%;">Last Reorg</th>
+            <th style="width: 5.5%;">Next Reorg</th>
           </tr>
         </thead>
         <tbody>
@@ -1129,9 +1142,9 @@ function populatePrintContainer() {
           <td>${escapeHtml(club.division_name || "-")}</td>
           <td>${escapeHtml(club.gn_division_name || "-")}</td>
           <td>${escapeHtml(club.chairman_name || "-")}</td>
-          <td>${escapeHtml(club.chairman_address || "-")}</td>
+          <td>${escapeHtml(club.chairman_address || "-")} ${club.chairman_phone ? "(" + escapeHtml(club.chairman_phone) + ")" : ""}</td>
           <td>${escapeHtml(club.secretary_name || "-")}</td>
-          <td>${escapeHtml(club.secretary_address || "-")}</td>
+          <td>${escapeHtml(club.secretary_address || "-")} ${club.secretary_phone ? "(" + escapeHtml(club.secretary_phone) + ")" : ""}</td>
           <td style="text-align: center; white-space: nowrap;">${formatDate(club.last_reorg_date)}</td>
           <td style="text-align: center; white-space: nowrap;">${formatDate(club.next_reorg_due_date)}</td>
         </tr>
@@ -1221,7 +1234,9 @@ async function printWithDate() {
     const loaded = await loadAllClubsForPrint();
     if (!loaded) {
       console.error("Failed to load clubs for print");
-      alert("Error loading data for print. Please try again.");
+      alert(
+        "Too many clubs to print at once. Please apply filters (by district or division) to reduce the data and try again.",
+      );
       document.title = originalTitle;
       return;
     }

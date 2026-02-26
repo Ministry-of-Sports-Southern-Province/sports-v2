@@ -22,15 +22,16 @@ try {
         sendJSONResponse(false, null, 'Registration number is required', 400);
     }
 
-    // Validate format: දපස/ක්‍රිඩා/{ග|ම|හ}/{digits}
+    // Validate format: දපස/ක්රීඩා/{ග|ම|හ}-{digits}
     if (!validateRegNumberFormat($regNumber)) {
         sendJSONResponse(false, [
             'available' => false,
+            'format_error' => true,
             'debug' => [
                 'reg_number' => $regNumber,
                 'length' => mb_strlen($regNumber),
                 'bytes' => strlen($regNumber),
-                'pattern' => 'දපස/ක්‍රිඩා/[ගමහ]/[0-9]+'
+                'expected_pattern' => 'දපස/ක්රීඩා/[ගා|මා|හ]-[0-9]+'
             ]
         ], 'Invalid registration number format');
     }

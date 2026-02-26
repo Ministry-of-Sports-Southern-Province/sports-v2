@@ -6,10 +6,10 @@
  */
 
 // Database credentials
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'localhost:3306');
 define('DB_NAME', 'scms');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'sportscmo');
+define('DB_PASS', '66nl2o0H$');
 define('DB_CHARSET', 'utf8mb4');
 
 /**
@@ -125,13 +125,13 @@ function validateDate($date, $allowFuture = false)
 
 /**
  * Validate registration number format
- * Format: දපස/ක්‍රිඩා/{ගා|මා|හ}/{digits}
+ * Format: දපස/ක්රීඩා/{ග|ම|හ}-{digits}
  * @param string $regNumber Registration number
  * @return bool True if valid format
  */
 function validateRegNumberFormat($regNumber)
 {
-    // Pattern: දපස/ක්‍රිඩා/ followed by ගා OR මා OR හ followed by / and digits
-    $pattern = '/^දපස\/ක්‍රිඩා\/(ගා|මා|හ)\/[0-9]+$/u';
+    // Pattern: දපස/ක්රීඩා/ followed by ග OR ම OR හ then - and digits (no whitespaces)
+    $pattern = '/^දපස\/ක්‍රීඩා\/(ගා|මා|හ)\-[0-9]+$/u';
     return preg_match($pattern, $regNumber);
 }
