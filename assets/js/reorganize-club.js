@@ -53,44 +53,75 @@ function loadClubData(clubId) {
 function displayCurrentInfo(club) {
   const container = document.getElementById("currentInfoContent");
   container.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <p class="font-semibold text-gray-700">Club Name:</p>
-                <p class="text-gray-900">${escapeHtml(club.name)}</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">Registration Number:</p>
-                <p class="text-gray-900">${escapeHtml(club.reg_number)}</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">Registration Date:</p>
-                <p class="text-gray-900">${club.registration_date || "-"}</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">District:</p>
-                <p class="text-gray-900" id="currentDistrict">Loading...</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">Division:</p>
-                <p class="text-gray-900" id="currentDivision">Loading...</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">GN Division:</p>
-                <p class="text-gray-900" id="currentGnDivision">Loading...</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">Chairman:</p>
-                <p class="text-gray-900">${escapeHtml(club.chairman_name)}</p>
-                <p class="text-xs text-gray-600">Phone: ${escapeHtml(club.chairman_phone)}</p>
-                <p class="text-xs text-gray-600">${escapeHtml(club.chairman_address)}</p>
-            </div>
-            <div>
-                <p class="font-semibold text-gray-700">Secretary:</p>
-                <p class="text-gray-900">${escapeHtml(club.secretary_name)}</p>
-                <p class="text-xs text-gray-600">Phone: ${escapeHtml(club.secretary_phone)}</p>
-                <p class="text-xs text-gray-600">${escapeHtml(club.secretary_address)}</p>
-            </div>
+        <div class="info-grid">
+      <div class="detail-card">
+        <h2 data-i18n="form.club_information">Club Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.reg_number">Registration Number</label><p>${escapeHtml(
+            club.reg_number,
+          )}</p></div>
+          <div><label data-i18n="form.registration_date">Registration Date</label><p>${formatDate(
+            club.registration_date,
+          )}</p></div>
         </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.club_name">Club Name</label><p>${escapeHtml(
+            club.name,
+          )}</p></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h2 data-i18n="form.location_information">Location Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.district">District</label><p>${escapeHtml(
+            club.district_name || "-",
+          )}</p></div>
+          <div><label data-i18n="form.division">Division</label><p>${escapeHtml(
+            club.division_name || "-",
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.gn_division">GN Division</label><p>${escapeHtml(
+            club.gn_division_name || "-",
+          )}</p></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h2 data-i18n="form.chairman_information">Chairman Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.chairman_name">Chairman Name</label><p>${escapeHtml(
+            club.chairman_name,
+          )}</p></div>
+          <div><label data-i18n="form.chairman_phone">Chairman Phone</label><p>${escapeHtml(
+            club.chairman_phone,
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.chairman_address">Chairman Address</label><p>${escapeHtml(
+            club.chairman_address,
+          )}</p></div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h2 data-i18n="form.secretary_information">Secretary Information</h2>
+        <div class="info-row">
+          <div><label data-i18n="form.secretary_name">Secretary Name</label><p>${escapeHtml(
+            club.secretary_name,
+          )}</p></div>
+          <div><label data-i18n="form.secretary_phone">Secretary Phone</label><p>${escapeHtml(
+            club.secretary_phone,
+          )}</p></div>
+        </div>
+        <div class="info-row">
+          <div class="full-width"><label data-i18n="form.secretary_address">Secretary Address</label><p>${escapeHtml(
+            club.secretary_address,
+          )}</p></div>
+        </div>
+      </div>
+    </div>
     `;
 
   // Fetch and display location names
@@ -382,7 +413,7 @@ function loadReorganizationHistory(clubId) {
       try {
         const data = JSON.parse(text);
         if (data.success) {
-          displayHistory(data.data);
+          displayHistory(data.data, clubId);
         } else {
           document.getElementById("historyContainer").innerHTML =
             '<p class="text-gray-500">No reorganization history</p>';
@@ -404,7 +435,7 @@ function loadReorganizationHistory(clubId) {
 /**
  * Display reorganization history
  */
-function displayHistory(history) {
+function displayHistory(history, clubId) {
   const container = document.getElementById("historyContainer");
 
   if (history.length === 0) {
@@ -418,14 +449,14 @@ function displayHistory(history) {
       (item, index) => `
         <div class="border-l-4 border-blue-500 pl-4 py-3 mb-4 bg-gray-50 rounded">
             <div class="flex justify-between items-center">
-                <div class="flex-1 cursor-pointer hover:bg-gray-100 -ml-4 pl-4 py-2" onclick="showHistoryModal(${index})">
+                <div class="flex-1 cursor-pointer hover:bg-gray-100 -ml-4 pl-4 py-2" onclick="showHistoryDetailModal(${index}, ${clubId})">
                     <p class="font-semibold text-blue-900">${formatDate(item.reorg_date)}</p>
                     <p class="text-sm text-gray-600 mt-1">
                         ${escapeHtml(item.prev_name)} → ${escapeHtml(item.current_name)}
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="showHistoryModal(${index})" class="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1">
+                    <button onclick="showHistoryDetailModal(${index}, ${clubId})" class="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1">
                         View Details →
                     </button>
                 </div>
@@ -435,146 +466,14 @@ function displayHistory(history) {
     )
     .join("");
 
-  // Store history data globally for modal
-  window.reorganizationHistory = history;
+  // Store history data globally for shared modal
+  window.clubReorgHistory = history;
 }
 
-/**
- * Show history modal with full details
- */
-function showHistoryModal(index) {
-  const item = window.reorganizationHistory[index];
-
-  // Populate modal fields
-  document.getElementById("modalReorgDate").textContent = formatDate(
-    item.reorg_date,
-  );
-
-  // Show/hide notes section
-  const notesDiv = document.getElementById("modalNotes");
-  if (item.notes) {
-    document.getElementById("modalNotesText").textContent = escapeHtml(
-      item.notes,
-    );
-    notesDiv.style.display = "block";
-  } else {
-    notesDiv.style.display = "none";
-  }
-
-  // Previous information
-  document.getElementById("modalPrevName").textContent = escapeHtml(
-    item.prev_name,
-  );
-  document.getElementById("modalPrevChairman").textContent = escapeHtml(
-    item.prev_chairman_name,
-  );
-  document.getElementById("modalPrevChairmanAddr").textContent = escapeHtml(
-    item.prev_chairman_address,
-  );
-  document.getElementById("modalPrevChairmanPhone").textContent = escapeHtml(
-    item.prev_chairman_phone,
-  );
-  document.getElementById("modalPrevSecretary").textContent = escapeHtml(
-    item.prev_secretary_name,
-  );
-  document.getElementById("modalPrevSecretaryAddr").textContent = escapeHtml(
-    item.prev_secretary_address,
-  );
-  document.getElementById("modalPrevSecretaryPhone").textContent = escapeHtml(
-    item.prev_secretary_phone,
-  );
-
-  // Current information
-  document.getElementById("modalCurrentName").textContent = escapeHtml(
-    item.current_name,
-  );
-  document.getElementById("modalCurrentChairman").textContent = escapeHtml(
-    item.current_chairman_name,
-  );
-  document.getElementById("modalCurrentSecretary").textContent = escapeHtml(
-    item.current_secretary_name,
-  );
-
-  // Store current reorg ID for delete operation
-  window.currentReorgId = item.id;
-
-  // Show modal
-  const modal = document.getElementById("historyModal");
-  modal.classList.remove("hidden");
-}
-
-/**
- * Close history modal
- */
-function closeHistoryModal(event) {
-  if (event && event.target !== event.currentTarget) {
-    return;
-  }
-  const modal = document.getElementById("historyModal");
-  modal.classList.add("hidden");
-}
-
-/**
- * Delete a reorganization record from modal
- */
-function deleteReorganizationFromModal() {
-  const reorgId = window.currentReorgId;
-
-  if (!reorgId) {
-    alert(
-      window.i18n
-        ? window.i18n.t("message.error_generic")
-        : "No reorganization selected",
-    );
-    return;
-  }
-
-  if (
-    !confirm(
-      window.i18n
-        ? window.i18n.t("message.confirm_delete_reorg_record")
-        : "Are you sure you want to delete this reorganization record? This action cannot be undone.",
-    )
-  ) {
-    return;
-  }
-
-  fetch(`${apiBase}/reorganize-club.php`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id: reorgId }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        closeHistoryModal();
-        alert(
-          window.i18n
-            ? window.i18n.t("message.reorganize_deleted_success")
-            : "Reorganization deleted successfully!",
-        );
-        const clubId = document.getElementById("clubId").value;
-        loadReorganizationHistory(clubId);
-      } else {
-        alert(
-          data.message ||
-            (window.i18n
-              ? window.i18n.t("message.reorganize_delete_error")
-              : "Failed to delete reorganization"),
-        );
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert(
-        window.i18n
-          ? window.i18n.t("message.error_reorganizing_club")
-          : "An error occurred while deleting the reorganization",
-      );
-    });
-}
+// showHistoryModal, closeHistoryModal, deleteReorganizationFromModal are replaced by shared-history-modal.js
+window.onHistoryDeleteSuccess = function (clubId) {
+  loadReorganizationHistory(clubId);
+};
 
 /**
  * Format date

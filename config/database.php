@@ -8,8 +8,8 @@
 // Database credentials
 define('DB_HOST', 'localhost:3306');
 define('DB_NAME', 'scms');
-define('DB_USER', 'sportscmo');
-define('DB_PASS', '66nl2o0H$');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 /**

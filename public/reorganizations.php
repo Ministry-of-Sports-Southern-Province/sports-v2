@@ -48,9 +48,11 @@ include '../includes/header.php';
                     </tr>
                 </thead>
                 <tbody id="clubsTable">
-                <tr><td colspan="7" class="px-6 py-4 text-center" data-i18n="message.loading">පූරණය වෙමින්...</td></tr>
-            </tbody>
-        </table>
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center" data-i18n="message.loading">පූරණය වෙමින්...</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="flex justify-between items-center mt-4 px-4">
@@ -60,11 +62,11 @@ include '../includes/header.php';
 </main>
 
 <?php
-$scripts = ['../assets/js/reorganizations.js'];
+$scripts = ['../assets/js/shared-history-modal.js', '../assets/js/reorganizations.js'];
 include '../includes/footer.php';
 ?>
 
 <script>
-// Make user role available to JavaScript
-window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
+    // Make user role available to JavaScript
+    window.currentUserRole = '<?php echo htmlspecialchars(getCurrentRole() ?? 'admin', ENT_QUOTES, 'UTF-8'); ?>';
 </script>

@@ -354,7 +354,7 @@ include '../includes/header.php';
 
 <?php
 // Scripts to include
-$scripts = ['../assets/js/club-details.js?v=' . time()];
+$scripts = ['../assets/js/shared-history-modal.js', '../assets/js/club-details.js?v=' . time()];
 
 // Include footer
 include '../includes/footer.php';
