@@ -45,6 +45,7 @@ try {
 
     // Get equipment
     $equipmentSql = "SELECT 
+                        ce.equipment_type_id AS id,
                         et.name,
                         ce.quantity
                      FROM club_equipment ce

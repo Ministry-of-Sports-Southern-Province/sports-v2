@@ -165,32 +165,41 @@ async function initializeTomSelect() {
   window.tomSelectInstances.equipmentSelect = new TomSelect(
     "#equipmentSelect",
     {
+      create: true,
+      createOnBlur: true,
       plugins: ["remove_button"],
-      maxOptions: 50,
+      maxOptions: null,
       placeholder: window.i18n
         ? window.i18n.t("placeholder.type_to_search")
         : "Type to search...",
+      valueField: "id",
+      labelField: "name",
+      searchField: "name",
+      preload: "focus",
+      load: function (query, callback) {
+        const url =
+          query.length > 0
+            ? `../api/equipment-types.php?search=${encodeURIComponent(query)}`
+            : `../api/equipment-types.php`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              callback(data.data);
+            } else {
+              callback();
+            }
+          })
+          .catch(() => callback());
+      },
+      onCreate: function (input, callback) {
+        createNewEquipmentType(input, callback);
+      },
       onChange: function (values) {
         updateEquipmentQuantityFields(values);
       },
     },
   );
-
-  // Load all equipment types initially
-  try {
-    const response = await fetch("../api/equipment-types.php");
-    const data = await response.json();
-    if (data.success) {
-      data.data.forEach((item) => {
-        window.tomSelectInstances.equipmentSelect.addOption({
-          value: item.id,
-          text: item.name,
-        });
-      });
-    }
-  } catch (e) {
-    console.error("Error loading equipment types:", e);
-  }
 }
 
 /**
@@ -265,9 +274,10 @@ function updateEquipmentQuantityFields(equipmentIds) {
     const div = document.createElement("div");
     div.className = "flex items-center gap-3 p-3 bg-gray-50 rounded";
     div.innerHTML = `
-      <span class="flex-1 text-sm font-medium text-gray-700">${option.text}</span>
-      <input type="number" id="eq_qty_${id}" 
-        class="w-24 border border-gray-300 rounded px-2 py-1 text-sm" 
+      <span class="flex-1 text-sm font-medium text-gray-700">${option.name}</span>
+      <input type="number" id="eq_qty_${id}"
+        data-equipment-id="${id}"
+        class="w-24 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity-input"
         min="1" value="1" placeholder="Qty" required>
     `;
     container.appendChild(div);
@@ -378,6 +388,13 @@ async function populateForm(club) {
 
   // Equipment
   if (club.equipment && club.equipment.length > 0) {
+    // Add existing equipment as options so setValue works before lazy load resolves
+    club.equipment.forEach((equip) => {
+      window.tomSelectInstances.equipmentSelect.addOption({
+        id: equip.id,
+        name: equip.name,
+      });
+    });
     const equipmentIds = club.equipment.map((e) => String(e.id));
     window.tomSelectInstances.equipmentSelect.setValue(equipmentIds);
 
@@ -426,6 +443,45 @@ function addReorgDateField(date = '') {
   });
   
   container.appendChild(div);
+}
+
+/**
+ * Create a new equipment type via the API (mirrors register.js behaviour)
+ */
+function createNewEquipmentType(name, callback) {
+  const formData = new FormData();
+  formData.append("name", name);
+
+  fetch("../api/equipment-types.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        const newEquipment = {
+          id: data.data.id,
+          name: data.data.name,
+        };
+        window.tomSelectInstances.equipmentSelect.addOption(newEquipment);
+        callback(newEquipment);
+      } else {
+        alert(
+          data.message ||
+            (window.i18n
+              ? window.i18n.t("validation.duplicate_entry")
+              : "Duplicate entry"),
+        );
+        callback(false);
+      }
+    })
+    .catch((error) => {
+      console.error("Error creating equipment type:", error);
+      alert(
+        window.i18n ? window.i18n.t("message.error") : "An error occurred",
+      );
+      callback(false);
+    });
 }
 
 /**
