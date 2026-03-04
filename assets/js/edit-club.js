@@ -420,28 +420,28 @@ async function populateForm(club) {
 /**
  * Add reorganization date field
  */
-function addReorgDateField(date = '') {
-  const container = document.getElementById('reorgDatesContainer');
+function addReorgDateField(date = "") {
+  const container = document.getElementById("reorgDatesContainer");
   const index = container.children.length;
-  
-  const div = document.createElement('div');
-  div.className = 'flex items-center gap-3';
+
+  const div = document.createElement("div");
+  div.className = "flex items-center gap-3";
   div.innerHTML = `
     <input type="date" 
       class="form-input flex-1 reorg-date-input" 
       value="${date}" 
-      max="${new Date().toISOString().split('T')[0]}">
+      max="${new Date().toISOString().split("T")[0]}">
     <button type="button" 
       class="btn btn-outline text-red-600 hover:bg-red-50 remove-reorg-btn">
       <span data-i18n="button.remove">ඉවත් කරන්න</span>
     </button>
   `;
-  
+
   // Add remove functionality
-  div.querySelector('.remove-reorg-btn').addEventListener('click', function() {
+  div.querySelector(".remove-reorg-btn").addEventListener("click", function () {
     div.remove();
   });
-  
+
   container.appendChild(div);
 }
 
@@ -477,9 +477,7 @@ function createNewEquipmentType(name, callback) {
     })
     .catch((error) => {
       console.error("Error creating equipment type:", error);
-      alert(
-        window.i18n ? window.i18n.t("message.error") : "An error occurred",
-      );
+      alert(window.i18n ? window.i18n.t("message.error") : "An error occurred");
       callback(false);
     });
 }
@@ -489,9 +487,11 @@ function createNewEquipmentType(name, callback) {
  */
 function setupFormSubmission() {
   // Add reorganization date button handler
-  document.getElementById('addReorgDateBtn').addEventListener('click', function() {
-    addReorgDateField();
-  });
+  document
+    .getElementById("addReorgDateBtn")
+    .addEventListener("click", function () {
+      addReorgDateField();
+    });
   document
     .getElementById("editClubForm")
     .addEventListener("submit", async function (e) {
@@ -579,7 +579,7 @@ function setupFormSubmission() {
 
       // Reorganization dates
       const reorgDates = [];
-      document.querySelectorAll('.reorg-date-input').forEach((input) => {
+      document.querySelectorAll(".reorg-date-input").forEach((input) => {
         if (input.value) {
           reorgDates.push({ date: input.value });
         }

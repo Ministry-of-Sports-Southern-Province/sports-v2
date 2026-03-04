@@ -41,7 +41,8 @@ $customStyles = '
         #searchInput,
         #filterDistrict,
         #filterDivision,
-        #filterGnDivision {
+        #filterGnDivision,
+        #filterStatus {
             font-family: "Noto Sans Sinhala", "Noto Sans Tamil", "Roboto", sans-serif;
             font-size: 14px;
             color: #374151;
@@ -57,7 +58,8 @@ $customStyles = '
         /* Select dropdown styling to match input */
         #filterDistrict option,
         #filterDivision option,
-        #filterGnDivision option {
+        #filterGnDivision option,
+        #filterStatus option {
             font-size: 14px;
             color: #374151;
             padding: 8px;
@@ -66,7 +68,8 @@ $customStyles = '
         /* Placeholder option styling (first option) */
         #filterDistrict option[value=""],
         #filterDivision option[value=""],
-        #filterGnDivision option[value=""] {
+        #filterGnDivision option[value=""],
+        #filterStatus option[value=""] {
             color: #9ca3af;
             font-size: 14px;
         }
@@ -360,16 +363,24 @@ include '../includes/header.php';
                     <option value="" data-i18n="placeholder.select"></option>
                 </select>
             </div>
-            <div class="md:col-span-3">
+            <div class="md:col-span-2">
                 <label class="form-label" data-i18n="form.division"></label>
                 <select id="filterDivision" class="form-select">
                     <option value="" data-i18n="placeholder.select_district_first"></option>
                 </select>
             </div>
-            <div class="md:col-span-3">
+            <div class="md:col-span-2">
                 <label class="form-label" data-i18n="form.gn_division"></label>
                 <select id="filterGnDivision" class="form-select">
                     <option value="" data-i18n="placeholder.select_division_first"></option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="form-label" data-i18n="form.reorg_status"></label>
+                <select id="filterStatus" class="form-select">
+                    <option value="" data-i18n="filter.all_statuses"></option>
+                    <option value="active" data-i18n="status.active"></option>
+                    <option value="expired" data-i18n="status.expired"></option>
                 </select>
             </div>
             <div class="md:col-span-2 flex flex-col justify-end gap-2">

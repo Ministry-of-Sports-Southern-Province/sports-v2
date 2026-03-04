@@ -17,12 +17,14 @@ function getClubFiltersParams() {
   const districtId = document.getElementById("filterDistrict")?.value || "";
   const divisionId = document.getElementById("filterDivision")?.value || "";
   const gnDivisionId = document.getElementById("filterGnDivision")?.value || "";
+  const status = document.getElementById("filterStatus")?.value || "";
 
   const params = new URLSearchParams();
   if (search) params.append("search", search);
   if (districtId) params.append("district_id", districtId);
   if (divisionId) params.append("division_id", divisionId);
   if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+  if (status) params.append("reorg_status", status);
   return params;
 }
 
@@ -528,6 +530,13 @@ function initializeDropdowns() {
     loadClubs(1);
   });
 
+  const statusSelect = document.getElementById("filterStatus");
+  if (statusSelect) {
+    statusSelect.addEventListener("change", function () {
+      loadClubs(1);
+    });
+  }
+
   // Load all districts
   fetch(apiBase + "/locations.php?type=district")
     .then((response) => response.json())
@@ -849,6 +858,9 @@ function resetFilters() {
   gnDivisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_division_first"></option>';
 
+  const statusSelect = document.getElementById("filterStatus");
+  if (statusSelect) statusSelect.value = "";
+
   // Update translations if i18n is available
   if (window.i18n) {
     window.i18n.updatePageTranslations();
@@ -1039,6 +1051,7 @@ function populatePrintContainer() {
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
   const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const statusSelect = document.getElementById("filterStatus");
 
   let filterText = window.i18n
     ? window.i18n.t("filter.all_clubs")
@@ -1049,6 +1062,9 @@ function populatePrintContainer() {
     filterText = divisionSelect.options[divisionSelect.selectedIndex].text;
   } else if (districtSelect.value) {
     filterText = districtSelect.options[districtSelect.selectedIndex].text;
+  }
+  if (statusSelect && statusSelect.value) {
+    filterText += ` - ${statusSelect.options[statusSelect.selectedIndex].text}`;
   }
   if (search) {
     filterText += ` - ${window.i18n ? window.i18n.t("placeholder.search") : "Search"}: ${search}`;

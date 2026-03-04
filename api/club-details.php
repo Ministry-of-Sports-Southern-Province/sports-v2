@@ -64,13 +64,13 @@ try {
     $reorgs = $reorgStmt->fetchAll(PDO::FETCH_ASSOC);
 
     $lastReorgDate = !empty($reorgs) ? $reorgs[0]['reorg_date'] : null;
-    
+
     // Calculate due date with special rule: if reorg after June, valid until Jan 1 next year + 1
     if ($lastReorgDate) {
         $reorgDateTime = new DateTime($lastReorgDate);
         $reorgMonth = (int)$reorgDateTime->format('n');
         $reorgYear = (int)$reorgDateTime->format('Y');
-        
+
         if ($reorgMonth > 6) {
             // After June: valid until Jan 1 of year after next
             $reorgDueDate = ($reorgYear + 2) . '-01-01';
@@ -81,7 +81,7 @@ try {
     } else {
         $reorgDueDate = null;
     }
-    
+
     $status = (!$lastReorgDate || $reorgDueDate <= date('Y-m-d')) ? 'expired' : 'active';
 
     $club['equipment'] = $equipment;
