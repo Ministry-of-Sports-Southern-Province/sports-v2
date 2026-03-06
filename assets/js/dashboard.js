@@ -1073,127 +1073,80 @@ function populatePrintContainer() {
   printContainer.innerHTML = "";
   if (data.length === 0) {
     printContainer.innerHTML =
-      '<div class="print-page"><p style="text-align: center; padding: 20px;">No data available</p><div class="page-number-footer">Page 1</div></div>';
+      '<p style="text-align:center;padding:20px;">No data available</p>';
     return;
   }
 
-  const firstPageRows = 20;
-  const otherPageRows = 24;
-  const pages = [];
-  let dataIndex = 0;
+  const deptName = window.i18n
+    ? window.i18n.t("header.department_name")
+    : "Department of Sports Southern Province";
+  const reportTitle = window.i18n
+    ? window.i18n.t("page.clubs_report_title")
+    : "Sports Clubs Report";
+  const preparedBy = window.i18n
+    ? window.i18n.t("footer.prepared_by")
+    : "Prepared By";
+  const checkedBy = window.i18n
+    ? window.i18n.t("footer.checked_by")
+    : "Checked By";
+  const approvedBy = window.i18n
+    ? window.i18n.t("footer.approved_by")
+    : "Approved By";
 
-  while (dataIndex < data.length) {
-    const isFirstPage = pages.length === 0;
-    const maxRows = isFirstPage ? firstPageRows : otherPageRows;
-    const remainingRows = data.length - dataIndex;
-
-    let rowsThisPage = Math.min(maxRows, remainingRows);
-
-    if (
-      remainingRows - rowsThisPage < 10 &&
-      !isFirstPage &&
-      remainingRows > rowsThisPage
-    ) {
-      rowsThisPage = remainingRows;
-    }
-
-    pages.push(data.slice(dataIndex, dataIndex + rowsThisPage));
-    dataIndex += rowsThisPage;
-  }
-
-  const totalPages = pages.length;
-  pages.forEach((pageData, pageNum) => {
-    const pageDiv = document.createElement("div");
-    pageDiv.className = "print-page";
-    let pageHTML = "";
-
-    if (pageNum === 0) {
-      const deptName = window.i18n
-        ? window.i18n.t("header.department_name")
-        : "Department of Sports Southern Province";
-      const reportTitle = window.i18n
-        ? window.i18n.t("page.clubs_report_title")
-        : "Sports Clubs Report";
-      pageHTML += `
-        <div class="print-header">
-          <div class="dept-name">${deptName}</div>
-          <h1>${reportTitle}</h1>
-          <div class="report-subtitle">${filterText}</div>
-        </div>
-      `;
-    }
-
-    pageHTML += `
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 2.5%;">No.</th>
-            <th style="width: 6%;">Reg No.</th>
-            <th style="width: 5.5%;">Date</th>
-            <th style="width: 10%;">Club Name</th>
-            <th style="width: 6.5%;">District</th>
-            <th style="width: 8%;">Division</th>
-            <th style="width: 8%;">GN Div</th>
-            <th style="width: 7%;">Chairman</th>
-            <th style="width: 9%;">Chair Addr & Phone</th>
-            <th style="width: 7%;">Secretary</th>
-            <th style="width: 9%;">Sec Addr & Phone</th>
-            <th style="width: 5.5%;">Last Reorg</th>
-            <th style="width: 5.5%;">Next Reorg</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    pageData.forEach((club, idx) => {
-      const globalIdx =
-        pages.slice(0, pageNum).reduce((sum, p) => sum + p.length, 0) + idx + 1;
-      pageHTML += `
+  let html = `
+    <div class="print-header">
+      <div class="dept-name">${deptName}</div>
+      <h1>${reportTitle}</h1>
+      <div class="report-subtitle">${filterText}</div>
+    </div>
+    <table>
+      <thead>
         <tr>
-          <td style="text-align: center;">${globalIdx}</td>
-          <td>${escapeHtml(club.reg_number || "-")}</td>
-          <td style="text-align: center; white-space: nowrap;">${formatDate(club.registration_date)}</td>
-          <td>${escapeHtml(club.name)}</td>
-          <td>${escapeHtml(club.district_name || "-")}</td>
-          <td>${escapeHtml(club.division_name || "-")}</td>
-          <td>${escapeHtml(club.gn_division_name || "-")}</td>
-          <td>${escapeHtml(club.chairman_name || "-")}</td>
-          <td>${escapeHtml(club.chairman_address || "-")} ${club.chairman_phone ? "(" + escapeHtml(club.chairman_phone) + ")" : ""}</td>
-          <td>${escapeHtml(club.secretary_name || "-")}</td>
-          <td>${escapeHtml(club.secretary_address || "-")} ${club.secretary_phone ? "(" + escapeHtml(club.secretary_phone) + ")" : ""}</td>
-          <td style="text-align: center; white-space: nowrap;">${formatDate(club.last_reorg_date)}</td>
-          <td style="text-align: center; white-space: nowrap;">${formatDate(club.next_reorg_due_date)}</td>
+          <th style="width:3%;">No.</th>
+          <th style="width:7%;">Reg No.</th>
+          <th style="width:9%;">Date</th>
+          <th style="width:11%;">Club Name</th>
+          <th style="width:11%;">Division</th>
+          <th style="width:11%;">GN Div</th>
+          <th style="width:17%;">Chairman (Name, Address & Phone)</th>
+          <th style="width:17%;">Secretary (Name, Address & Phone)</th>
+          <th style="width:7%;">Last Reorg</th>
+          <th style="width:7%;">Next Reorg</th>
         </tr>
-      `;
-    });
+      </thead>
+      <tbody>
+  `;
 
-    pageHTML += `</tbody></table>`;
-
-    if (pageNum === totalPages - 1) {
-      const preparedBy = window.i18n
-        ? window.i18n.t("footer.prepared_by")
-        : "Prepared By";
-      const checkedBy = window.i18n
-        ? window.i18n.t("footer.checked_by")
-        : "Checked By";
-      const approvedBy = window.i18n
-        ? window.i18n.t("footer.approved_by")
-        : "Approved By";
-      pageHTML += `
-        <div class="print-footer">
-          <div class="signatures">
-            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${preparedBy}</div></div>
-            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${checkedBy}</div></div>
-            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${approvedBy}</div></div>
-          </div>
-        </div>
-      `;
-    }
-
-    pageHTML += `<div class="page-number-footer">Page ${pageNum + 1} of ${totalPages}</div>`;
-    pageDiv.innerHTML = pageHTML;
-    printContainer.appendChild(pageDiv);
+  data.forEach((club, idx) => {
+    html += `
+      <tr>
+        <td style="text-align:center;">${idx + 1}</td>
+        <td>${escapeHtml(club.reg_number || "-")}</td>
+        <td style="text-align:center;white-space:nowrap;">${formatDate(club.registration_date)}</td>
+        <td>${escapeHtml(club.name)}</td>
+        <td>${escapeHtml(club.division_name || "-")}</td>
+        <td>${escapeHtml(club.gn_division_name || "-")}</td>
+        <td>${escapeHtml(club.chairman_name || "-")}${club.chairman_address ? "<br>" + escapeHtml(club.chairman_address) : ""}${club.chairman_phone ? "<br>" + escapeHtml(club.chairman_phone) : ""}</td>
+        <td>${escapeHtml(club.secretary_name || "-")}${club.secretary_address ? "<br>" + escapeHtml(club.secretary_address) : ""}${club.secretary_phone ? "<br>" + escapeHtml(club.secretary_phone) : ""}</td>
+        <td style="text-align:center;white-space:nowrap;">${formatDate(club.last_reorg_date)}</td>
+        <td style="text-align:center;white-space:nowrap;">${formatDate(club.next_reorg_due_date)}</td>
+      </tr>
+    `;
   });
+
+  html += `
+      </tbody>
+    </table>
+    <div class="print-footer">
+      <div class="signatures">
+        <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${preparedBy}</div></div>
+        <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${checkedBy}</div></div>
+        <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${approvedBy}</div></div>
+      </div>
+    </div>
+  `;
+
+  printContainer.innerHTML = html;
 
   if (window.i18n && window.i18n.applyTranslations) {
     window.i18n.applyTranslations();

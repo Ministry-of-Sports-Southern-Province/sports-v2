@@ -80,115 +80,66 @@ $customStyles = '
         }
 
         @media print {
-            @page { 
-                size: A4 landscape; 
-                margin: 10mm;
+            @page {
+                size: A4 landscape;
+                margin: 10mm 10mm 15mm 10mm;
+                @bottom-center {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-size: 7pt;
+                    color: #374151;
+                }
             }
-            
+
             body {
                 margin: 0;
                 padding: 0;
                 background: white;
             }
-            
+
             /* Hide all main dashboard elements */
             body > *:not(#printContainer) {
                 display: none !important;
             }
-            
-            /* Hide floating widgets/headers/footers */
+
             .accessibility-fab, .accessibility-panel, header, footer {
                 display: none !important;
             }
 
-            /* Show Print Container */
+            /* Show Print Container as normal flow */
             #printContainer {
                 display: block !important;
                 width: 100%;
-                height: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-                z-index: 9999;
+                position: static;
             }
 
-            /* Report Page Layout */
-            .print-page-wrapper {
-                width: 100%;
-                padding: 0;
-                box-sizing: border-box;
-                background: white;
-            }
-            
-            .print-page {
-                border: 2px solid #1e3a8a;
-                padding: 3mm 3mm 3mm 3mm;
-                margin-bottom: 10mm;
-                page-break-after: always;
-                page-break-inside: avoid;
-                position: relative;
-                box-sizing: border-box;
-                width: 100%;
-                min-height: 185mm;
-                max-height: 297mm;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
-            
-            .print-page:last-child {
-                page-break-after: auto;
-                margin-bottom: 0;
-            }
-            
-            .page-number-footer {
-                position: relative;
-                bottom: auto;
-                left: auto;
-                right: auto;
+            /* Report Header — appears once at top of document */
+            .print-header {
                 text-align: center;
-                font-size: 7.5pt;
-                color: #374151;
-                font-weight: 500;
-                height: auto;
-                padding: 2mm 0 0 0;
-                margin: 0;
-                margin-top: auto;
-                border-top: 1px solid #ddd;
-            }
-
-            .report-content {
-                flex-grow: 1;
-                width: 100%;
-            }
-
-            /* Header */
-            .print-header { 
-                text-align: center; 
-                margin-bottom: 4px; 
-                border-bottom: 2px solid #1e3a8a; 
+                margin-bottom: 6px;
+                border-bottom: 2px solid #1e3a8a;
                 padding-bottom: 3px;
                 padding-top: 2px;
-                flex-shrink: 0;
                 background: #f0f4f8;
                 border-radius: 2px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .print-header .dept-name { 
+            .print-header .dept-name {
                 font-size: 7.5pt;
-                font-weight: bold; 
-                color: #1e3a8a; 
-                text-transform: uppercase; 
-                margin-bottom: 2px; 
+                font-weight: bold;
+                color: #1e3a8a;
+                text-transform: uppercase;
+                margin-bottom: 2px;
                 line-height: 1;
                 letter-spacing: 0.5px;
             }
-            .print-header h1 { 
+            .print-header h1 {
                 font-size: 14pt;
-                font-weight: 900; 
-                color: #000; 
-                text-transform: uppercase; 
-                margin: 2px 0 3px 0; 
-                letter-spacing: 0.8px; 
+                font-weight: 900;
+                color: #000;
+                text-transform: uppercase;
+                margin: 2px 0 3px 0;
+                letter-spacing: 0.8px;
                 line-height: 1.1;
             }
             .print-header .report-subtitle {
@@ -201,94 +152,93 @@ $customStyles = '
                 border-radius: 10px;
                 display: inline-block;
                 border: 1px solid #d1d5db;
-                -webkit-print-color-adjust: exact; 
+                -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
-            /* Table Styling */
-            #printContainer table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                font-size: 6pt; 
-                margin-top: 1px;
-                margin-bottom: 0;
-                table-layout: auto;
-                line-height: 1;
-                flex-grow: 1;
-                overflow: visible;
+
+            /* Table — single continuous table, browser handles page breaks */
+            #printContainer table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10pt;
+                line-height: 1.2;
+                table-layout: fixed;
+                margin-top: 2px;
             }
+
+            /* thead repeats automatically on every printed page */
             #printContainer table thead {
                 display: table-header-group;
             }
             #printContainer table tbody {
                 display: table-row-group;
             }
+
+            /* Never split a row across two pages */
             #printContainer table tr {
                 page-break-inside: avoid;
+                break-inside: avoid;
             }
-            #printContainer table th { 
-                background-color: #1e3a8a !important; 
-                color: white !important; 
-                font-weight: bold; 
-                font-size: 6pt;
-                padding: 1px 2px; 
-                border: 0.5px solid #0f3a6d; 
-                text-align: left; 
+
+            #printContainer table th {
+                background-color: #1e3a8a !important;
+                color: white !important;
+                font-weight: bold;
+                font-size: 10pt;
+                padding: 2px 3px;
+                border: 0.5px solid #0f3a6d;
+                text-align: left;
                 line-height: 1.2;
                 white-space: normal;
-                overflow: visible;
                 word-break: break-word;
-                -webkit-print-color-adjust: exact; 
+                -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            #printContainer table td { 
-                padding: 0.8px 1px; 
-                border: 0.5px solid #999; 
-                font-size: 5pt; 
-                color: #000; 
-                line-height: 1.2; 
+            #printContainer table td {
+                padding: 2px 3px;
+                border: 0.5px solid #999;
+                font-size: 10pt;
+                color: #000;
+                line-height: 1.3;
                 vertical-align: top;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
-                overflow: visible;
-                max-height: none;
                 white-space: normal;
             }
-            #printContainer table tr:nth-child(even) { 
-                background-color: #f5f5f5 !important; 
-                -webkit-print-color-adjust: exact; 
+            #printContainer table tr:nth-child(even) {
+                background-color: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
-            /* Footer */
-            .print-footer { 
-                margin-top: 1mm; 
-                page-break-inside: avoid;
+
+            /* Footer - keep together, do not split from last row */
+            .print-footer {
+                margin-top: 4mm;
                 border-top: 1px solid #ccc;
                 padding-top: 2mm;
-                flex-shrink: 0;
+                page-break-inside: avoid;
+                break-inside: avoid;
             }
-            .signatures { 
-                display: flex; 
-                justify-content: space-between; 
-                margin-bottom: 0; 
+            .signatures {
+                display: flex;
+                justify-content: space-between;
                 margin-top: 2mm;
                 gap: 10px;
             }
-            .sig-block { 
+            .sig-block {
                 flex: 1;
-                text-align: center; 
+                text-align: center;
             }
-            .sig-line { 
-                border-bottom: 0.5px solid #000; 
-                margin-bottom: 2px; 
-                height: 12px; 
+            .sig-line {
+                border-bottom: 0.5px solid #000;
+                margin-bottom: 2px;
+                height: 12px;
             }
-            .sig-label { 
-                font-size: 6pt; 
-                font-weight: bold; 
-                text-transform: uppercase; 
-                color: #000; 
+            .sig-label {
+                font-size: 6pt;
+                font-weight: bold;
+                text-transform: uppercase;
+                color: #000;
                 line-height: 1;
             }
         }

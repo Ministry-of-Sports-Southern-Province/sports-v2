@@ -112,6 +112,7 @@ try {
                 c.secretary_address,
                 c.secretary_phone,
                 d.name as district_name,
+                d.sinhala_letter as district_letter,
                 dv.name as division_name,
                 gn.name as gn_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
