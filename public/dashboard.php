@@ -349,7 +349,7 @@ include '../includes/header.php';
                 <thead>
                     <tr>
                         <th data-i18n="table.reg_number"></th>
-                        <th data-i18n="table.registration_date"></th>
+                        <th data-i18n="table.registration_date" style="min-width: 120px;"></th>
                         <th data-i18n="table.club_name"></th>
                         <th data-i18n="table.division"></th>
                         <th data-i18n="table.gn_division"></th>
@@ -357,8 +357,8 @@ include '../includes/header.php';
                         <th data-i18n="table.chairman_address"></th>
                         <th data-i18n="table.secretary_name"></th>
                         <th data-i18n="table.secretary_address"></th>
-                        <th data-i18n="table.last_reorg_date"></th>
-                        <th data-i18n="table.next_reorg_due_date"></th>
+                        <th data-i18n="table.last_reorg_date" style="min-width: 120px;"></th>
+                        <th data-i18n="table.next_reorg_due_date" style="min-width: 120px;"></th>
                         <th data-i18n="table.actions"></th>
                     </tr>
                 </thead>

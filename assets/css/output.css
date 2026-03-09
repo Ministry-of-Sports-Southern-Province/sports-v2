@@ -1860,7 +1860,7 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
     border-color: var(--color-slate-600);
-    padding-inline: calc(var(--spacing) * 5);
+    padding-inline: calc(var(--spacing) * 3);
     padding-block: calc(var(--spacing) * 3.5);
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
@@ -1893,7 +1893,7 @@
     background-color: var(--color-slate-100);
   }
   .data-table tbody td {
-    padding-inline: calc(var(--spacing) * 5);
+    padding-inline: calc(var(--spacing) * 3);
     padding-block: calc(var(--spacing) * 3.5);
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));

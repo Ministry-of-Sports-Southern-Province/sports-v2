@@ -12,12 +12,40 @@ A modern sports club management system for the Department of Sports Southern Pro
 - ✅ Dual date entry options (current date or manual past date)
 - ✅ Flexible equipment tracking system
 - ✅ Searchable autocomplete for locations with on-the-fly creation
-- ✅ Dashboard with search and filter capabilities
+- ✅ Dashboard with search, filter (district / division / GN division / status) and pagination
+- ✅ Club details view with full information display
+- ✅ Club editing (inline updates via edit-club page)
+- ✅ Club deletion with confirmation
+- ✅ Reorganization tracking — record and view reorganization history per club
+- ✅ Reorganizations list with status tracking
+- ✅ Summary view with real-time streaming support
+- ✅ User authentication (login / logout) with role-based access control (admin / viewer)
+- ✅ Admin user management panel
+- ✅ Admin settings page
+
+### Reports
+
+- ✅ General reports page
+- ✅ District statistics report
+- ✅ Equipment report
+- ✅ Registered clubs report
+- ✅ Reorganized clubs report
+
+### Export & Print
+
+- ✅ Export clubs to CSV/Excel (server-side, filter-aware)
+- ✅ Export clubs to PDF (server-side)
+- ✅ Print-friendly club list with full data, signatures, and date stamp
+
+### Charts & Statistics
+
+- ✅ Pie, Bar, and Doughnut charts for clubs by district (Chart.js)
+- ✅ Animated stat cards with district breakdowns
 
 ### Technical Features
 
-- ✅ **Offline Support** - No CDN dependencies, works without internet
-- ✅ Multilingual support (English, Sinhala, Tamil) - Frontend only
+- ✅ **Offline Support** — No CDN dependencies, works without internet
+- ✅ Multilingual support (English, Sinhala, Tamil) — Frontend only
 - ✅ UTF-8 support for Sinhala and Tamil characters
 - ✅ Properly normalized database (7 tables, 3NF compliant)
 - ✅ Tom Select for enhanced dropdowns with search
@@ -25,6 +53,7 @@ A modern sports club management system for the Department of Sports Southern Pro
 - ✅ PDO with prepared statements for security
 - ✅ Transaction support for data integrity
 - ✅ Inline validation with translated error messages
+- ✅ XSS protection via server-side and client-side escaping
 
 ## Technology Stack
 
@@ -138,8 +167,15 @@ This generates `assets/css/output.css` required for the system to work.
    - XAMPP: `c:\xampp\htdocs\sports-v2`
 
 2. Access the system in your browser:
+   - Login: `http://localhost/sports-v2/login.php`
    - Dashboard: `http://localhost/sports-v2/public/dashboard.php`
-   - Registration: `http://localhost/sports-v2/public/register.php`
+   - Register Club: `http://localhost/sports-v2/public/register.php`
+   - Reports: `http://localhost/sports-v2/public/reports.php`
+   - Admin Settings: `http://localhost/sports-v2/public/admin-settings.php`
+
+3. Set up the admin account (first-time setup):
+   - Run `http://localhost/sports-v2/setup-admin.php` in your browser
+   - Or see `ADMIN_LOGIN_SETUP.md` for manual setup instructions
 
 ## Usage Guide
 
@@ -175,9 +211,32 @@ This generates `assets/css/output.css` required for the system to work.
 ### Viewing Clubs
 
 1. Navigate to **Dashboard**
-2. Use search box to find clubs by name, reg number, or chairman
-3. Filter by district
-4. Click "View Details" to see full club information
+2. Use the search box to find clubs by name, reg number, or chairman
+3. Filter by district, division, GN division, or reorganization status
+4. Use pagination controls to navigate large result sets
+5. Click **View Details** to see full club information
+6. Admins can **Edit**, **Delete**, or **Reorganize** clubs from the action column
+
+### Reorganizations
+
+1. Navigate to **Reorganizations** for a list of all recorded reorganizations
+2. Click **Reorganize** on a club (from dashboard or club details) to record a new reorganization date
+3. The dashboard shows the next reorganization due date per club (calculated automatically)
+
+### Reports
+
+Navigate to **Reports** for:
+- **District Statistics** — clubs count by district
+- **Equipment Report** — equipment inventory across clubs
+- **Registered Clubs** — list of registered clubs
+- **Reorganized Clubs** — list of clubs with reorganization history
+
+### Export
+
+From the dashboard, use the export buttons to download:
+- **CSV/Excel** — filtered club data as a CSV file
+- **PDF** — formatted PDF report
+- **Print** — browser print view with signatures block and date stamp
 
 ### Language Switching
 
@@ -213,35 +272,77 @@ This generates `assets/css/output.css` required for the system to work.
 
 ```
 sports-v2/
-├── api/                        # Backend API endpoints
-│   ├── clubs.php              # Club registration
-│   ├── clubs-list.php         # Club listing with filters
-│   ├── locations.php          # Locations CRUD
-│   ├── equipment-types.php    # Equipment types CRUD
-│   └── validate-reg-number.php # Registration number validation
+├── api/                            # Backend API endpoints
+│   ├── clubs.php                  # Club CRUD (create, delete)
+│   ├── clubs-list.php             # Club listing with filters & pagination
+│   ├── club-details.php           # Single club details
+│   ├── locations.php              # Locations CRUD
+│   ├── equipment-types.php        # Equipment types CRUD
+│   ├── validate-reg-number.php    # Registration number validation
+│   ├── reorganizations.php        # Reorganization list API
+│   ├── reorganize-club.php        # Record reorganization API
+│   ├── statistics.php             # Dashboard statistics
+│   ├── summary.php                # Summary data
+│   ├── summary-stream.php         # Streaming summary (SSE)
+│   ├── reports.php                # Reports API
+│   ├── export-clubs-excel.php     # CSV/Excel export
+│   ├── export-clubs-pdf.php       # PDF export
+│   ├── get-translations.php       # i18n translation API
+│   ├── admin-users.php            # Admin user management
+│   ├── login.php                  # Authentication
+│   └── logout.php                 # Session termination
 ├── assets/
-│   ├── css/                   # Custom styles (if needed)
+│   ├── css/
+│   │   ├── input.css              # Tailwind source
+│   │   └── output.css             # Built CSS (do not edit manually)
 │   ├── js/
-│   │   ├── i18n.js           # Internationalization module
-│   │   ├── register.js       # Registration form logic
-│   │   └── dashboard.js      # Dashboard logic
-│   └── lang/
-│       ├── en.json           # English translations
-│       ├── si.json           # Sinhala translations
-│       └── ta.json           # Tamil translations
+│   │   ├── i18n.js               # Internationalization module
+│   │   ├── register.js           # Registration form logic
+│   │   ├── dashboard.js          # Dashboard with charts & pagination
+│   │   ├── club-details.js       # Club details view logic
+│   │   ├── edit-club.js          # Edit club form logic
+│   │   ├── reorganizations.js    # Reorganizations list
+│   │   ├── reorganize-club.js    # Record reorganization logic
+│   │   ├── summary.js            # Summary page logic
+│   │   ├── reports.js            # Reports page logic
+│   │   ├── report-district-statistics.js
+│   │   ├── report-equipment.js
+│   │   ├── report-registered.js
+│   │   ├── report-reorganized.js
+│   │   ├── shared-history-modal.js # Reusable history modal
+│   │   └── admin-settings.js     # Admin settings logic
+│   ├── lang/
+│   │   ├── en.json               # English translations
+│   │   ├── si.json               # Sinhala translations
+│   │   └── ta.json               # Tamil translations
+│   └── vendor/                   # Offline vendor libraries
 ├── config/
-│   └── database.php          # Database connection & utilities
+│   └── database.php              # Database connection & utilities
 ├── includes/
-│   ├── header.php            # Common header
-│   └── footer.php            # Common footer
-├── public/
-│   ├── register.html         # Club registration form
-│   ├── dashboard.html        # Clubs dashboard
-│   └── club-details.html     # Club details view (TODO)
+│   ├── auth.php                  # Authentication helpers
+│   ├── header.php                # Common header
+│   └── footer.php                # Common footer
+├── public/                       # Page entry points
+│   ├── dashboard.php             # Clubs dashboard
+│   ├── register.php              # Club registration form
+│   ├── club-details.php          # Club details view
+│   ├── edit-club.php             # Edit club
+│   ├── reorganizations.php       # Reorganizations list
+│   ├── reorganize-club.php       # Record reorganization
+│   ├── summary.php               # Summary view
+│   ├── reports.php               # Reports hub
+│   ├── report-district-statistics.php
+│   ├── report-equipment.php
+│   ├── report-registered.php
+│   ├── report-reorganized.php
+│   └── admin-settings.php        # Admin settings & user management
 ├── sql/
-│   ├── schema.sql            # Database schema
-│   └── seed.sql              # Seed data
-└── README.md                 # This file
+│   ├── schema.sql                # Database schema
+│   ├── seed.sql                  # Seed data
+│   └── add-performance-indexes.sql
+├── login.php                     # Login page
+├── index.php                     # Root redirect
+└── README.md                     # This file
 ```
 
 ## Key Improvements Over Old System
@@ -281,16 +382,9 @@ sports-v2/
 
 ## Future Enhancements
 
-- [ ] Club details page with edit functionality
-- [ ] Reorganization tracking interface
-- [ ] Equipment inventory reports
-- [ ] User authentication and authorization
-- [ ] Data export (CSV/PDF)
-- [ ] Advanced search with multiple filters
-- [ ] Activity audit log
 - [ ] Email notifications
 - [ ] Mobile responsive optimizations
-- [ ] Print-friendly views
+- [ ] Activity audit log
 
 ## Support
 
@@ -303,5 +397,5 @@ Proprietary - Department of Sports Southern Province, Sri Lanka
 ---
 
 **Version**: 2.0  
-**Last Updated**: January 5, 2026  
-**Status**: Initial Release - Registration & Dashboard Complete
+**Last Updated**: March 6, 2026  
+**Status**: Active — Full feature set implemented
