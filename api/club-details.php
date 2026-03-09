@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Club Details API
@@ -26,7 +26,7 @@ try {
     // Get club details with location info
     $sql = "SELECT 
                 c.*,
-                gn.name as gn_division_name,
+                gn.name as gs_division_name,
                 dv.name as division_name,
                 d.name as district_name
             FROM clubs c

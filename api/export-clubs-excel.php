@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Export Clubs to Excel API
@@ -20,7 +20,7 @@ try {
     $search = $_GET['search'] ?? '';
     $districtId = $_GET['district_id'] ?? null;
     $divisionId = $_GET['division_id'] ?? null;
-    $gnDivisionId = $_GET['gn_division_id'] ?? null;
+    $gsDivisionId = $_GET['gs_division_id'] ?? null;
     $language = $_GET['language'] ?? 'si';
 
     // Load language file
@@ -68,9 +68,9 @@ try {
     }
 
     // Add GN division filter
-    if ($gnDivisionId) {
+    if ($gsDivisionId) {
         $baseFrom .= " AND gn.id = ?";
-        $params[] = $gnDivisionId;
+        $params[] = $gsDivisionId;
     }
 
     $countSql = "SELECT COUNT(DISTINCT c.id) " . $baseFrom;
@@ -97,7 +97,7 @@ try {
                 c.secretary_phone,
                 d.name as district_name,
                 dv.name as division_name,
-                gn.name as gn_division_name,
+                gn.name as gs_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
             " . $baseFrom . "
             GROUP BY c.id
@@ -130,7 +130,7 @@ try {
         t('table.registration_date', 'Registration Date'),
         t('table.club_name', 'Club Name'),
         t('table.division', 'Division'),
-        t('table.gn_division', 'GN Division'),
+        t('table.gs_division', 'GS Division'),
         t('table.chairman_name', 'Chairman Name'),
         t('table.chairman_address', 'Chairman Address and Phone'),
         t('table.secretary_name', 'Secretary Name'),
@@ -165,7 +165,7 @@ try {
             date('Y-m-d', strtotime($club['registration_date'])),
             $club['name'],
             $club['division_name'] ?? '',
-            $club['gn_division_name'] ?? '',
+            $club['gs_division_name'] ?? '',
             $club['chairman_name'] ?? '',
             ($club['chairman_address'] ?? '') . ' ' . ($club['chairman_phone'] ? '(' . $club['chairman_phone'] . ')' : ''),
             $club['secretary_name'] ?? '',

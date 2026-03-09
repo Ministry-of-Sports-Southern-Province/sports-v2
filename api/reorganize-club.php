@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Club Reorganization API
@@ -145,7 +145,7 @@ function reorganizeClub()
             $data['secretary_name'],
             $data['secretary_address'],
             $data['secretary_phone'],
-            $data['gn_division_id'] ?? null,
+            $data['gs_division_id'] ?? null,
             $data['club_id']
         ]);
 

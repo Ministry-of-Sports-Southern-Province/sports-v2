@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Dashboard Page
@@ -41,7 +41,7 @@ $customStyles = '
         #searchInput,
         #filterDistrict,
         #filterDivision,
-        #filterGnDivision,
+        #filterGsDivision,
         #filterStatus {
             font-family: "Noto Sans Sinhala", "Noto Sans Tamil", "Roboto", sans-serif;
             font-size: 14px;
@@ -58,7 +58,7 @@ $customStyles = '
         /* Select dropdown styling to match input */
         #filterDistrict option,
         #filterDivision option,
-        #filterGnDivision option,
+        #filterGsDivision option,
         #filterStatus option {
             font-size: 14px;
             color: #374151;
@@ -68,7 +68,7 @@ $customStyles = '
         /* Placeholder option styling (first option) */
         #filterDistrict option[value=""],
         #filterDivision option[value=""],
-        #filterGnDivision option[value=""],
+        #filterGsDivision option[value=""],
         #filterStatus option[value=""] {
             color: #9ca3af;
             font-size: 14px;
@@ -320,8 +320,8 @@ include '../includes/header.php';
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label class="form-label" data-i18n="form.gn_division"></label>
-                <select id="filterGnDivision" class="form-select">
+                <label class="form-label" data-i18n="form.gs_division"></label>
+                <select id="filterGsDivision" class="form-select">
                     <option value="" data-i18n="placeholder.select_division_first"></option>
                 </select>
             </div>
@@ -352,7 +352,7 @@ include '../includes/header.php';
                         <th data-i18n="table.registration_date" style="min-width: 120px;"></th>
                         <th data-i18n="table.club_name"></th>
                         <th data-i18n="table.division"></th>
-                        <th data-i18n="table.gn_division"></th>
+                        <th data-i18n="table.gs_division"></th>
                         <th data-i18n="table.chairman_name"></th>
                         <th data-i18n="table.chairman_address"></th>
                         <th data-i18n="table.secretary_name"></th>

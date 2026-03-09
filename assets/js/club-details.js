@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Club Details JavaScript
  */
 
@@ -132,8 +132,8 @@ function displayClubDetails(club) {
           )}</p></div>
         </div>
         <div class="info-row">
-          <div class="full-width"><label data-i18n="form.gn_division">GN Division</label><p>${escapeHtml(
-            club.gn_division_name || "-",
+          <div class="full-width"><label data-i18n="form.gs_division">GS Division</label><p>${escapeHtml(
+            club.gs_division_name || "-",
           )}</p></div>
         </div>
       </div>

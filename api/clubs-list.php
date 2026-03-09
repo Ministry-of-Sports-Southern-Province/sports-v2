@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Clubs List API
@@ -18,7 +18,7 @@ try {
     $search = $_GET['search'] ?? '';
     $districtId = $_GET['district_id'] ?? null;
     $divisionId = $_GET['division_id'] ?? null;
-    $gnDivisionId = $_GET['gn_division_id'] ?? null;
+    $gsDivisionId = $_GET['gs_division_id'] ?? null;
     $reorgStatus = isset($_GET['reorg_status']) ? trim($_GET['reorg_status']) : null;
     if ($reorgStatus !== null && $reorgStatus !== 'active' && $reorgStatus !== 'expired') {
         $reorgStatus = null;
@@ -69,9 +69,9 @@ try {
     }
 
     // Add GN division filter
-    if ($gnDivisionId) {
-        $where .= " AND gn.id = :gn_division_id";
-        $params['gn_division_id'] = (int)$gnDivisionId;
+    if ($gsDivisionId) {
+        $where .= " AND gn.id = :gs_division_id";
+        $params['gs_division_id'] = (int)$gsDivisionId;
     }
 
     // HAVING for reorg_status (active = due date in future, expired = due date past or no reorg)
@@ -114,7 +114,7 @@ try {
                 d.name as district_name,
                 d.sinhala_letter as district_letter,
                 dv.name as division_name,
-                gn.name as gn_division_name,
+                gn.name as gs_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
             " . $baseFrom . $where . "
             GROUP BY c.id" . $having . "

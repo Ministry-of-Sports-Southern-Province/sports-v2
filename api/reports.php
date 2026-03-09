@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 header('Content-Type: application/json; charset=UTF-8');
 require_once '../config/database.php';
 
@@ -137,7 +137,7 @@ try {
         $equipment = $_GET['equipment'] ?? '';
         $district = $_GET['district'] ?? '';
         $division = $_GET['division'] ?? '';
-        $gnDivision = $_GET['gn_division'] ?? '';
+        $gsDivision = $_GET['gs_division'] ?? '';
 
         $baseFrom = "FROM clubs c
                 LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
@@ -164,9 +164,9 @@ try {
             $params['division'] = $division;
         }
 
-        if ($gnDivision) {
-            $baseFrom .= " AND gn.name = :gn_division";
-            $params['gn_division'] = $gnDivision;
+        if ($gsDivision) {
+            $baseFrom .= " AND gn.name = :gs_division";
+            $params['gs_division'] = $gsDivision;
         }
 
         $countSql = "SELECT COUNT(*) " . $baseFrom;
@@ -177,7 +177,7 @@ try {
             sendJSONResponse(false, null, 'Too many rows to print all. Please apply filters.', 400);
         }
 
-        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gn_division, et.name as equipment, ce.quantity
+        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, ce.quantity
                 FROM clubs c
                 LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
                 LEFT JOIN divisions dv ON gn.division_id = dv.id
@@ -187,7 +187,7 @@ try {
                 WHERE 1=1";
 
         // Keep select + where identical to $baseFrom, for safety/clarity
-        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gn_division, et.name as equipment, ce.quantity
+        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, ce.quantity
                 " . $baseFrom . "
                 ORDER BY d.name, dv.name, gn.name, c.name, et.name";
 

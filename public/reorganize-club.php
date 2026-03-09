@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Club Reorganization Page
@@ -74,8 +74,8 @@ if (!$clubId) {
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label required" data-i18n="form.gn_division">GN Division</label>
-                    <select id="gnDivision" class="form-select" required>
+                    <label class="form-label required" data-i18n="form.gs_division">GS Division</label>
+                    <select id="gsDivision" class="form-select" required>
                         <option value="" data-i18n="placeholder.select_division_first">Select division first</option>
                     </select>
                 </div>

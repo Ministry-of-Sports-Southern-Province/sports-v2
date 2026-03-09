@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $pageTitle = 'report.type_equipment';
 $pageHeading = 'report.type_equipment';
 $activePage = 'reports';
@@ -30,9 +30,9 @@ include '../includes/header.php';
                 </select>
             </div>
             <div>
-                <label class="form-label" data-i18n="filter.gn_division">ග්‍රාම නිලධාරී</label>
-                <select id="gnDivision" class="form-select">
-                    <option value="" data-i18n="filter.all_gn_divisions">සියලු ග්‍රාම නිලධාරී</option>
+                <label class="form-label" data-i18n="filter.gs_division">Grama Sewa Division</label>
+                <select id="gsDivision" class="form-select">
+                    <option value="" data-i18n="filter.all_gs_divisions">All GS Divisions</option>
                 </select>
             </div>
         </div>

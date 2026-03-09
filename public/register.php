@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Registration Page
@@ -50,11 +50,11 @@ include '../includes/header.php';
                 <span id="divisionError" class="form-error hidden"></span>
             </div>
             <div class="mb-4">
-                <label class="form-label" data-i18n="form.gn_division">ග්‍රාම නිලධාරී වසම</label>
-                <select id="gnDivision" name="gnDivision" required class="form-select" data-i18n-placeholder="placeholder.select">
+                <label class="form-label" data-i18n="form.gs_division">Grama Sewa Division</label>
+                <select id="gsDivision" name="gsDivision" required class="form-select" data-i18n-placeholder="placeholder.select">
                     <option value=""></option>
                 </select>
-                <span id="gnDivisionError" class="form-error hidden"></span>
+                <span id="gsDivisionError" class="form-error hidden"></span>
             </div>
         </div>
 

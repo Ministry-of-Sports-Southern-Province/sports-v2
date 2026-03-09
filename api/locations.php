@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Locations API
@@ -43,7 +43,7 @@ function handleGetRequest($pdo)
     $parentId = $_GET['parent_id'] ?? null;
 
     // Validate type
-    $validTypes = ['district', 'division', 'gn_division'];
+    $validTypes = ['district', 'division', 'gs_division'];
     if (!in_array($type, $validTypes)) {
         sendJSONResponse(false, null, 'Invalid location type', 400);
     }
@@ -57,13 +57,13 @@ function handleGetRequest($pdo)
             case 'division':
                 $stmt = $pdo->prepare("SELECT id, name, district_id FROM divisions WHERE id = :id");
                 break;
-            case 'gn_division':
+            case 'gs_division':
                 $stmt = $pdo->prepare("SELECT id, name, division_id FROM grama_niladhari_divisions WHERE id = :id");
                 break;
         }
         $stmt->execute(['id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($result) {
             sendJSONResponse(true, $result);
         } else {
@@ -103,7 +103,7 @@ function handleGetRequest($pdo)
             $sql .= " ORDER BY name";
             break;
 
-        case 'gn_division':
+        case 'gs_division':
             $sql = "SELECT id, name, division_id FROM grama_niladhari_divisions WHERE 1=1";
             $params = [];
 
@@ -138,7 +138,7 @@ function handlePostRequest($pdo)
     $parentId = $_POST['parent_id'] ?? null;
 
     // Validate type
-    $validTypes = ['district', 'division', 'gn_division'];
+    $validTypes = ['district', 'division', 'gs_division'];
     if (!in_array($type, $validTypes)) {
         sendJSONResponse(false, null, 'Invalid location type', 400);
     }
@@ -207,7 +207,7 @@ function handlePostRequest($pdo)
                 ];
                 break;
 
-            case 'gn_division':
+            case 'gs_division':
                 if (!$parentId) {
                     sendJSONResponse(false, null, 'Division ID is required', 400);
                 }
@@ -219,7 +219,7 @@ function handlePostRequest($pdo)
                     'division_id' => $parentId
                 ]);
                 if ($stmt->fetch()) {
-                    sendJSONResponse(false, null, 'GN Division already exists in this division', 409);
+                    sendJSONResponse(false, null, 'GS Division already exists in this division', 409);
                 }
 
                 $stmt = $pdo->prepare("INSERT INTO grama_niladhari_divisions (name, division_id) VALUES (:name, :division_id)");

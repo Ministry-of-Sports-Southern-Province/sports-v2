@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Restore Complete Translation Files with Statistics Keys
@@ -37,7 +37,7 @@ $siJson = [
     "form.location_information" => "ස්ථාන තොරතුරු",
     "form.district" => "දිස්ත්‍රික්කය",
     "form.division" => "ප්‍රාදේශීය ලේකම් කෝට්ඨාසය",
-    "form.gn_division" => "ග්‍රාම නිලධාරී කෝට්ඨාසය",
+    "form.gs_division" => "ග්‍රාම නිලධාරී කෝට්ඨාසය",
     "form.chairman_information" => "සභාපතිගේ තොරතුරු",
     "form.chairman_name" => "සභාපතිගේ නම",
     "form.chairman_address" => "සභාපතිගේ ලිපිනය",
@@ -105,7 +105,7 @@ $siJson = [
     "table.club_name" => "සමාජ නාමය",
     "table.district" => "දිස්ත්‍රික්කය",
     "table.division" => "ප්‍රාදේශීය ලේකම් කෝට්ඨාසය",
-    "table.gn_division" => "ග්‍රාම නිලධාරී කෝට්ඨාසය",
+    "table.gs_division" => "ග්‍රාම නිලධාරී කෝට්ඨාසය",
     "table.chairman" => "සභාපති",
     "table.secretary" => "ලේකම්",
     "table.registration_date" => "ලියාපදිංචි දිනය",
@@ -161,7 +161,7 @@ $taJson = [
     "form.location_information" => "இட தகவல்",
     "form.district" => "மாவட்டம்",
     "form.division" => "பிரிவு",
-    "form.gn_division" => "கிராம அலுவலர் பிரிவு",
+    "form.gs_division" => "கிராம அலுவலர் பிரிவு",
     "form.chairman_information" => "தலைவர் தகவல்",
     "form.chairman_name" => "தலைவரின் பெயர்",
     "form.chairman_address" => "தலைவரின் முகவரி",
@@ -229,7 +229,7 @@ $taJson = [
     "table.club_name" => "கழக பெயர்",
     "table.district" => "மாவட்டம்",
     "table.division" => "பிரிவு",
-    "table.gn_division" => "கிராம அலுவலர் பிரிவு",
+    "table.gs_division" => "கிராம அலுவலர் பிரிவு",
     "table.chairman" => "தலைவர்",
     "table.secretary" => "செயலாளர்",
     "table.registration_date" => "பதிவு தேதி",

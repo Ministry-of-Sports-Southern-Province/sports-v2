@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Club Reorganization JavaScript
  */
 
@@ -75,8 +75,8 @@ function displayCurrentInfo(club) {
                 <p class="text-gray-900" id="currentDivision">Loading...</p>
             </div>
             <div>
-                <p class="font-semibold text-gray-700">GN Division:</p>
-                <p class="text-gray-900" id="currentGnDivision">Loading...</p>
+                <p class="font-semibold text-gray-700">GS Division:</p>
+                <p class="text-gray-900" id="currentGsDivision">Loading...</p>
             </div>
             <div>
                 <p class="font-semibold text-gray-700">Chairman:</p>
@@ -130,22 +130,22 @@ function displayCurrentInfo(club) {
     document.getElementById("currentDivision").textContent = "-";
   }
 
-  if (club.gn_division_id) {
-    fetch(`${apiBase}/locations.php?type=gn_division&id=${club.gn_division_id}`)
+  if (club.gs_division_id) {
+    fetch(`${apiBase}/locations.php?type=gs_division&id=${club.gs_division_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success && data.data) {
-          document.getElementById("currentGnDivision").textContent =
+          document.getElementById("currentGsDivision").textContent =
             data.data.name;
         } else {
-          document.getElementById("currentGnDivision").textContent = "-";
+          document.getElementById("currentGsDivision").textContent = "-";
         }
       })
       .catch(() => {
-        document.getElementById("currentGnDivision").textContent = "-";
+        document.getElementById("currentGsDivision").textContent = "-";
       });
   } else {
-    document.getElementById("currentGnDivision").textContent = "-";
+    document.getElementById("currentGsDivision").textContent = "-";
   }
 }
 
@@ -176,8 +176,8 @@ function populateForm(club) {
 /**
  * Load location hierarchy (district -> division -> GN division)
  */
-function loadLocationHierarchy(gnDivisionId) {
-  fetch(`${apiBase}/locations.php?type=gn_division&id=${gnDivisionId}`)
+function loadLocationHierarchy(gsDivisionId) {
+  fetch(`${apiBase}/locations.php?type=gs_division&id=${gsDivisionId}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success && data.data) {
@@ -187,7 +187,7 @@ function loadLocationHierarchy(gnDivisionId) {
         // Load division to get district
         return fetch(`${apiBase}/locations.php?type=division&id=${divisionId}`);
       }
-      throw new Error("GN Division not found");
+      throw new Error("GS Division not found");
     })
     .then((response) => response.json())
     .then((data) => {
@@ -236,7 +236,7 @@ function initializeLocationDropdowns() {
 
   // Division change handler (district is disabled)
   document.getElementById("division").addEventListener("change", function () {
-    loadGNDivisions(this.value);
+    loadGSDivisions(this.value);
   });
 }
 
@@ -245,10 +245,10 @@ function initializeLocationDropdowns() {
  */
 function loadDivisions(districtId, selectedDivisionId = null) {
   const divisionSelect = document.getElementById("division");
-  const gnDivisionSelect = document.getElementById("gnDivision");
+  const gsDivisionSelect = document.getElementById("gsDivision");
 
   divisionSelect.innerHTML = '<option value="">Select division</option>';
-  gnDivisionSelect.innerHTML =
+  gsDivisionSelect.innerHTML =
     '<option value="">Select division first</option>';
 
   if (!districtId) return;
@@ -266,7 +266,7 @@ function loadDivisions(districtId, selectedDivisionId = null) {
 
         if (selectedDivisionId) {
           divisionSelect.value = selectedDivisionId;
-          loadGNDivisions(selectedDivisionId, currentClubData?.gn_division_id);
+          loadGSDivisions(selectedDivisionId, currentClubData?.gs_division_id);
         }
       }
     })
@@ -278,25 +278,25 @@ function loadDivisions(districtId, selectedDivisionId = null) {
 /**
  * Load GN divisions for selected division
  */
-function loadGNDivisions(divisionId, selectedGNDivisionId = null) {
-  const gnDivisionSelect = document.getElementById("gnDivision");
-  gnDivisionSelect.innerHTML = '<option value="">Select GN division</option>';
+function loadGSDivisions(divisionId, selectedGSDivisionId = null) {
+  const gsDivisionSelect = document.getElementById("gsDivision");
+  gsDivisionSelect.innerHTML = '<option value="">Select GS division</option>';
 
   if (!divisionId) return;
 
-  fetch(`${apiBase}/locations.php?type=gn_division&parent_id=${divisionId}`)
+  fetch(`${apiBase}/locations.php?type=gs_division&parent_id=${divisionId}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        data.data.forEach((gnDivision) => {
+        data.data.forEach((gsDivision) => {
           const option = document.createElement("option");
-          option.value = gnDivision.id;
-          option.textContent = gnDivision.name;
-          gnDivisionSelect.appendChild(option);
+          option.value = gsDivision.id;
+          option.textContent = gsDivision.name;
+          gsDivisionSelect.appendChild(option);
         });
 
-        if (selectedGNDivisionId) {
-          gnDivisionSelect.value = selectedGNDivisionId;
+        if (selectedGSDivisionId) {
+          gsDivisionSelect.value = selectedGSDivisionId;
         }
       }
     });
@@ -319,7 +319,7 @@ function handleSubmit(e) {
     secretary_name: document.getElementById("secretaryName").value,
     secretary_address: document.getElementById("secretaryAddress").value,
     secretary_phone: document.getElementById("secretaryPhone").value,
-    gn_division_id: document.getElementById("gnDivision").value,
+    gs_division_id: document.getElementById("gsDivision").value,
     notes: document.getElementById("notes").value,
   };
 

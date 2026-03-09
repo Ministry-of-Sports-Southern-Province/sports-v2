@@ -1,4 +1,4 @@
-/* ================================
+﻿/* ================================
    API BASE (relative to public/ so filters & search work)
 ================================ */
 var apiBase =
@@ -16,14 +16,14 @@ function getClubFiltersParams() {
   const search = document.getElementById("searchInput")?.value || "";
   const districtId = document.getElementById("filterDistrict")?.value || "";
   const divisionId = document.getElementById("filterDivision")?.value || "";
-  const gnDivisionId = document.getElementById("filterGnDivision")?.value || "";
+  const gsDivisionId = document.getElementById("filterGsDivision")?.value || "";
   const status = document.getElementById("filterStatus")?.value || "";
 
   const params = new URLSearchParams();
   if (search) params.append("search", search);
   if (districtId) params.append("district_id", districtId);
   if (divisionId) params.append("division_id", divisionId);
-  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+  if (gsDivisionId) params.append("gs_division_id", gsDivisionId);
   if (status) params.append("reorg_status", status);
   return params;
 }
@@ -515,7 +515,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeDropdowns() {
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
-  const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const gsDivisionSelect = document.getElementById("filterGsDivision");
 
   // Add change event listeners
   districtSelect.addEventListener("change", function () {
@@ -526,7 +526,7 @@ function initializeDropdowns() {
     handleDivisionChange(this.value);
   });
 
-  gnDivisionSelect.addEventListener("change", function () {
+  gsDivisionSelect.addEventListener("change", function () {
     loadClubs(1);
   });
 
@@ -626,12 +626,12 @@ function handleDistrictChange(districtId) {
   console.log("handleDistrictChange called with:", districtId);
 
   const divisionSelect = document.getElementById("filterDivision");
-  const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const gsDivisionSelect = document.getElementById("filterGsDivision");
 
   // Clear division and GN division
   divisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_district_first"></option>';
-  gnDivisionSelect.innerHTML =
+  gsDivisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_division_first"></option>';
 
   // Update translations if i18n is available
@@ -675,10 +675,10 @@ function handleDistrictChange(districtId) {
 function handleDivisionChange(divisionId) {
   console.log("handleDivisionChange called with:", divisionId);
 
-  const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const gsDivisionSelect = document.getElementById("filterGsDivision");
 
   // Clear GN division
-  gnDivisionSelect.innerHTML =
+  gsDivisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_division_first"></option>';
 
   // Update translations if i18n is available
@@ -687,30 +687,30 @@ function handleDivisionChange(divisionId) {
   }
 
   if (divisionId) {
-    // Load GN divisions
-    const url = `${apiBase}/locations.php?type=gn_division&parent_id=${divisionId}`;
-    console.log("Fetching GN divisions from:", url);
+    // Load GS divisions
+    const url = `${apiBase}/locations.php?type=gs_division&parent_id=${divisionId}`;
+    console.log("Fetching GS divisions from:", url);
 
     fetch(url)
       .then((response) => {
-        console.log("GN Division response status:", response.status);
+        console.log("GS Division response status:", response.status);
         return response.json();
       })
       .then((data) => {
-        console.log("GN Division data received:", data);
+        console.log("GS Division data received:", data);
         if (data.success && data.data) {
-          data.data.forEach((gnDivision) => {
+          data.data.forEach((gsDivision) => {
             const option = document.createElement("option");
-            option.value = gnDivision.id;
-            option.textContent = gnDivision.name;
-            option.setAttribute("data-search", gnDivision.name.toLowerCase());
-            gnDivisionSelect.appendChild(option);
+            option.value = gsDivision.id;
+            option.textContent = gsDivision.name;
+            option.setAttribute("data-search", gsDivision.name.toLowerCase());
+            gsDivisionSelect.appendChild(option);
           });
-          console.log(`Added ${data.data.length} GN divisions to dropdown`);
-          enableSelectSearch(gnDivisionSelect);
+          console.log(`Added ${data.data.length} GS divisions to dropdown`);
+          enableSelectSearch(gsDivisionSelect);
         }
       })
-      .catch((error) => console.error("Error loading GN divisions:", error));
+      .catch((error) => console.error("Error loading GS divisions:", error));
   }
 
   loadClubs(1);
@@ -770,7 +770,7 @@ function displayClubs(clubs) {
             <td class="whitespace-nowrap text-slate-700">${formatDate(club.registration_date)}</td>
             <td class="text-slate-900 font-medium">${escapeHtml(club.name)}</td>
             <td class="text-slate-700">${escapeHtml(club.division_name || "")}</td>
-            <td class="text-slate-700">${escapeHtml(club.gn_division_name || "")}</td>
+            <td class="text-slate-700">${escapeHtml(club.gs_division_name || "")}</td>
             <td class="text-slate-700">${escapeHtml(club.chairman_name || "")}</td>
             <td class="text-slate-700">${escapeHtml(club.chairman_address || "")} ${club.chairman_phone ? "(" + escapeHtml(club.chairman_phone) + ")" : ""}</td>
             <td class="text-slate-700">${escapeHtml(club.secretary_name || "")}</td>
@@ -850,12 +850,12 @@ function resetFilters() {
   // Reset native dropdowns
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
-  const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const gsDivisionSelect = document.getElementById("filterGsDivision");
 
   districtSelect.value = "";
   divisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_district_first"></option>';
-  gnDivisionSelect.innerHTML =
+  gsDivisionSelect.innerHTML =
     '<option value="" data-i18n="placeholder.select_division_first"></option>';
 
   const statusSelect = document.getElementById("filterStatus");
@@ -977,7 +977,7 @@ function exportToExcel() {
   const search = document.getElementById("searchInput").value;
   const districtId = document.getElementById("filterDistrict").value;
   const divisionId = document.getElementById("filterDivision").value;
-  const gnDivisionId = document.getElementById("filterGnDivision").value;
+  const gsDivisionId = document.getElementById("filterGsDivision").value;
   const language = localStorage.getItem("language");
 
   // Build query parameters
@@ -985,7 +985,7 @@ function exportToExcel() {
   if (search) params.append("search", search);
   if (districtId) params.append("district_id", districtId);
   if (divisionId) params.append("division_id", divisionId);
-  if (gnDivisionId) params.append("gn_division_id", gnDivisionId);
+  if (gsDivisionId) params.append("gs_division_id", gsDivisionId);
   params.append("language", language);
 
   // Show loading state
@@ -1050,14 +1050,14 @@ function populatePrintContainer() {
   const search = document.getElementById("searchInput").value;
   const districtSelect = document.getElementById("filterDistrict");
   const divisionSelect = document.getElementById("filterDivision");
-  const gnDivisionSelect = document.getElementById("filterGnDivision");
+  const gsDivisionSelect = document.getElementById("filterGsDivision");
   const statusSelect = document.getElementById("filterStatus");
 
   let filterText = window.i18n
     ? window.i18n.t("filter.all_clubs")
     : "All Clubs";
-  if (gnDivisionSelect.value) {
-    filterText = gnDivisionSelect.options[gnDivisionSelect.selectedIndex].text;
+  if (gsDivisionSelect.value) {
+    filterText = gsDivisionSelect.options[gsDivisionSelect.selectedIndex].text;
   } else if (divisionSelect.value) {
     filterText = divisionSelect.options[divisionSelect.selectedIndex].text;
   } else if (districtSelect.value) {
@@ -1107,7 +1107,7 @@ function populatePrintContainer() {
           <th style="width:9%;">Date</th>
           <th style="width:11%;">Club Name</th>
           <th style="width:11%;">Division</th>
-          <th style="width:11%;">GN Div</th>
+          <th style="width:11%;">GS Division</th>
           <th style="width:17%;">Chairman (Name, Address & Phone)</th>
           <th style="width:17%;">Secretary (Name, Address & Phone)</th>
           <th style="width:7%;">Last Reorg</th>
@@ -1125,7 +1125,7 @@ function populatePrintContainer() {
         <td style="text-align:center;white-space:nowrap;">${formatDate(club.registration_date)}</td>
         <td>${escapeHtml(club.name)}</td>
         <td>${escapeHtml(club.division_name || "-")}</td>
-        <td>${escapeHtml(club.gn_division_name || "-")}</td>
+        <td>${escapeHtml(club.gs_division_name || "-")}</td>
         <td>${escapeHtml(club.chairman_name || "-")}${club.chairman_address ? "<br>" + escapeHtml(club.chairman_address) : ""}${club.chairman_phone ? "<br>" + escapeHtml(club.chairman_phone) : ""}</td>
         <td>${escapeHtml(club.secretary_name || "-")}${club.secretary_address ? "<br>" + escapeHtml(club.secretary_address) : ""}${club.secretary_phone ? "<br>" + escapeHtml(club.secretary_phone) : ""}</td>
         <td style="text-align:center;white-space:nowrap;">${formatDate(club.last_reorg_date)}</td>

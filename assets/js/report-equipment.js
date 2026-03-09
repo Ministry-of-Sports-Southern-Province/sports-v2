@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
   loadDistricts();
   loadEquipmentTypes();
 
@@ -11,11 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
     generateReport(1);
   });
   document.getElementById("division")?.addEventListener("change", function () {
-    loadGNDivisions();
+    loadGSDivisions();
     generateReport(1);
   });
   document
-    .getElementById("gnDivision")
+    .getElementById("gsDivision")
     ?.addEventListener("change", function () {
       generateReport(1);
     });
@@ -34,14 +34,14 @@ function buildReportQuery({
   const equipment = document.getElementById("equipment").value;
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
-  const gnDivision = document.getElementById("gnDivision")?.value || "";
+  const gsDivision = document.getElementById("gsDivision")?.value || "";
 
   const params = new URLSearchParams();
   params.append("type", "equipment");
   params.append("equipment", equipment);
   params.append("district", district);
   if (division) params.append("division", division);
-  if (gnDivision) params.append("gn_division", gnDivision);
+  if (gsDivision) params.append("gs_division", gsDivision);
 
   if (printAll) {
     params.append("print_all", "1");
@@ -97,8 +97,8 @@ function loadDivisions() {
     .catch((err) => console.error("Error loading divisions:", err));
 }
 
-function loadGNDivisions() {
-  const select = document.getElementById("gnDivision");
+function loadGSDivisions() {
+  const select = document.getElementById("gsDivision");
   const divisionSelect = document.getElementById("division");
   const selectedDivision = divisionSelect.value;
 
@@ -113,7 +113,7 @@ function loadGNDivisions() {
   const divisionId = window.divisionsData?.[selectedDivision];
   if (!divisionId) return;
 
-  fetch(`../api/locations.php?type=gn_division&parent_id=${divisionId}&search=`)
+  fetch(`../api/locations.php?type=gs_division&parent_id=${divisionId}&search=`)
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
@@ -154,13 +154,13 @@ function generateReportPage(page = 1) {
   const equipment = document.getElementById("equipment").value;
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
-  const gnDivision = document.getElementById("gnDivision")?.value || "";
+  const gsDivision = document.getElementById("gsDivision")?.value || "";
 
   fetch(buildReportQuery({ page: currentPage, limit: rowsPerPage }))
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        displayReport(data.data, equipment, district, division, gnDivision);
+        displayReport(data.data, equipment, district, division, gsDivision);
         renderPagination(data.pagination);
       }
     });
@@ -197,7 +197,7 @@ function printReportWithDate() {
   const equipmentVal = document.getElementById("equipment")?.value;
   const districtVal = document.getElementById("district")?.value;
   const divisionVal = document.getElementById("division")?.value || "";
-  const gnDivisionVal = document.getElementById("gnDivision")?.value || "";
+  const gsDivisionVal = document.getElementById("gsDivision")?.value || "";
 
   fetch(buildReportQuery({ printAll: true }))
     .then((res) => res.json())
@@ -208,7 +208,7 @@ function printReportWithDate() {
           equipmentVal,
           districtVal,
           divisionVal,
-          gnDivisionVal,
+          gsDivisionVal,
         );
         window.print();
         setTimeout(() => {
@@ -323,13 +323,13 @@ function displayReport(
   equipment,
   district,
   division = "",
-  gnDivision = "",
+  gsDivision = "",
 ) {
   const output = document.getElementById("reportOutput");
   const equipmentText = equipment || "All Equipment";
   const districtText = district || "All Districts";
   const divisionText = division ? ` | Division: ${division}` : "";
-  const gnDivisionText = gnDivision ? ` | GN Division: ${gnDivision}` : "";
+  const gsDivisionText = gsDivision ? ` | GS Division: ${gsDivision}` : "";
 
   // Calculate total
   const totalQuantity = data.reduce(
@@ -337,14 +337,14 @@ function displayReport(
     0,
   );
 
-  // Sort data by district, division, gn_division for proper grouping
+  // Sort data by district, division, gs_division for proper grouping
   const sortedData = [...data].sort((a, b) => {
     if (a.district !== b.district)
       return (a.district || "").localeCompare(b.district || "");
     if (a.division !== b.division)
       return (a.division || "").localeCompare(b.division || "");
-    if (a.gn_division !== b.gn_division)
-      return (a.gn_division || "").localeCompare(b.gn_division || "");
+    if (a.gs_division !== b.gs_division)
+      return (a.gs_division || "").localeCompare(b.gs_division || "");
     return 0;
   });
 
@@ -361,16 +361,16 @@ function displayReport(
   ];
 
   let tableRows = "";
-  let currentGnDivisionKey = "";
+  let currentGsDivisionKey = "";
   let colorIndex = 0;
   let currentColor = "";
 
   sortedData.forEach((row, i) => {
-    const gnDivisionKey = `${row.district}|${row.division}|${row.gn_division}`;
+    const gsDivisionKey = `${row.district}|${row.division}|${row.gs_division}`;
 
     // Change color when GN Division changes
-    if (gnDivisionKey !== currentGnDivisionKey) {
-      currentGnDivisionKey = gnDivisionKey;
+    if (gsDivisionKey !== currentGsDivisionKey) {
+      currentGsDivisionKey = gsDivisionKey;
       currentColor = colors[colorIndex % colors.length];
       colorIndex++;
     }
@@ -382,7 +382,7 @@ function displayReport(
         <td class="text-slate-800 font-medium">${row.name}</td>
         <td class="text-slate-800">${row.district || "-"}</td>
         <td class="text-slate-800">${row.division || "-"}</td>
-        <td class="text-slate-800">${row.gn_division || "-"}</td>
+        <td class="text-slate-800">${row.gs_division || "-"}</td>
         <td class="text-slate-800">${row.equipment}</td>
         <td class="text-right font-medium text-slate-900">${row.quantity}</td>
       </tr>`;
@@ -524,13 +524,13 @@ function displayReport(
         <div class="print-header" style="display: none;">
             <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
             <h1 data-i18n="report.type_equipment">Equipment Report</h1>
-            <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</div>
+            <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}</div>
         </div>
 
         <div class="text-center mb-6 no-print">
             <h2 class="text-2xl font-bold">Department of Sports Southern Province</h2>
             <h3 class="text-xl mt-2">Equipment Report</h3>
-            <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gnDivisionText}</p>
+            <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}</p>
             <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString("en-US")}</p>
         </div>
         
@@ -542,7 +542,7 @@ function displayReport(
                     <th>Club Name</th>
                     <th>District</th>
                     <th>Division</th>
-                    <th>GN Division</th>
+                    <th>GS Division</th>
                     <th>Equipment</th>
                     <th class="text-right">Quantity</th>
                 </tr>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Export Clubs to PDF API
@@ -19,7 +19,7 @@ try {
     $search = $_GET['search'] ?? '';
     $districtId = $_GET['district_id'] ?? null;
     $divisionId = $_GET['division_id'] ?? null;
-    $gnDivisionId = $_GET['gn_division_id'] ?? null;
+    $gsDivisionId = $_GET['gs_division_id'] ?? null;
     $language = $_GET['language'] ?? 'si';
 
     // Load language file
@@ -67,9 +67,9 @@ try {
     }
 
     // Add GN division filter
-    if ($gnDivisionId) {
+    if ($gsDivisionId) {
         $baseFrom .= " AND gn.id = ?";
-        $params[] = $gnDivisionId;
+        $params[] = $gsDivisionId;
     }
 
     $countSql = "SELECT COUNT(DISTINCT c.id) " . $baseFrom;
@@ -95,7 +95,7 @@ try {
                 c.secretary_phone,
                 d.name as district_name,
                 dv.name as division_name,
-                gn.name as gn_division_name,
+                gn.name as gs_division_name,
                 MAX(cr.reorg_date) as last_reorg_date
             " . $baseFrom . "
             GROUP BY c.id
@@ -234,7 +234,7 @@ try {
     $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.registration_date', 'Reg Date')) . '</th>';
     $html .= '<th style="width: 12%">' . htmlspecialchars(t('table.club_name', 'Club Name')) . '</th>';
     $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.division', 'Division')) . '</th>';
-    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.gn_division', 'GN')) . '</th>';
+    $html .= '<th style="width: 8%">' . htmlspecialchars(t('table.gs_division', 'GS')) . '</th>';
     $html .= '<th style="width: 14%">' . htmlspecialchars(t('table.chairman', 'Chairman')) . '</th>';
     $html .= '<th style="width: 14%">' . htmlspecialchars(t('table.secretary_name', 'Secretary')) . '</th>';
     $html .= '<th style="width: 10%">' . htmlspecialchars(t('table.last_reorg_date', 'Last Reorg')) . '</th>';
@@ -267,7 +267,7 @@ try {
         $html .= '<td>' . htmlspecialchars(date('Y-m-d', strtotime($club['registration_date']))) . '</td>';
         $html .= '<td>' . htmlspecialchars($club['name']) . '</td>';
         $html .= '<td>' . htmlspecialchars($club['division_name'] ?? '') . '</td>';
-        $html .= '<td>' . htmlspecialchars($club['gn_division_name'] ?? '') . '</td>';
+        $html .= '<td>' . htmlspecialchars($club['gs_division_name'] ?? '') . '</td>';
         $html .= '<td>' . htmlspecialchars($club['chairman_name'] ?? '') . '<br><small style="color:#666; font-size:7pt;">' . htmlspecialchars($club['chairman_address'] ?? '') . ' ' . ($club['chairman_phone'] ? '(' . htmlspecialchars($club['chairman_phone']) . ')' : '') . '</small></td>';
         $html .= '<td>' . htmlspecialchars($club['secretary_name'] ?? '') . '<br><small style="color:#666; font-size:7pt;">' . htmlspecialchars($club['secretary_address'] ?? '') . ' ' . ($club['secretary_phone'] ? '(' . htmlspecialchars($club['secretary_phone']) . ')' : '') . '</small></td>';
         $html .= '<td>' . htmlspecialchars($club['last_reorg_date'] ? date('Y-m-d', strtotime($club['last_reorg_date'])) : '-') . '</td>';

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Registration Form JavaScript
  * Handles Tom Select initialization, validation, and form submission
  */
@@ -130,7 +130,7 @@ function initializeTomSelect() {
   });
 
   // GN Division select
-  window.tomSelectInstances.gnDivision = new TomSelect("#gnDivision", {
+  window.tomSelectInstances.gsDivision = new TomSelect("#gsDivision", {
     create: true,
     createOnBlur: true,
     maxOptions: 50,
@@ -148,7 +148,7 @@ function initializeTomSelect() {
           ? `&search=${encodeURIComponent(query)}`
           : "";
 
-      fetch(`../api/locations.php?type=gn_division${q}&parent_id=${divisionId}`)
+      fetch(`../api/locations.php?type=gs_division${q}&parent_id=${divisionId}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -166,7 +166,7 @@ function initializeTomSelect() {
     },
     onCreate: function (input, callback) {
       const divisionId = window.tomSelectInstances.division.getValue();
-      createNewLocation("gn_division", input, divisionId, callback);
+      createNewLocation("gs_division", input, divisionId, callback);
     },
   });
 
@@ -218,8 +218,8 @@ function handleDistrictChange(districtId, selectInstance) {
   // Clear division and GN division
   window.tomSelectInstances.division.clear();
   window.tomSelectInstances.division.clearOptions();
-  window.tomSelectInstances.gnDivision.clear();
-  window.tomSelectInstances.gnDivision.clearOptions();
+  window.tomSelectInstances.gsDivision.clear();
+  window.tomSelectInstances.gsDivision.clearOptions();
 
   const regNumberManual = document.getElementById("regNumberManual");
   const regNumberHelper = document.getElementById("regNumberHelper");
@@ -275,17 +275,17 @@ function handleDistrictChange(districtId, selectInstance) {
  */
 function handleDivisionChange(divisionId) {
   // Clear GN division
-  window.tomSelectInstances.gnDivision.clear();
-  window.tomSelectInstances.gnDivision.clearOptions();
+  window.tomSelectInstances.gsDivision.clear();
+  window.tomSelectInstances.gsDivision.clearOptions();
 
   if (divisionId) {
     // Load GN divisions for selected division
-    fetch(`../api/locations.php?type=gn_division&parent_id=${divisionId}`)
+    fetch(`../api/locations.php?type=gs_division&parent_id=${divisionId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
           data.data.forEach((item) => {
-            window.tomSelectInstances.gnDivision.addOption({
+            window.tomSelectInstances.gsDivision.addOption({
               value: item.id,
               text: item.name,
             });
@@ -296,7 +296,7 @@ function handleDivisionChange(divisionId) {
 }
 
 /**
- * Create new location (district/division/gn_division)
+ * Create new location (district/division/gs_division)
  */
 function createNewLocation(type, name, parentId, callback) {
   const formData = new FormData();
@@ -717,8 +717,8 @@ function setupFormSubmission() {
         window.tomSelectInstances.division.getValue(),
       );
       formData.append(
-        "gn_division_id",
-        window.tomSelectInstances.gnDivision.getValue() || "",
+        "gs_division_id",
+        window.tomSelectInstances.gsDivision.getValue() || "",
       );
 
       // Chairman
@@ -984,17 +984,17 @@ function populateFormWithClubData(club) {
             })
         : Promise.resolve();
 
-      // Load GN divisions if we have a gn_division_id
-      const loadGNDivisions =
-        club.gn_division_id && club.division_id
+      // Load GN divisions if we have a gs_division_id
+      const loadGSDivisions =
+        club.gs_division_id && club.division_id
           ? fetch(
-              `../api/locations.php?type=gn_division&parent_id=${club.division_id}`,
+              `../api/locations.php?type=gs_division&parent_id=${club.division_id}`,
             )
               .then((response) => response.json())
               .then((data) => {
                 if (data.success) {
                   data.data.forEach((item) => {
-                    window.tomSelectInstances.gnDivision.addOption({
+                    window.tomSelectInstances.gsDivision.addOption({
                       value: item.id,
                       text: item.name,
                     });
@@ -1004,7 +1004,7 @@ function populateFormWithClubData(club) {
           : Promise.resolve();
 
       // Wait for all options to load, then set values
-      Promise.all([loadDivisions, loadGNDivisions]).then(() => {
+      Promise.all([loadDivisions, loadGSDivisions]).then(() => {
         // Set district value (this will trigger onChange and clear dependent fields)
         window.tomSelectInstances.district.setValue(club.district_id, true);
 
@@ -1028,21 +1028,21 @@ function populateFormWithClubData(club) {
                 );
 
                 // Re-add and set GN division options
-                if (club.gn_division_id) {
+                if (club.gs_division_id) {
                   fetch(
-                    `../api/locations.php?type=gn_division&parent_id=${club.division_id}`,
+                    `../api/locations.php?type=gs_division&parent_id=${club.division_id}`,
                   )
                     .then((response) => response.json())
                     .then((data) => {
                       if (data.success) {
                         data.data.forEach((item) => {
-                          window.tomSelectInstances.gnDivision.addOption({
+                          window.tomSelectInstances.gsDivision.addOption({
                             value: item.id,
                             text: item.name,
                           });
                         });
-                        window.tomSelectInstances.gnDivision.setValue(
-                          club.gn_division_id,
+                        window.tomSelectInstances.gsDivision.setValue(
+                          club.gs_division_id,
                           true,
                         );
                       }

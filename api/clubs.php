@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /**
  * Clubs API
@@ -67,7 +67,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
     $clubName = sanitizeInput($data['club_name'] ?? '');
     $districtId = $data['district_id'] ?? null;
     $divisionId = $data['division_id'] ?? null;
-    $gnDivisionId = $data['gn_division_id'] ?? null;
+    $gsDivisionId = $data['gs_division_id'] ?? null;
 
     $chairmanName = sanitizeInput($data['chairman_name'] ?? '');
     $chairmanAddress = sanitizeInput($data['chairman_address'] ?? '');
@@ -82,15 +82,15 @@ function handleClubRegistration($pdo, $isUpdate = false)
 
     $equipment = json_decode($data['equipment'] ?? '[]', true);
     $reorganizations = json_decode($data['reorganizations'] ?? '[]', true);
-    $gnDivisionId = empty($gnDivisionId) ? null : $gnDivisionId;
+    $gsDivisionId = empty($gsDivisionId) ? null : $gsDivisionId;
 
     // Auto-create divisions and GN divisions if they don't exist (when names are provided instead of IDs)
     if ($divisionId !== null && !is_numeric($divisionId)) {
         $divisionId = getOrCreateDivision($pdo, $divisionId, $districtId);
     }
 
-    if ($gnDivisionId !== null && !is_numeric($gnDivisionId)) {
-        $gnDivisionId = getOrCreateGNDivision($pdo, $gnDivisionId, $divisionId);
+    if ($gsDivisionId !== null && !is_numeric($gsDivisionId)) {
+        $gsDivisionId = getOrCreateGSDivision($pdo, $gsDivisionId, $divisionId);
     }
 
     // Validate that numeric IDs actually exist in database
@@ -102,12 +102,12 @@ function handleClubRegistration($pdo, $isUpdate = false)
         }
     }
 
-    if ($gnDivisionId !== null && is_numeric($gnDivisionId)) {
+    if ($gsDivisionId !== null && is_numeric($gsDivisionId)) {
         $stmt = $pdo->prepare("SELECT id FROM grama_niladhari_divisions WHERE id = :id");
-        $stmt->execute(['id' => $gnDivisionId]);
+        $stmt->execute(['id' => $gsDivisionId]);
         if (!$stmt->fetch()) {
             // If GN Division ID doesn't exist, set to null instead of failing
-            $gnDivisionId = null;
+            $gsDivisionId = null;
         }
     }
 
@@ -209,7 +209,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 secretary_name = :secretary_name,
                 secretary_address = :secretary_address,
                 secretary_phone = :secretary_phone,
-                gn_division_id = :gn_division_id
+                gn_division_id = :gs_division_id
             WHERE id = :club_id";
 
             $stmt = $pdo->prepare($sql);
@@ -224,7 +224,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 'secretary_name' => $secretaryName,
                 'secretary_address' => $secretaryAddress,
                 'secretary_phone' => $secretaryPhone,
-                'gn_division_id' => empty($gnDivisionId) ? null : $gnDivisionId,
+                'gs_division_id' => empty($gsDivisionId) ? null : $gsDivisionId,
                 'club_id' => $clubId
             ]);
 
@@ -242,7 +242,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 :reg_number, :name, :registration_date, :date_entry_type,
                 :chairman_name, :chairman_address, :chairman_phone,
                 :secretary_name, :secretary_address, :secretary_phone,
-                :gn_division_id
+                :gs_division_id
             )";
 
             $stmt = $pdo->prepare($sql);
@@ -257,7 +257,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 'secretary_name' => $secretaryName,
                 'secretary_address' => $secretaryAddress,
                 'secretary_phone' => $secretaryPhone,
-                'gn_division_id' => empty($gnDivisionId) ? null : $gnDivisionId
+                'gs_division_id' => empty($gsDivisionId) ? null : $gsDivisionId
             ]);
 
             $clubId = $pdo->lastInsertId();
@@ -346,13 +346,13 @@ function getOrCreateDivision($pdo, $divisionName, $districtId)
 /**
  * Get existing GN division ID or create new one
  */
-function getOrCreateGNDivision($pdo, $gnDivisionName, $divisionId)
+function getOrCreateGSDivision($pdo, $gsDivisionName, $divisionId)
 {
-    $gnDivisionName = sanitizeInput($gnDivisionName);
+    $gsDivisionName = sanitizeInput($gsDivisionName);
 
     // Check if GN division already exists
     $stmt = $pdo->prepare("SELECT id FROM grama_niladhari_divisions WHERE name = :name AND division_id = :division_id");
-    $stmt->execute(['name' => $gnDivisionName, 'division_id' => $divisionId]);
+    $stmt->execute(['name' => $gsDivisionName, 'division_id' => $divisionId]);
     $result = $stmt->fetch();
 
     if ($result) {
@@ -361,7 +361,7 @@ function getOrCreateGNDivision($pdo, $gnDivisionName, $divisionId)
 
     // Create new GN division
     $stmt = $pdo->prepare("INSERT INTO grama_niladhari_divisions (name, division_id) VALUES (:name, :division_id)");
-    $stmt->execute(['name' => $gnDivisionName, 'division_id' => $divisionId]);
+    $stmt->execute(['name' => $gsDivisionName, 'division_id' => $divisionId]);
 
     return $pdo->lastInsertId();
 }
@@ -408,7 +408,7 @@ function handleGetClub($pdo)
             SELECT 
                 c.id, c.reg_number, c.name,
                 c.registration_date, c.date_entry_type,
-                c.gn_division_id,
+                c.gn_division_id as gs_division_id,
                 c.chairman_name, c.chairman_address, c.chairman_phone,
                 c.secretary_name, c.secretary_address, c.secretary_phone,
                 gn.division_id AS division_id,
