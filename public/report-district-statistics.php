@@ -2,6 +2,9 @@
 $pageTitle = 'report.type_district_statistics';
 $pageHeading = 'report.type_district_statistics';
 $activePage = 'reports';
+$additionalLinks = [
+    '<script src="' . htmlspecialchars($basePath ?? '../', ENT_QUOTES, 'UTF-8') . 'assets/js/vendor/chart.min.js"></script>'
+];
 include '../includes/header.php';
 ?>
 
@@ -10,18 +13,38 @@ include '../includes/header.php';
 
     <div class="section-card mb-6 no-print">
         <h2 class="section-heading" data-i18n="report.type_district_statistics">දිස්ත්රික් ක්‍රීඩා සමාජ සංඛ්‍යා වාර්තාව</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
+
+        <!-- Row 1: District + Registration Date Range + Reorganization Date Range -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+            <!-- District -->
+            <div class="md:col-span-1">
                 <label class="form-label" data-i18n="form.district">දිස්ත්රික්කය</label>
                 <select id="district" class="form-select">
                     <option value="" data-i18n="filter.all_districts">සියලු දිස්ත්රික්ක</option>
                 </select>
             </div>
-            <div>
-                <label class="form-label" data-i18n="report.select_year">වර්ෂය</label>
-                <select id="year" class="form-select"></select>
+
+            <!-- Registration Date Range -->
+            <div class="md:col-span-2">
+                <label class="form-label" data-i18n="report.date_range_reg">ලියාපදිංචි දින පරාසය</label>
+                <div class="flex gap-2 items-center">
+                    <input type="date" id="reg_date_from" class="form-select flex-1" />
+                    <span class="text-gray-400 font-medium select-none">→</span>
+                    <input type="date" id="reg_date_to" class="form-select flex-1" />
+                </div>
+            </div>
+
+            <!-- Reorganization Date Range -->
+            <div class="md:col-span-2">
+                <label class="form-label" data-i18n="report.date_range_reorg">ප්‍රතිසංවිධාන දින පරාසය</label>
+                <div class="flex gap-2 items-center">
+                    <input type="date" id="reorg_date_from" class="form-select flex-1" />
+                    <span class="text-gray-400 font-medium select-none">→</span>
+                    <input type="date" id="reorg_date_to" class="form-select flex-1" />
+                </div>
             </div>
         </div>
+
         <div class="flex flex-wrap gap-3">
             <button onclick="resetFilters()" class="btn btn-secondary" data-i18n="button.reset">නැවත සකසන්න</button>
             <button onclick="printReportWithDate()" class="btn btn-success" data-i18n="button.print">මුද්‍රණය කරන්න</button>

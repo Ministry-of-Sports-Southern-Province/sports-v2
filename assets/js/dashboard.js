@@ -107,7 +107,7 @@ function renderPagination(pagination) {
 
   // Prev
   const prevBtn = document.createElement("button");
-  prevBtn.textContent = "Prev";
+  prevBtn.textContent = window.i18n ? window.i18n.t("pagination.prev") : "Prev";
   prevBtn.disabled = currentPage === 1;
   prevBtn.className =
     "px-3 py-1 border rounded " +
@@ -164,7 +164,7 @@ function renderPagination(pagination) {
 
   // Next
   const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Next";
+  nextBtn.textContent = window.i18n ? window.i18n.t("pagination.next") : "Next";
   nextBtn.disabled = currentPage === totalPages;
   nextBtn.className =
     "px-3 py-1 border rounded " +
@@ -177,7 +177,17 @@ function renderPagination(pagination) {
   if (infoEl) {
     const startRow = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
     const endRow = Math.min(currentPage * rowsPerPage, totalRows);
-    infoEl.textContent = `Showing ${startRow}–${endRow} of ${totalRows} (Page ${currentPage} of ${totalPages})`;
+    if (window.i18n) {
+      const tpl = window.i18n.t("pagination.showing");
+      infoEl.textContent = tpl
+        .replace("{start}", startRow)
+        .replace("{end}", endRow)
+        .replace("{total}", totalRows)
+        .replace("{page}", currentPage)
+        .replace("{pages}", totalPages);
+    } else {
+      infoEl.textContent = `Showing ${startRow}–${endRow} of ${totalRows} (Page ${currentPage} of ${totalPages})`;
+    }
   }
 }
 
@@ -245,8 +255,14 @@ function loadStatistics() {
             container.appendChild(card);
           });
 
-          // Create charts
-          createDistrictCharts(stats.clubs_by_district);
+          // Show charts section and create charts
+          const chartsSection = document.getElementById("chartsSection");
+          if (chartsSection) chartsSection.style.removeProperty("display");
+          createCharts(
+            stats.clubs_by_district,
+            stats.active_clubs || 0,
+            stats.expired_clubs || 0,
+          );
         }
       }
     })
@@ -254,13 +270,23 @@ function loadStatistics() {
 }
 
 /**
- * Create district charts (Pie, Bar, and Doughnut)
+ * Create all dashboard charts (Pie, Bar, Doughnut, and Active/Expired)
  */
 let pieChartInstance = null;
 let barChartInstance = null;
 let doughnutChartInstance = null;
+let statusChartInstance = null;
 
-function createDistrictCharts(districtData) {
+// Keep last stats data so charts can be rebuilt on language change
+let _lastDistrictData = null;
+let _lastActiveClubs = 0;
+let _lastExpiredClubs = 0;
+
+function createCharts(districtData, activeClubs, expiredClubs) {
+  _lastDistrictData = districtData;
+  _lastActiveClubs = activeClubs;
+  _lastExpiredClubs = expiredClubs;
+
   const labels = districtData.map((d) => d.district_name);
   const data = districtData.map((d) => d.count);
   const total = data.reduce((a, b) => a + b, 0);
@@ -456,7 +482,9 @@ function createDistrictCharts(districtData) {
             ctx.fillText(text, textX, textY);
             ctx.font = "normal " + fontSize * 0.4 + "em sans-serif";
             ctx.fillStyle = "#6b7280";
-            const subText = "Total";
+            const subText = window.i18n
+              ? window.i18n.t("stats.total_label")
+              : "Total";
             const subTextX = Math.round(
               (width - ctx.measureText(subText).width) / 2,
             );
@@ -465,6 +493,64 @@ function createDistrictCharts(districtData) {
           },
         },
       ],
+    });
+  }
+
+  // Create Active vs Expired — Horizontal Bar Chart
+  if (statusChartInstance) statusChartInstance.destroy();
+  const statusCtx = document.getElementById("statusChart");
+  if (statusCtx) {
+    const activeLabel = window.i18n
+      ? window.i18n.t("stats.active_clubs")
+      : "Active Clubs";
+    const expiredLabel = window.i18n
+      ? window.i18n.t("stats.expired_clubs")
+      : "Expired Clubs";
+    statusChartInstance = new Chart(statusCtx, {
+      type: "bar",
+      data: {
+        labels: [activeLabel, expiredLabel],
+        datasets: [
+          {
+            data: [activeClubs, expiredClubs],
+            backgroundColor: ["#10b981", "#ef4444"],
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(0,0,0,0.8)",
+            padding: 8,
+            bodyFont: {
+              family: "Noto Sans Sinhala, Noto Sans Tamil, Roboto, sans-serif",
+              size: 11,
+            },
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 9 } },
+            grid: { color: "rgba(0,0,0,0.05)" },
+          },
+          y: {
+            ticks: {
+              font: {
+                family:
+                  "Noto Sans Sinhala, Noto Sans Tamil, Roboto, sans-serif",
+                size: 10,
+              },
+            },
+            grid: { display: false },
+          },
+        },
+      },
     });
   }
 }
@@ -487,6 +573,17 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeDropdowns();
   loadClubs(1);
   loadStatistics();
+
+  // Re-render charts and pagination labels when language changes
+  if (window.i18n) {
+    window.i18n.onLanguageChange(function () {
+      if (_lastDistrictData) {
+        createCharts(_lastDistrictData, _lastActiveClubs, _lastExpiredClubs);
+      }
+      // Re-render pagination so Prev/Next labels update
+      renderPagination({ total_pages: totalPages, total: totalRows });
+    });
+  }
 
   // Live search with debounce
   const searchInput = document.getElementById("searchInput");

@@ -207,9 +207,34 @@ try {
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } elseif ($type === 'district_statistics') {
         $district = $_GET['district'] ?? '';
-        $year = (int)($_GET['year'] ?? date('Y'));
-        $yearStart = $year . '-01-01';
-        $yearEnd = ($year + 1) . '-01-01';
+
+        // Validate and sanitize date range inputs
+        $defaultFrom = date('Y') . '-01-01';
+        $defaultTo   = date('Y') . '-12-31';
+
+        $raw = $_GET['reg_date_from'] ?? '';
+        $d = DateTime::createFromFormat('Y-m-d', $raw);
+        $regDateFrom = ($d && $d->format('Y-m-d') === $raw) ? $raw : $defaultFrom;
+
+        $raw = $_GET['reg_date_to'] ?? '';
+        $d = DateTime::createFromFormat('Y-m-d', $raw);
+        $regDateTo = ($d && $d->format('Y-m-d') === $raw) ? $raw : $defaultTo;
+
+        $raw = $_GET['reorg_date_from'] ?? '';
+        $d = DateTime::createFromFormat('Y-m-d', $raw);
+        $reorgDateFrom = ($d && $d->format('Y-m-d') === $raw) ? $raw : $defaultFrom;
+
+        $raw = $_GET['reorg_date_to'] ?? '';
+        $d = DateTime::createFromFormat('Y-m-d', $raw);
+        $reorgDateTo = ($d && $d->format('Y-m-d') === $raw) ? $raw : $defaultTo;
+
+        // Ensure from <= to for each range
+        if ($regDateFrom > $regDateTo) {
+            [$regDateFrom, $regDateTo]     = [$regDateTo, $regDateFrom];
+        }
+        if ($reorgDateFrom > $reorgDateTo) {
+            [$reorgDateFrom, $reorgDateTo] = [$reorgDateTo, $reorgDateFrom];
+        }
 
         $divisionBaseFrom = "FROM divisions dv
                         LEFT JOIN districts d ON dv.district_id = d.id
@@ -235,7 +260,7 @@ try {
                 LEFT JOIN clubs c ON c.gn_division_id = gn.id
                 LEFT JOIN club_reorganizations cr ON cr.club_id = c.id
                 WHERE 1=1";
-        $params = [$yearStart, $yearEnd, $yearStart, $yearEnd];
+        $params = [$regDateFrom, $regDateTo, $reorgDateFrom, $reorgDateTo];
 
         if ($district) {
             $aggregateFrom .= " AND d.name = ?";
@@ -244,8 +269,8 @@ try {
 
         $aggregateSelect = "SELECT dv.id, dv.name as division_name,
                 COUNT(DISTINCT c.id) as total_clubs,
-                COUNT(DISTINCT CASE WHEN c.registration_date >= ? AND c.registration_date < ? THEN c.id END) as year_registered,
-                COUNT(DISTINCT CASE WHEN cr.reorg_date >= ? AND cr.reorg_date < ? THEN c.id END) as year_reorganized
+                COUNT(DISTINCT CASE WHEN c.registration_date BETWEEN ? AND ? THEN c.id END) as year_registered,
+                COUNT(DISTINCT CASE WHEN cr.reorg_date BETWEEN ? AND ? THEN c.id END) as year_reorganized
                 ";
 
         $aggregateSql = $aggregateSelect . $aggregateFrom . " GROUP BY dv.id, dv.name";

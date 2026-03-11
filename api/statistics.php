@@ -47,12 +47,45 @@ try {
     ");
     $todayRegistrations = $stmt->fetch()['total'];
 
+    // Active vs Expired clubs (based on reorganization due date)
+    $stmt = $pdo->query("
+        SELECT
+            SUM(CASE
+                WHEN last_reorg IS NULL THEN 1
+                WHEN MONTH(last_reorg) >= 7
+                     AND DATE(CONCAT(YEAR(last_reorg) + 2, '-01-01')) <= CURDATE() THEN 1
+                WHEN MONTH(last_reorg) < 7
+                     AND DATE_ADD(last_reorg, INTERVAL 1 YEAR) <= CURDATE() THEN 1
+                ELSE 0
+            END) AS expired_clubs,
+            SUM(CASE
+                WHEN last_reorg IS NOT NULL
+                     AND MONTH(last_reorg) >= 7
+                     AND DATE(CONCAT(YEAR(last_reorg) + 2, '-01-01')) > CURDATE() THEN 1
+                WHEN last_reorg IS NOT NULL
+                     AND MONTH(last_reorg) < 7
+                     AND DATE_ADD(last_reorg, INTERVAL 1 YEAR) > CURDATE() THEN 1
+                ELSE 0
+            END) AS active_clubs
+        FROM (
+            SELECT c.id, MAX(cr.reorg_date) AS last_reorg
+            FROM clubs c
+            LEFT JOIN club_reorganizations cr ON c.id = cr.club_id
+            GROUP BY c.id
+        ) sub
+    ");
+    $statusRow = $stmt->fetch();
+    $activeClubs  = (int)($statusRow['active_clubs']  ?? 0);
+    $expiredClubs = (int)($statusRow['expired_clubs'] ?? 0);
+
     sendJSONResponse(true, [
-        'total_clubs' => (int)$totalClubs,
-        'clubs_by_district' => $clubsByDistrict,
+        'total_clubs'           => (int)$totalClubs,
+        'clubs_by_district'     => $clubsByDistrict,
         'total_equipment_types' => (int)$totalEquipmentTypes,
-        'recent_registrations' => (int)$recentRegistrations,
-        'today_registrations' => (int)$todayRegistrations
+        'recent_registrations'  => (int)$recentRegistrations,
+        'today_registrations'   => (int)$todayRegistrations,
+        'active_clubs'          => $activeClubs,
+        'expired_clubs'         => $expiredClubs,
     ], 'Statistics retrieved successfully');
 } catch (Exception $e) {
     sendJSONResponse(false, null, $e->getMessage(), 500);

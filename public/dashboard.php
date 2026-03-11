@@ -277,6 +277,38 @@ include '../includes/header.php';
         <!-- District cards will be dynamically inserted here -->
     </div>
 
+    <!-- Charts Section -->
+    <div id="chartsSection" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8" style="display:none!important;">
+        <!-- Distribution by District — Pie -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col">
+            <h3 class="text-sm font-semibold text-gray-600 mb-3" data-i18n="stats.distribution_by_district">Distribution by District</h3>
+            <div class="flex-1" style="position:relative;min-height:180px;">
+                <canvas id="districtPieChart"></canvas>
+            </div>
+        </div>
+        <!-- Clubs Comparison — Bar -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col">
+            <h3 class="text-sm font-semibold text-gray-600 mb-3" data-i18n="stats.clubs_comparison">Clubs Comparison</h3>
+            <div class="flex-1" style="position:relative;min-height:180px;">
+                <canvas id="districtBarChart"></canvas>
+            </div>
+        </div>
+        <!-- Overview — Doughnut -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col">
+            <h3 class="text-sm font-semibold text-gray-600 mb-3" data-i18n="stats.overview">Overview</h3>
+            <div class="flex-1" style="position:relative;min-height:180px;">
+                <canvas id="overviewDoughnutChart"></canvas>
+            </div>
+        </div>
+        <!-- Active vs Expired — Horizontal Bar -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col">
+            <h3 class="text-sm font-semibold text-gray-600 mb-3" data-i18n="stats.active_expired">Active vs Expired</h3>
+            <div class="flex-1" style="position:relative;min-height:180px;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <!-- Action Bar -->
     <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
         <h2 class="page-title m-0" data-i18n="nav.dashboard"></h2>
