@@ -1,16 +1,24 @@
 <?php
 
-/**
- * Database Configuration
- * PDO connection with UTF-8 support for Sinhala/Tamil characters
- */
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
-// Database credentials
-define('DB_HOST', 'localhost:3306');
-define('DB_NAME', 'scms');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// ===== LOCAL =====
+if ($host === 'localhost' || $host === '127.0.0.1') {
+
+    define('DB_HOST', 'localhost:3306');
+    define('DB_NAME', 'scms');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+} else {
+
+    // ===== LIVE SERVER =====
+    define('DB_HOST', 'localhost:3306');
+    define('DB_NAME', 'scms');   // change
+    define('DB_USER', 'sportscmo'); // change
+    define('DB_PASS', 'pb0489Er#');        // change
+}
 define('DB_CHARSET', 'utf8mb4');
+
 
 /**
  * Get PDO database connection
