@@ -20,7 +20,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
 RewriteRule ^([^.]+)\.html$ /$1 [R=301,L]
 
-# 3) Internally rewrite clean URLs to existing .html files
+# 4) Internally rewrite clean URLs to existing .html files
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f

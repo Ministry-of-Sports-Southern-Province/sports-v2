@@ -309,5 +309,20 @@
   "message.reorganize_error": "கழகத்தை மறுசீரமைக்க முடியவில்லை",
   "message.error_reorganizing_club": "கழகத்தை மறுசீரமைக்கும்போது ஒரு பிழை ஏற்பட்டது",
   "message.reorganize_deleted_success": "மறுசீரமைப்பு வெற்றிகரமாக நீக்கப்பட்டது!",
-  "message.reorganize_delete_error": "மறுசீரமைப்பு நீக்க முடியவில்லை"
+  "message.reorganize_delete_error": "மறுசீரமைப்பு நீக்க முடியவில்லை",
+  "page.public_clubs_title": "பொது கழக அட்டவணை",
+  "public.directory_subtitle": "பதிவு செய்யப்பட்ட விளையாட்டு கழகங்களை உலாவுங்கள் — உள்நுழைவு தேவையில்லை.",
+  "public.search_placeholder": "கழக பெயர் அல்லது பதிவு எண் மூலம் தேடுங்கள்...",
+  "public.all_districts": "அனைத்து மாவட்டங்கள்",
+  "public.all_divisions": "அனைத்து பிரிவுகள்",
+  "public.all_statuses": "அனைத்து நிலைகள்",
+  "public.no_clubs": "கழகங்கள் எதுவும் கிடைக்கவில்லை",
+  "public.club_detail_title": "கழக விவரங்கள்",
+  "public.reg_number": "பதிவு எண்",
+  "public.registration_date": "பதிவு தேதி",
+  "public.gs_division": "கிராம சேவை பிரிவு",
+  "public.reorg_status": "மறுசீரமைப்பு நிலை",
+  "public.public_view_badge": "பொது காட்சி",
+  "nav.public_directory": "பொது அட்டவணை",
+  "button.next": "அடுத்து"
 }

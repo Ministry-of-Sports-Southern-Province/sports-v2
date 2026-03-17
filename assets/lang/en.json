@@ -321,5 +321,20 @@
   "message.reorganize_error": "Failed to reorganize club",
   "message.error_reorganizing_club": "An error occurred while reorganizing the club",
   "message.reorganize_deleted_success": "Reorganization deleted successfully!",
-  "message.reorganize_delete_error": "Failed to delete reorganization"
+  "message.reorganize_delete_error": "Failed to delete reorganization",
+  "page.public_clubs_title": "Public Club Directory",
+  "public.directory_subtitle": "Browse registered sports clubs — no login required.",
+  "public.search_placeholder": "Search by club name or registration number...",
+  "public.all_districts": "All Districts",
+  "public.all_divisions": "All Divisions",
+  "public.all_statuses": "All Statuses",
+  "public.no_clubs": "No clubs found",
+  "public.club_detail_title": "Club Details",
+  "public.reg_number": "Registration Number",
+  "public.registration_date": "Registration Date",
+  "public.gs_division": "Grama Sewa Division",
+  "public.reorg_status": "Reorganization Status",
+  "public.public_view_badge": "Public View",
+  "nav.public_directory": "Public Directory",
+  "button.next": "Next"
 }
