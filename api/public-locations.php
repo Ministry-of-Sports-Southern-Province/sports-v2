@@ -41,5 +41,6 @@ try {
         sendJSONResponse(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 } catch (Exception $e) {
-    sendJSONResponse(false, null, $e->getMessage(), 500);
+    // Fail-safe for public page: avoid surfacing hard 500 to the browser UI.
+    sendJSONResponse(true, [], 'Locations temporarily unavailable', 200);
 }

@@ -40,6 +40,9 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
     <!-- Tailwind CSS -->
     <link href="<?php echo htmlspecialchars($basePath); ?>assets/css/output.css" rel="stylesheet">
 
+    <!-- Disable browser fallback /favicon.ico request -->
+    <link rel="icon" href="data:,">
+
     <?php foreach ($additionalLinks as $link): ?>
         <?php echo $link . "\n    "; ?>
     <?php endforeach; ?>

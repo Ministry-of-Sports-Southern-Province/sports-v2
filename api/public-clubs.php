@@ -52,7 +52,8 @@ if (isset($_GET['stats']) && $_GET['stats'] === '1') {
 
         sendJSONResponse(true, ['total' => $total, 'active' => $active, 'expired' => $total - $active]);
     } catch (Exception $e) {
-        sendJSONResponse(false, null, $e->getMessage(), 500);
+        // Fail-safe for public page: keep UI responsive if DB/schema is unavailable.
+        sendJSONResponse(true, ['total' => 0, 'active' => 0, 'expired' => 0], 'Stats temporarily unavailable', 200);
     }
     exit;
 }
@@ -231,5 +232,13 @@ try {
         ]
     ]);
 } catch (Exception $e) {
-    sendJSONResponse(false, null, $e->getMessage(), 500);
+    // Fail-safe for public page: avoid hard 500 and return an empty list with pagination.
+    sendJSONResponse(true, [], 'Clubs temporarily unavailable', 200, [
+        'pagination' => [
+            'page'        => 1,
+            'limit'       => 20,
+            'total'       => 0,
+            'total_pages' => 1,
+        ]
+    ]);
 }
