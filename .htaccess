@@ -1,7 +1,8 @@
-RewriteEngine On
+<IfModule mod_passenger.c>
+	PassengerEnabled off
+</IfModule>
 
-# Serve existing logo.svg as favicon to avoid missing /favicon.ico 500 responses
-RewriteRule ^favicon\.ico$ /assets/img/logo.svg [L]
+RewriteEngine On
 
 # 0) Keep localhost on HTTP for local development
 RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1)(:\d+)?$ [NC,OR]

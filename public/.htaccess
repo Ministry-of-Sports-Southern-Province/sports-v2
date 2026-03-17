@@ -1,0 +1,3 @@
+<IfModule mod_passenger.c>
+    PassengerEnabled off
+</IfModule>

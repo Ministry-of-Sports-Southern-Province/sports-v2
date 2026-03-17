@@ -40,9 +40,9 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
     <!-- Tailwind CSS -->
     <link href="<?php echo htmlspecialchars($basePath); ?>assets/css/output.css" rel="stylesheet">
 
-    <!-- Favicon: use existing logo.svg to avoid root /favicon.ico requests -->
-    <link rel="icon" href="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" type="image/svg+xml">
-    <link rel="shortcut icon" href="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" type="image/svg+xml">
+    <!-- Favicon: point to a real static root icon so browsers do not trigger a failing fallback request -->
+    <link rel="icon" href="<?php echo htmlspecialchars($basePath); ?>favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="<?php echo htmlspecialchars($basePath); ?>favicon.ico" type="image/x-icon">
 
     <?php foreach ($additionalLinks as $link): ?>
         <?php echo $link . "\n    "; ?>
