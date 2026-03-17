@@ -138,16 +138,39 @@ try {
         $district = $_GET['district'] ?? '';
         $division = $_GET['division'] ?? '';
         $gsDivision = $_GET['gs_division'] ?? '';
+        $year = $_GET['year'] ?? null;
+
+        if (empty($year)) {
+            $year = (int)date('Y');
+        }
+
+        if (!validateReportingYear($year)) {
+            sendJSONResponse(false, null, 'A valid year is required for equipment report', 400);
+        }
+
+        $hasYearlyTable = false;
+        try {
+            $yearlyCheckStmt = $pdo->query("SHOW TABLES LIKE 'club_equipment_yearly'");
+            $hasYearlyTable = (bool)($yearlyCheckStmt && $yearlyCheckStmt->fetchColumn());
+        } catch (Exception $schemaCheckException) {
+            $hasYearlyTable = false;
+        }
+
+        $equipmentTable = $hasYearlyTable ? 'club_equipment_yearly' : 'club_equipment';
 
         $baseFrom = "FROM clubs c
                 LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
                 LEFT JOIN divisions dv ON gn.division_id = dv.id
                 LEFT JOIN districts d ON dv.district_id = d.id
-                INNER JOIN club_equipment ce ON c.id = ce.club_id
+                INNER JOIN {$equipmentTable} ce ON c.id = ce.club_id
                 INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
                 WHERE 1=1";
 
         $params = [];
+        if ($hasYearlyTable) {
+            $params['year'] = (int)$year;
+            $baseFrom .= " AND ce.reporting_year = :year";
+        }
 
         if ($equipment) {
             $baseFrom .= " AND et.name = :equipment";

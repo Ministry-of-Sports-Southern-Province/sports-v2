@@ -16,9 +16,17 @@ try {
     }
 
     $clubId = $_GET['id'] ?? null;
+    $reportingYear = $_GET['reporting_year'] ?? null;
+    if (empty($reportingYear)) {
+        $reportingYear = (int)date('Y');
+    }
 
     if (!$clubId) {
         sendJSONResponse(false, null, 'Club ID is required', 400);
+    }
+
+    if (!validateReportingYear($reportingYear)) {
+        sendJSONResponse(false, null, 'A valid reporting year is required', 400);
     }
 
     $pdo = getDBConnection();
@@ -48,13 +56,16 @@ try {
                         ce.equipment_type_id AS id,
                         et.name,
                         ce.quantity
-                     FROM club_equipment ce
+                     FROM club_equipment_yearly ce
                      JOIN equipment_types et ON ce.equipment_type_id = et.id
-                     WHERE ce.club_id = :club_id
+                     WHERE ce.club_id = :club_id AND ce.reporting_year = :reporting_year
                      ORDER BY et.name";
 
     $equipmentStmt = $pdo->prepare($equipmentSql);
-    $equipmentStmt->execute(['club_id' => $clubId]);
+    $equipmentStmt->execute([
+        'club_id' => $clubId,
+        'reporting_year' => (int)$reportingYear
+    ]);
     $equipment = $equipmentStmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Get reorganization data
@@ -85,6 +96,7 @@ try {
     $status = (!$lastReorgDate || $reorgDueDate <= date('Y-m-d')) ? 'expired' : 'active';
 
     $club['equipment'] = $equipment;
+    $club['reporting_year'] = (int)$reportingYear;
     $club['reorganizations'] = $reorgs;
     $club['last_reorg_date'] = $lastReorgDate;
     $club['reorg_due_date'] = $reorgDueDate;

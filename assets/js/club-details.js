@@ -5,6 +5,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const clubId = urlParams.get("id");
+  const reportingYear =
+    parseInt(urlParams.get("year") || "", 10) || new Date().getFullYear();
 
   if (!clubId) {
     showError(
@@ -13,11 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  loadClubDetails(clubId);
+  loadClubDetails(clubId, reportingYear);
 });
 
-function loadClubDetails(clubId) {
-  fetch(`../api/club-details.php?id=${clubId}`)
+function loadClubDetails(clubId, reportingYear) {
+  fetch(`../api/club-details.php?id=${clubId}&reporting_year=${reportingYear}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {

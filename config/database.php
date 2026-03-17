@@ -124,6 +124,27 @@ function validateDate($date, $allowFuture = false)
 }
 
 /**
+ * Validate reporting year range
+ * @param mixed $year Year value
+ * @param int $minYear Minimum allowed year
+ * @param int|null $maxYear Maximum allowed year (defaults to current year + 1)
+ * @return bool True if valid
+ */
+function validateReportingYear($year, $minYear = 1900, $maxYear = null)
+{
+    if ($maxYear === null) {
+        $maxYear = (int)date('Y') + 1;
+    }
+
+    if (!is_numeric($year)) {
+        return false;
+    }
+
+    $yearInt = (int)$year;
+    return $yearInt >= $minYear && $yearInt <= $maxYear;
+}
+
+/**
  * Validate registration number format
  * Format: දපස/ක්රීඩා/{ග|ම|හ}-{digits}
  * @param string $regNumber Registration number

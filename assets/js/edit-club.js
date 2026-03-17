@@ -28,6 +28,19 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Initialize Tom Select dropdowns
   await initializeTomSelect();
 
+  const reportingYearInput = document.getElementById("reportingYear");
+  if (reportingYearInput && !reportingYearInput.value) {
+    reportingYearInput.value = String(new Date().getFullYear());
+  }
+
+  if (reportingYearInput) {
+    reportingYearInput.addEventListener("change", function () {
+      if (validateReportingYear()) {
+        loadClubData();
+      }
+    });
+  }
+
   // Setup form submission
   setupFormSubmission();
 
@@ -289,7 +302,12 @@ function updateEquipmentQuantityFields(equipmentIds) {
  */
 async function loadClubData() {
   try {
-    const response = await fetch(`../api/clubs.php?id=${currentClubId}`);
+    const reportingYear =
+      parseInt(document.getElementById("reportingYear")?.value || "", 10) ||
+      new Date().getFullYear();
+    const response = await fetch(
+      `../api/clubs.php?id=${currentClubId}&reporting_year=${reportingYear}`,
+    );
     const data = await response.json();
 
     if (data.success) {
@@ -322,6 +340,10 @@ async function populateForm(club) {
   document.getElementById("clubName").value = club.name || "";
   document.getElementById("registrationDate").value =
     club.registration_date || "";
+  if (document.getElementById("reportingYear")) {
+    document.getElementById("reportingYear").value =
+      club.reporting_year || document.getElementById("reportingYear").value;
+  }
 
   // Chairman info
   document.getElementById("chairmanName").value = club.chairman_name || "";
@@ -498,7 +520,11 @@ function setupFormSubmission() {
       e.preventDefault();
 
       // Validate phones
-      if (!validatePhone("chairman") || !validatePhone("secretary")) {
+      if (
+        !validatePhone("chairman") ||
+        !validatePhone("secretary") ||
+        !validateReportingYear()
+      ) {
         return;
       }
 
@@ -576,6 +602,7 @@ function setupFormSubmission() {
       }
 
       formData.append("equipment", JSON.stringify(selectedEquipment));
+      formData.append("reporting_year", document.getElementById("reportingYear").value);
 
       // Reorganization dates
       const reorgDates = [];
@@ -633,6 +660,31 @@ function setupFormSubmission() {
         submitBtn.textContent = originalText;
       }
     });
+}
+
+function validateReportingYear() {
+  const yearInput = document.getElementById("reportingYear");
+  const errorSpan = document.getElementById("reportingYearError");
+
+  if (!yearInput) {
+    return true;
+  }
+
+  const year = parseInt(yearInput.value, 10);
+  const currentYear = new Date().getFullYear();
+  if (!year || year < 1900 || year > currentYear + 1) {
+    if (errorSpan) {
+      errorSpan.textContent = "Valid reporting year is required";
+      errorSpan.classList.remove("hidden");
+    }
+    yearInput.focus();
+    return false;
+  }
+
+  if (errorSpan) {
+    errorSpan.classList.add("hidden");
+  }
+  return true;
 }
 
 /**

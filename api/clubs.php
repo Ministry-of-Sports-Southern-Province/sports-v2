@@ -81,8 +81,13 @@ function handleClubRegistration($pdo, $isUpdate = false)
     $registrationDate = $data['registration_date'] ?? null;
 
     $equipment = json_decode($data['equipment'] ?? '[]', true);
+    $reportingYear = $data['reporting_year'] ?? null;
     $reorganizations = json_decode($data['reorganizations'] ?? '[]', true);
     $gsDivisionId = empty($gsDivisionId) ? null : $gsDivisionId;
+
+    if (empty($reportingYear)) {
+        $reportingYear = (int)date('Y');
+    }
 
     // Auto-create divisions and GN divisions if they don't exist (when names are provided instead of IDs)
     if ($divisionId !== null && !is_numeric($divisionId)) {
@@ -92,6 +97,9 @@ function handleClubRegistration($pdo, $isUpdate = false)
     if ($gsDivisionId !== null && !is_numeric($gsDivisionId)) {
         $gsDivisionId = getOrCreateGSDivision($pdo, $gsDivisionId, $divisionId);
     }
+
+    // Validation container
+    $errors = [];
 
     // Validate that numeric IDs actually exist in database
     if ($divisionId !== null && is_numeric($divisionId)) {
@@ -120,9 +128,6 @@ function handleClubRegistration($pdo, $isUpdate = false)
         }
         unset($eq);
     }
-
-    // Validation
-    $errors = [];
 
     // Validate registration number
     if (empty($regNumber)) {
@@ -177,13 +182,30 @@ function handleClubRegistration($pdo, $isUpdate = false)
         $registrationDate = date('Y-m-d');
     }
 
+    if (!validateReportingYear($reportingYear)) {
+        $errors[] = 'A valid reporting year is required';
+    }
+
     // Validate equipment quantities if provided
     if (is_array($equipment)) {
+        $equipmentTypeIds = [];
         foreach ($equipment as $eq) {
+            if (!isset($eq['equipment_type_id']) || !is_numeric($eq['equipment_type_id'])) {
+                $errors[] = 'Invalid equipment type';
+                break;
+            }
+
             if (isset($eq['quantity']) && $eq['quantity'] < 1) {
                 $errors[] = 'Equipment quantity must be at least 1';
                 break;
             }
+
+            $equipmentTypeId = (int)$eq['equipment_type_id'];
+            if (in_array($equipmentTypeId, $equipmentTypeIds, true)) {
+                $errors[] = 'Duplicate equipment type found in the same year';
+                break;
+            }
+            $equipmentTypeIds[] = $equipmentTypeId;
         }
     }
 
@@ -228,9 +250,6 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 'club_id' => $clubId
             ]);
 
-            // Delete existing equipment
-            $deleteEq = $pdo->prepare("DELETE FROM club_equipment WHERE club_id = :club_id");
-            $deleteEq->execute(['club_id' => $clubId]);
         } else {
             // Insert club
             $sql = "INSERT INTO clubs (
@@ -263,21 +282,7 @@ function handleClubRegistration($pdo, $isUpdate = false)
             $clubId = $pdo->lastInsertId();
         }
 
-        // Insert equipment if provided
-        if (is_array($equipment) && count($equipment) > 0) {
-            $equipmentSql = "INSERT INTO club_equipment (club_id, equipment_type_id, quantity) VALUES (:club_id, :equipment_type_id, :quantity)";
-            $equipmentStmt = $pdo->prepare($equipmentSql);
-
-            foreach ($equipment as $eq) {
-                if (isset($eq['equipment_type_id']) && isset($eq['quantity'])) {
-                    $equipmentStmt->execute([
-                        'club_id' => $clubId,
-                        'equipment_type_id' => $eq['equipment_type_id'],
-                        'quantity' => $eq['quantity']
-                    ]);
-                }
-            }
-        }
+        syncYearlyEquipment($pdo, (int)$clubId, (int)$reportingYear, $equipment, $isUpdate);
 
         // Handle reorganization dates
         if ($isUpdate) {
@@ -311,7 +316,8 @@ function handleClubRegistration($pdo, $isUpdate = false)
         $successMessage = $isUpdate ? 'Club updated successfully' : 'Club registered successfully';
         sendJSONResponse(true, [
             'club_id' => $clubId,
-            'reg_number' => $regNumber
+            'reg_number' => $regNumber,
+            'reporting_year' => (int)$reportingYear
         ], $successMessage);
     } catch (Exception $e) {
         // Rollback transaction on error
@@ -389,6 +395,144 @@ function getOrCreateEquipmentType($pdo, $equipmentTypeName)
     return $pdo->lastInsertId();
 }
 
+/**
+ * Synchronize equipment for a specific year using snapshot + transaction log.
+ */
+function syncYearlyEquipment($pdo, $clubId, $reportingYear, $equipment, $isUpdate)
+{
+    if (!hasYearlyEquipmentTables($pdo)) {
+        syncLegacyEquipment($pdo, $clubId, $equipment);
+        return;
+    }
+
+    $existingStmt = $pdo->prepare(
+        "SELECT equipment_type_id, quantity
+         FROM club_equipment_yearly
+         WHERE club_id = :club_id AND reporting_year = :reporting_year"
+    );
+    $existingStmt->execute([
+        'club_id' => $clubId,
+        'reporting_year' => $reportingYear
+    ]);
+
+    $existingByType = [];
+    foreach ($existingStmt->fetchAll() as $row) {
+        $existingByType[(int)$row['equipment_type_id']] = (int)$row['quantity'];
+    }
+
+    $submittedByType = [];
+    if (is_array($equipment)) {
+        foreach ($equipment as $eq) {
+            if (!isset($eq['equipment_type_id'], $eq['quantity'])) {
+                continue;
+            }
+
+            $submittedByType[(int)$eq['equipment_type_id']] = (int)$eq['quantity'];
+        }
+    }
+
+    $upsertYearlyStmt = $pdo->prepare(
+        "INSERT INTO club_equipment_yearly (club_id, equipment_type_id, reporting_year, quantity)
+         VALUES (:club_id, :equipment_type_id, :reporting_year, :quantity)
+         ON DUPLICATE KEY UPDATE quantity = VALUES(quantity), updated_at = CURRENT_TIMESTAMP"
+    );
+
+    $deleteYearlyStmt = $pdo->prepare(
+        "DELETE FROM club_equipment_yearly
+         WHERE club_id = :club_id AND equipment_type_id = :equipment_type_id AND reporting_year = :reporting_year"
+    );
+
+    $insertTxnStmt = $pdo->prepare(
+        "INSERT INTO club_equipment_transactions (
+            club_id,
+            equipment_type_id,
+            reporting_year,
+            quantity_delta,
+            action_type,
+            event_date
+        ) VALUES (
+            :club_id,
+            :equipment_type_id,
+            :reporting_year,
+            :quantity_delta,
+            :action_type,
+            :event_date
+        )"
+    );
+
+    $allEquipmentTypeIds = array_unique(array_merge(array_keys($existingByType), array_keys($submittedByType)));
+    $actionType = $isUpdate ? 'update' : 'registration';
+    $eventDate = date('Y-m-d');
+
+    foreach ($allEquipmentTypeIds as $equipmentTypeId) {
+        $oldQuantity = $existingByType[$equipmentTypeId] ?? 0;
+        $newQuantity = $submittedByType[$equipmentTypeId] ?? 0;
+        $delta = $newQuantity - $oldQuantity;
+
+        if ($newQuantity > 0) {
+            $upsertYearlyStmt->execute([
+                'club_id' => $clubId,
+                'equipment_type_id' => $equipmentTypeId,
+                'reporting_year' => $reportingYear,
+                'quantity' => $newQuantity
+            ]);
+        } elseif ($oldQuantity > 0) {
+            $deleteYearlyStmt->execute([
+                'club_id' => $clubId,
+                'equipment_type_id' => $equipmentTypeId,
+                'reporting_year' => $reportingYear
+            ]);
+        }
+
+        if ($delta !== 0) {
+            $insertTxnStmt->execute([
+                'club_id' => $clubId,
+                'equipment_type_id' => $equipmentTypeId,
+                'reporting_year' => $reportingYear,
+                'quantity_delta' => $delta,
+                'action_type' => $actionType,
+                'event_date' => $eventDate
+            ]);
+        }
+    }
+}
+
+function hasYearlyEquipmentTables($pdo)
+{
+    $stmt = $pdo->query("SHOW TABLES LIKE 'club_equipment_yearly'");
+    if (!$stmt || !$stmt->fetchColumn()) {
+        return false;
+    }
+
+    $stmt = $pdo->query("SHOW TABLES LIKE 'club_equipment_transactions'");
+    return (bool)($stmt && $stmt->fetchColumn());
+}
+
+function syncLegacyEquipment($pdo, $clubId, $equipment)
+{
+    $deleteEq = $pdo->prepare("DELETE FROM club_equipment WHERE club_id = :club_id");
+    $deleteEq->execute(['club_id' => $clubId]);
+
+    if (!is_array($equipment) || count($equipment) === 0) {
+        return;
+    }
+
+    $equipmentSql = "INSERT INTO club_equipment (club_id, equipment_type_id, quantity) VALUES (:club_id, :equipment_type_id, :quantity)";
+    $equipmentStmt = $pdo->prepare($equipmentSql);
+
+    foreach ($equipment as $eq) {
+        if (!isset($eq['equipment_type_id'], $eq['quantity'])) {
+            continue;
+        }
+
+        $equipmentStmt->execute([
+            'club_id' => $clubId,
+            'equipment_type_id' => (int)$eq['equipment_type_id'],
+            'quantity' => (int)$eq['quantity']
+        ]);
+    }
+}
+
 // Get club by ID for editing
 function handleGetClub($pdo)
 {
@@ -397,9 +541,21 @@ function handleGetClub($pdo)
     }
 
     $clubId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    $reportingYear = filter_input(INPUT_GET, 'reporting_year', FILTER_VALIDATE_INT);
+    if (!$reportingYear && isset($_GET['reporting_year'])) {
+        $reportingYear = (int)$_GET['reporting_year'];
+    }
+
+    if (!$reportingYear) {
+        $reportingYear = (int)date('Y');
+    }
 
     if (!$clubId) {
         sendJSONResponse(false, null, 'Invalid club ID', 400);
+    }
+
+    if (!validateReportingYear($reportingYear)) {
+        sendJSONResponse(false, null, 'A valid reporting year is required', 400);
     }
 
     try {
@@ -425,17 +581,37 @@ function handleGetClub($pdo)
             sendJSONResponse(false, null, 'Club not found', 404);
         }
 
-        // Get club equipment
-        $stmt = $pdo->prepare("
-            SELECT et.id, et.name, ce.quantity
-            FROM club_equipment ce
-            INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
-            WHERE ce.club_id = :club_id
-        ");
-        $stmt->execute(['club_id' => $clubId]);
-        $equipment = $stmt->fetchAll();
+                    // Get club equipment (year-wise table preferred, legacy fallback if migration not applied yet)
+                    try {
+                        $stmt = $pdo->prepare("
+                            SELECT et.id, et.name, ce.quantity
+                            FROM club_equipment_yearly ce
+                            INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
+                            WHERE ce.club_id = :club_id AND ce.reporting_year = :reporting_year
+                        ");
+                        $stmt->execute([
+                            'club_id' => $clubId,
+                            'reporting_year' => $reportingYear
+                        ]);
+                        $equipment = $stmt->fetchAll();
+                    } catch (PDOException $equipmentException) {
+                        // SQLSTATE 42S02: table or view not found (legacy DB without migration)
+                        if ($equipmentException->getCode() !== '42S02') {
+                            throw $equipmentException;
+                        }
+
+                        $stmt = $pdo->prepare("
+                            SELECT et.id, et.name, ce.quantity
+                            FROM club_equipment ce
+                            INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
+                            WHERE ce.club_id = :club_id
+                        ");
+                        $stmt->execute(['club_id' => $clubId]);
+                        $equipment = $stmt->fetchAll();
+                    }
 
         $club['equipment'] = $equipment;
+        $club['reporting_year'] = (int)$reportingYear;
 
         // Get club reorganization dates
         $stmt = $pdo->prepare("

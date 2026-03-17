@@ -1,4 +1,5 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
+  initializeYearFilter();
   loadDistricts();
   loadEquipmentTypes();
 
@@ -19,12 +20,39 @@
     ?.addEventListener("change", function () {
       generateReport(1);
     });
+  document.getElementById("year")?.addEventListener("change", function () {
+    generateReport(1);
+  });
 });
 
 let currentPage = 1;
 let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
+
+function initializeYearFilter() {
+  const yearSelect = document.getElementById("year");
+  if (!yearSelect) {
+    return;
+  }
+
+  const currentYear = new Date().getFullYear();
+
+  // Clear existing options except placeholder.
+  while (yearSelect.children.length > 1) {
+    yearSelect.removeChild(yearSelect.lastChild);
+  }
+
+  // Show recent years and near-future planning year.
+  for (let y = currentYear + 1; y >= currentYear - 10; y--) {
+    const option = document.createElement("option");
+    option.value = String(y);
+    option.textContent = String(y);
+    yearSelect.appendChild(option);
+  }
+
+  yearSelect.value = String(currentYear);
+}
 
 function buildReportQuery({
   page = 1,
@@ -35,9 +63,15 @@ function buildReportQuery({
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
   const gsDivision = document.getElementById("gsDivision")?.value || "";
+  const year = document.getElementById("year")?.value || "";
+
+  if (!year) {
+    return "";
+  }
 
   const params = new URLSearchParams();
   params.append("type", "equipment");
+  params.append("year", year);
   params.append("equipment", equipment);
   params.append("district", district);
   if (division) params.append("division", division);
@@ -151,6 +185,12 @@ function generateReport() {
 
 function generateReportPage(page = 1) {
   currentPage = page;
+  const year = document.getElementById("year")?.value || "";
+  if (!year) {
+    alert("Please select year");
+    return;
+  }
+
   const equipment = document.getElementById("equipment").value;
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
@@ -160,7 +200,7 @@ function generateReportPage(page = 1) {
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
-        displayReport(data.data, equipment, district, division, gsDivision);
+        displayReport(data.data, year, equipment, district, division, gsDivision);
         renderPagination(data.pagination);
       }
     });
@@ -198,6 +238,12 @@ function printReportWithDate() {
   const districtVal = document.getElementById("district")?.value;
   const divisionVal = document.getElementById("division")?.value || "";
   const gsDivisionVal = document.getElementById("gsDivision")?.value || "";
+  const yearVal = document.getElementById("year")?.value || "";
+
+  if (!yearVal) {
+    alert("Please select year");
+    return;
+  }
 
   fetch(buildReportQuery({ printAll: true }))
     .then((res) => res.json())
@@ -205,6 +251,7 @@ function printReportWithDate() {
       if (data.success) {
         displayReport(
           data.data,
+          yearVal,
           equipmentVal,
           districtVal,
           divisionVal,
@@ -320,6 +367,7 @@ function renderPagination(pagination) {
 
 function displayReport(
   data,
+  year,
   equipment,
   district,
   division = "",
@@ -330,6 +378,7 @@ function displayReport(
   const districtText = district || "All Districts";
   const divisionText = division ? ` | Division: ${division}` : "";
   const gsDivisionText = gsDivision ? ` | GS Division: ${gsDivision}` : "";
+  const yearText = year ? ` | Year: ${year}` : "";
 
   // Calculate total
   const totalQuantity = data.reduce(
@@ -524,13 +573,13 @@ function displayReport(
         <div class="print-header" style="display: none;">
             <div class="dept-name" data-i18n="header.department_name">Department of Sports Southern Province</div>
             <h1 data-i18n="report.type_equipment">Equipment Report</h1>
-            <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}</div>
+            <div class="text-sm">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}${yearText}</div>
         </div>
 
         <div class="text-center mb-6 no-print">
             <h2 class="text-2xl font-bold">Department of Sports Southern Province</h2>
             <h3 class="text-xl mt-2">Equipment Report</h3>
-            <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}</p>
+            <p class="text-sm text-gray-600 mt-2">Equipment: ${equipmentText} | District: ${districtText}${divisionText}${gsDivisionText}${yearText}</p>
             <p class="text-sm text-gray-600">Generated: ${new Date().toLocaleDateString("en-US")}</p>
         </div>
         

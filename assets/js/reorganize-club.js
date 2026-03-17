@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
  * Load current club data
  */
 function loadClubData(clubId) {
-  fetch(`${apiBase}/clubs.php?id=${clubId}`)
+  const reportingYear = new Date().getFullYear();
+  fetch(`${apiBase}/clubs.php?id=${clubId}&reporting_year=${reportingYear}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success && data.data) {

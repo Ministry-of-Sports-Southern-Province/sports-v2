@@ -126,6 +126,11 @@ include '../includes/header.php';
         <div class="section-card">
             <h2 class="section-heading" data-i18n="form.equipment_information">ක්‍රීඩා උපකරණ</h2>
             <p class="text-sm text-slate-600 mb-4" data-i18n="form.equipment_note">සමාජයේ ඇති උපකරණ තෝරන්න (අත්‍යවශ්‍ය නොවේ)</p>
+            <div class="mb-4">
+                <label class="form-label">Reporting Year</label>
+                <input type="number" id="reportingYear" name="reportingYear" min="1900" max="2100" required class="form-input" value="<?php echo date('Y'); ?>">
+                <span id="reportingYearError" class="form-error hidden"></span>
+            </div>
             <div>
                 <label class="form-label" data-i18n="form.select_equipment">උපකරණ තෝරන්න</label>
                 <select id="equipmentSelect" name="equipment[]" multiple class="form-select" data-i18n-placeholder="placeholder.type_to_search">

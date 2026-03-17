@@ -10,7 +10,13 @@ include '../includes/header.php';
 
     <div class="section-card mb-6 no-print">
         <h2 class="section-heading" data-i18n="report.type_equipment">උපකරණ ලැයිස්තුව වාර්තාව</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div>
+                <label class="form-label">Report Year</label>
+                <select id="year" class="form-select" required>
+                    <option value="">Select year</option>
+                </select>
+            </div>
             <div>
                 <label class="form-label" data-i18n="report.select_equipment">උපකරණ වර්ගය</label>
                 <select id="equipment" class="form-select">

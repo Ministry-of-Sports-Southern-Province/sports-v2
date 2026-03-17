@@ -540,6 +540,13 @@ function setupFormValidation() {
     .addEventListener("change", function () {
       validateRegistrationDate();
     });
+
+  const reportingYearInput = document.getElementById("reportingYear");
+  if (reportingYearInput) {
+    reportingYearInput.addEventListener("input", function () {
+      validateReportingYear();
+    });
+  }
 }
 
 /**
@@ -764,6 +771,10 @@ function setupFormSubmission() {
       // Equipment - Collect all selected equipment with quantities
       const selectedEquipment = [];
       const equipmentIds = window.tomSelectInstances.equipmentSelect.getValue();
+      const reportingYearInput = document.getElementById("reportingYear");
+      const reportingYear = reportingYearInput
+        ? parseInt(reportingYearInput.value, 10)
+        : NaN;
 
       if (equipmentIds.length > 0) {
         equipmentIds.forEach((id) => {
@@ -779,6 +790,7 @@ function setupFormSubmission() {
       }
 
       formData.append("equipment", JSON.stringify(selectedEquipment));
+      formData.append("reporting_year", String(reportingYear));
 
       // Check if editing
       const clubId =
@@ -887,7 +899,36 @@ function validateForm() {
     }
   });
 
+  if (!validateReportingYear()) {
+    isValid = false;
+  }
+
   return isValid;
+}
+
+function validateReportingYear() {
+  const yearInput = document.getElementById("reportingYear");
+  const errorSpan = document.getElementById("reportingYearError");
+
+  if (!yearInput) {
+    return true;
+  }
+
+  const year = parseInt(yearInput.value, 10);
+  const currentYear = new Date().getFullYear();
+
+  if (!year || year < 1900 || year > currentYear + 1) {
+    if (errorSpan) {
+      errorSpan.textContent = "Valid reporting year is required";
+      errorSpan.classList.remove("hidden");
+    }
+    return false;
+  }
+
+  if (errorSpan) {
+    errorSpan.classList.add("hidden");
+  }
+  return true;
 }
 
 /**
@@ -909,7 +950,11 @@ function checkEditMode() {
   submitBtn.dataset.clubId = clubId;
 
   // Load club data
-  fetch(`/sports-v2/api/clubs.php?id=${clubId}`)
+  const reportingYear =
+    parseInt(document.getElementById("reportingYear")?.value || "", 10) ||
+    new Date().getFullYear();
+
+  fetch(`/sports-v2/api/clubs.php?id=${clubId}&reporting_year=${reportingYear}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
@@ -941,6 +986,10 @@ function populateFormWithClubData(club) {
     document.getElementById("regNumberManual").value = regParts[3] || "";
   }
   document.getElementById("clubName").value = club.name || "";
+  if (document.getElementById("reportingYear")) {
+    document.getElementById("reportingYear").value =
+      club.reporting_year || new Date().getFullYear();
+  }
 
   // Chairman info
   document.getElementById("chairmanName").value = club.chairman_name || "";

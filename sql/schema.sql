@@ -4,6 +4,8 @@
 
 -- Drop tables in reverse order of dependencies
 DROP TABLE IF EXISTS club_reorganizations;
+DROP TABLE IF EXISTS club_equipment_transactions;
+DROP TABLE IF EXISTS club_equipment_yearly;
 DROP TABLE IF EXISTS club_equipment;
 DROP TABLE IF EXISTS equipment_types;
 DROP TABLE IF EXISTS clubs;
@@ -97,7 +99,7 @@ CREATE TABLE equipment_types (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ====================
--- 6. CLUB EQUIPMENT TABLE (Junction Table)
+-- 6. CLUB EQUIPMENT TABLE (Legacy Junction Table)
 -- ====================
 CREATE TABLE club_equipment (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -114,7 +116,48 @@ CREATE TABLE club_equipment (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ====================
--- 7. CLUB REORGANIZATIONS TABLE
+-- 7. CLUB EQUIPMENT YEARLY SNAPSHOT TABLE
+-- ====================
+CREATE TABLE club_equipment_yearly (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    club_id INT NOT NULL,
+    equipment_type_id INT NOT NULL,
+    reporting_year SMALLINT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE KEY unique_equipment_per_club_year (club_id, equipment_type_id, reporting_year),
+    INDEX idx_equipment_yearly_year (reporting_year),
+    INDEX idx_equipment_yearly_club_year (club_id, reporting_year),
+    INDEX idx_equipment_yearly_type_year (equipment_type_id, reporting_year)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ====================
+-- 8. CLUB EQUIPMENT TRANSACTION LOG TABLE
+-- ====================
+CREATE TABLE club_equipment_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    club_id INT NOT NULL,
+    equipment_type_id INT NOT NULL,
+    reporting_year SMALLINT NOT NULL,
+    quantity_delta INT NOT NULL,
+    action_type ENUM('registration', 'update', 'adjustment') NOT NULL DEFAULT 'update',
+    event_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_equipment_txn_year (reporting_year),
+    INDEX idx_equipment_txn_club_year (club_id, reporting_year),
+    INDEX idx_equipment_txn_type_year (equipment_type_id, reporting_year),
+    INDEX idx_equipment_txn_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ====================
+-- 9. CLUB REORGANIZATIONS TABLE
 -- ====================
 CREATE TABLE club_reorganizations (
     id INT AUTO_INCREMENT PRIMARY KEY,
