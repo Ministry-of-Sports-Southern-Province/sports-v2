@@ -1,3 +1,7 @@
 <IfModule mod_passenger.c>
     PassengerEnabled off
 </IfModule>
+
+RewriteEngine On
+# If this folder is used as document root, disable favicon requests here too
+RewriteRule ^favicon\.ico$ - [R=204,L]

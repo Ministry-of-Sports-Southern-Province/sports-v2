@@ -4,13 +4,13 @@
 
 RewriteEngine On
 
+# Explicitly disable favicon serving to avoid repeated browser requests causing server errors
+RewriteRule ^favicon\.ico$ - [R=204,L]
+
 # 0) CRITICAL: Skip rewrite for any existing file or directory (MUST be first)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-
-# Serve the real static favicon only when no physical favicon file exists
-RewriteRule ^favicon\.ico$ /assets/img/logo.svg [L]
 
 # 1) Force HTTPS (optional if SSL installed)
 RewriteCond %{HTTPS} off
