@@ -1,12 +1,12 @@
 RewriteEngine On
 
-# Serve existing logo.svg as favicon to avoid missing /favicon.ico 500 responses
-RewriteRule ^favicon\.ico$ /assets/img/logo.svg [L]
-
 # 0) CRITICAL: Skip rewrite for any existing file or directory (MUST be first)
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+# Serve the real static favicon only when no physical favicon file exists
+RewriteRule ^favicon\.ico$ /assets/img/logo.svg [L]
 
 # 1) Force HTTPS (optional if SSL installed)
 RewriteCond %{HTTPS} off
