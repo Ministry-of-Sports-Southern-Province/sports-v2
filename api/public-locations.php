@@ -8,7 +8,7 @@
  */
 
 header('Content-Type: application/json; charset=UTF-8');
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -24,7 +24,8 @@ try {
     }
 
     if ($type === 'district') {
-        $stmt = $pdo->prepare("SELECT id, name, sinhala_letter FROM districts ORDER BY name");
+        // Keep response schema minimal for public UI and avoid optional-column dependency.
+        $stmt = $pdo->prepare("SELECT id, name FROM districts ORDER BY name");
         $stmt->execute();
         sendJSONResponse(true, $stmt->fetchAll(PDO::FETCH_ASSOC));
     }

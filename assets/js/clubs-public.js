@@ -242,7 +242,7 @@
         return;
       }
       const clubs = data.data || [];
-      const pag = data.meta?.pagination || {};
+      const pag = data.pagination || data.meta?.pagination || {};
       totalPages = pag.total_pages || 1;
       currentPage = pag.page || 1;
       renderResults(clubs, pag, search);

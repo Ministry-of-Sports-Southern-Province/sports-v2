@@ -7,7 +7,21 @@
  */
 
 header('Content-Type: application/json; charset=UTF-8');
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
+
+/**
+ * Check whether a table exists in the current database.
+ */
+function tableExists(PDO $pdo, string $tableName): bool
+{
+    $stmt = $pdo->prepare(
+        "SELECT COUNT(*) FROM information_schema.tables
+         WHERE table_schema = DATABASE() AND table_name = :table_name"
+    );
+    $stmt->bindValue(':table_name', $tableName, PDO::PARAM_STR);
+    $stmt->execute();
+    return ((int)$stmt->fetchColumn()) > 0;
+}
 
 // ------------------------------------------------------------------
 // Stats mode — lightweight count summary for the dashboard cards
@@ -15,20 +29,26 @@ require_once '../config/database.php';
 if (isset($_GET['stats']) && $_GET['stats'] === '1') {
     try {
         $pdo = getDBConnection();
+        $hasReorgTable = tableExists($pdo, 'club_reorganizations');
 
         $total = (int)$pdo->query("SELECT COUNT(*) FROM clubs")->fetchColumn();
 
-        $activeHaving = "HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0"
-            . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2,'-01-01'))"
-            . " ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+        // Backward-compatible fallback when reorganization table is not available.
+        if ($hasReorgTable) {
+            $activeHaving = "HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0"
+                . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2,'-01-01'))"
+                . " ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
 
-        $active = (int)$pdo->query(
-            "SELECT COUNT(*) FROM (
-                SELECT c.id FROM clubs c
-                LEFT JOIN club_reorganizations cr ON c.id = cr.club_id
-                GROUP BY c.id {$activeHaving}
-            ) AS sub"
-        )->fetchColumn();
+            $active = (int)$pdo->query(
+                "SELECT COUNT(*) FROM (
+                    SELECT c.id FROM clubs c
+                    LEFT JOIN club_reorganizations cr ON c.id = cr.club_id
+                    GROUP BY c.id {$activeHaving}
+                ) AS sub"
+            )->fetchColumn();
+        } else {
+            $active = 0;
+        }
 
         sendJSONResponse(true, ['total' => $total, 'active' => $active, 'expired' => $total - $active]);
     } catch (Exception $e) {
@@ -43,6 +63,7 @@ try {
     }
 
     $pdo = getDBConnection();
+    $hasReorgTable = tableExists($pdo, 'club_reorganizations');
 
     // ------------------------------------------------------------------
     // Parameters
@@ -68,8 +89,16 @@ try {
             LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
             LEFT JOIN divisions dv ON gn.division_id = dv.id
             LEFT JOIN districts d  ON dv.district_id = d.id
+            WHERE 1=1";
+
+    if ($hasReorgTable) {
+        $baseFrom = "FROM clubs c
+            LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
+            LEFT JOIN divisions dv ON gn.division_id = dv.id
+            LEFT JOIN districts d  ON dv.district_id = d.id
             LEFT JOIN club_reorganizations cr ON c.id = cr.club_id
             WHERE 1=1";
+    }
 
     $where  = '';
     $params = [];
@@ -93,14 +122,24 @@ try {
 
     // Reorganization status filter uses HAVING (same logic as clubs-list.php)
     $having = '';
-    if ($reorgStatus === 'active') {
+    if ($hasReorgTable && $reorgStatus === 'active') {
         $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0"
             . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01'))"
             . " ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
-    } elseif ($reorgStatus === 'expired') {
+    } elseif ($hasReorgTable && $reorgStatus === 'expired') {
         $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 1"
             . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01'))"
             . " ELSE (CURDATE() >= DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+    } elseif (!$hasReorgTable && $reorgStatus === 'active') {
+        // Without reorganization history support, no records can be classified as active.
+        sendJSONResponse(true, [], 'Clubs loaded successfully', 200, [
+            'pagination' => [
+                'page'        => 1,
+                'limit'       => $limit,
+                'total'       => 0,
+                'total_pages' => 1,
+            ]
+        ]);
     }
 
     // ------------------------------------------------------------------
@@ -122,20 +161,35 @@ try {
     // ------------------------------------------------------------------
     // Data — strictly no personal columns
     // ------------------------------------------------------------------
-    $sql = "SELECT
-                c.id,
-                c.reg_number,
-                c.name,
-                c.registration_date,
-                d.name  AS district_name,
-                dv.name AS division_name,
-                gn.name AS gs_division_name,
-                MAX(cr.reorg_date) AS last_reorg_date
-            " . $baseFrom . $where . "
-            GROUP BY c.id, c.reg_number, c.name, c.registration_date, d.name, dv.name, gn.name"
-        . $having . "
-            ORDER BY c.registration_date DESC, c.id DESC
-            LIMIT :limit OFFSET :offset";
+    if ($hasReorgTable) {
+        $sql = "SELECT
+                    c.id,
+                    c.reg_number,
+                    c.name,
+                    c.registration_date,
+                    d.name  AS district_name,
+                    dv.name AS division_name,
+                    gn.name AS gs_division_name,
+                    MAX(cr.reorg_date) AS last_reorg_date
+                " . $baseFrom . $where . "
+                GROUP BY c.id, c.reg_number, c.name, c.registration_date, d.name, dv.name, gn.name"
+            . $having . "
+                ORDER BY c.registration_date DESC, c.id DESC
+                LIMIT :limit OFFSET :offset";
+    } else {
+        $sql = "SELECT
+                    c.id,
+                    c.reg_number,
+                    c.name,
+                    c.registration_date,
+                    d.name  AS district_name,
+                    dv.name AS division_name,
+                    gn.name AS gs_division_name,
+                    NULL AS last_reorg_date
+                " . $baseFrom . $where . "
+                ORDER BY c.registration_date DESC, c.id DESC
+                LIMIT :limit OFFSET :offset";
+    }
 
     $stmt = $pdo->prepare($sql);
     foreach ($params as $key => $val) {
