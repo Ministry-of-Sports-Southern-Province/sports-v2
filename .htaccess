@@ -3,20 +3,28 @@ RewriteEngine On
 # Serve existing logo.svg as favicon to avoid missing /favicon.ico 500 responses
 RewriteRule ^favicon\.ico$ /assets/img/logo.svg [L]
 
-# 0) CRITICAL: Skip rewrite for any existing file or directory (MUST be first)
+# 0) Keep localhost on HTTP for local development
+RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1)(:\d+)?$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^\[::1\](?::\d+)?$ [NC]
+RewriteCond %{HTTPS} on
+RewriteRule ^ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=302]
+
+# 1) Force HTTPS for non-local hosts (optional if SSL installed)
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTP_HOST} !^\[::1\](?::\d+)?$ [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 2) Skip rewrite for any existing file or directory
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# 1) Force HTTPS (optional if SSL installed)
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# 2) Redirect any *.html URL to clean URL
+# 3) Redirect any *.html URL to clean URL
 RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
 RewriteRule ^([^.]+)\.html$ /$1 [R=301,L]
 
-# 3) Internally rewrite clean URLs to existing .html files
+# 4) Internally rewrite clean URLs to existing .html files
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f
