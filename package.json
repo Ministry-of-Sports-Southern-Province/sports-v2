@@ -1,0 +1,27 @@
+{
+  "name": "sports-v2",
+  "version": "1.0.0",
+  "description": "A modern sports club management system for the Department of Sports Southern Province (දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව) built with clean architecture, proper database normalization, and multilingual support.",
+  "main": "tailwind.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ministry-of-Sports-Southern-Province/sports-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ministry-of-Sports-Southern-Province/sports-v2/issues"
+  },
+  "homepage": "https://github.com/Ministry-of-Sports-Southern-Province/sports-v2#readme",
+  "dependencies": {
+    "tailwindcss": "^4.2.1"
+  }
+}
