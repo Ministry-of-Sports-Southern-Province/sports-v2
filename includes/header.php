@@ -650,7 +650,7 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
                 <!-- Right side: Language Switcher above User Info & Logout -->
                 <div class="flex flex-col items-end space-y-3">
                     <!-- Language Switcher -->
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-2 items-center">
                         <button data-language="en" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
                             EN
                         </button>
@@ -660,6 +660,10 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
                         <button data-language="ta" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
                             தமிழ்
                         </button>
+                        <!-- Login button (public pages only) -->
+                        <?php if ($isPublicPage): ?>
+                            <a href="<?php echo htmlspecialchars($basePath); ?>login.php" class="px-4 py-1.5 rounded text-sm font-semibold text-blue-600 bg-white hover:bg-blue-50 transition ml-2" data-i18n="button.login">Login</a>
+                        <?php endif; ?>
                     </div>
 
                     <!-- User Info & Logout (hidden on public pages) -->
