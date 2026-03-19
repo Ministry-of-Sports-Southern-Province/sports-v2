@@ -181,30 +181,43 @@ $customStyles = '
     }
     
     .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1rem;
+        background: white;
+        border-left: 4px solid #3b82f6;
+        padding: 1.25rem;
         border-radius: 0.5rem;
-        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
     
     .stat-card.card-blue {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-left-color: #3b82f6;
     }
     
     .stat-card.card-green {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-left-color: #10b981;
+    }
+    
+    .stat-card.card-amber {
+        border-left-color: #f59e0b;
     }
     
     .stat-value {
-        font-size: 1.75rem;
+        font-size: 2rem;
         font-weight: 700;
+        color: #1e293b;
+        line-height: 1;
     }
     
     .stat-label {
         font-size: 0.875rem;
-        opacity: 0.9;
-        margin-top: 0.25rem;
+        color: #64748b;
+        margin-top: 0.5rem;
+        font-weight: 500;
     }
     
     .modal {
@@ -258,7 +271,7 @@ include '../includes/header.php';
         <!-- Left Panel: Add Equipment Form -->
         <div class="form-card">
             <h2 data-i18n="form.add_equipment">Add Equipment</h2>
-            
+
             <div class="form-group">
                 <label data-i18n="form.club_name">Club</label>
                 <select id="clubSelect" class="form-select">
@@ -296,7 +309,7 @@ include '../includes/header.php';
 
             <div id="equipmentContent" style="display: none;">
                 <div class="equipment-stats" id="statsContainer"></div>
-                
+
                 <div class="year-filter" id="yearFilterContainer"></div>
 
                 <table class="equipment-table" id="equipmentTable">

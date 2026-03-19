@@ -169,7 +169,6 @@ function initializeTomSelect() {
       createNewLocation("gs_division", input, divisionId, callback);
     },
   });
-
 }
 
 /**
@@ -837,5 +836,3 @@ function populateFormWithClubData(club) {
     }
   }, 1000);
 }
-
-

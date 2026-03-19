@@ -160,7 +160,6 @@ async function initializeTomSelect() {
         .catch(() => callback());
     },
   });
-
 }
 
 /**

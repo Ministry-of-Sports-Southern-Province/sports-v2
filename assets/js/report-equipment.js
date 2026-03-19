@@ -15,9 +15,11 @@
     loadGSDivisions();
     generateReport(1);
   });
-  document.getElementById("gsDivision")?.addEventListener("change", function () {
-    generateReport(1);
-  });
+  document
+    .getElementById("gsDivision")
+    ?.addEventListener("change", function () {
+      generateReport(1);
+    });
   document.getElementById("year")?.addEventListener("change", function () {
     generateReport(1);
   });
@@ -178,26 +180,29 @@ function loadReportYears() {
  */
 function setViewMode(mode) {
   currentViewMode = mode;
-  
+
   // Update button styling
   document.getElementById("viewModeAggregated").classList.remove("active-mode");
-  document.getElementById("viewModeAggregated").style.backgroundColor = "#d1d5db";
+  document.getElementById("viewModeAggregated").style.backgroundColor =
+    "#d1d5db";
   document.getElementById("viewModeAggregated").style.color = "#374151";
-  
+
   document.getElementById("viewModeYearwise").classList.remove("active-mode");
   document.getElementById("viewModeYearwise").style.backgroundColor = "#d1d5db";
   document.getElementById("viewModeYearwise").style.color = "#374151";
-  
+
   if (mode === "aggregated") {
     document.getElementById("viewModeAggregated").classList.add("active-mode");
-    document.getElementById("viewModeAggregated").style.backgroundColor = "#2563eb";
+    document.getElementById("viewModeAggregated").style.backgroundColor =
+      "#2563eb";
     document.getElementById("viewModeAggregated").style.color = "white";
   } else {
     document.getElementById("viewModeYearwise").classList.add("active-mode");
-    document.getElementById("viewModeYearwise").style.backgroundColor = "#2563eb";
+    document.getElementById("viewModeYearwise").style.backgroundColor =
+      "#2563eb";
     document.getElementById("viewModeYearwise").style.color = "white";
   }
-  
+
   // Regenerate report with new view mode
   generateReport(1);
 }

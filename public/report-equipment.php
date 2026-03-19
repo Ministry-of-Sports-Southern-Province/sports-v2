@@ -10,7 +10,7 @@ include '../includes/header.php';
 
     <div class="section-card mb-6 no-print">
         <h2 class="section-heading" data-i18n="report.type_equipment">උපකරණ ලැයිස්තුව වාර්තාව</h2>
-        
+
         <!-- Primary Filters -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>

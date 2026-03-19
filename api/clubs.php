@@ -227,7 +227,6 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 'gs_division_id' => empty($gsDivisionId) ? null : $gsDivisionId,
                 'club_id' => $clubId
             ]);
-
         } else {
             // Insert club
             $sql = "INSERT INTO clubs (
