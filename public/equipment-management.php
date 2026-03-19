@@ -252,7 +252,9 @@ $customStyles = '
     }
 ';
 
-$additionalLinks = [];
+$additionalLinks = [
+    '<link href="' . htmlspecialchars($basePath ?? '../', ENT_QUOTES, 'UTF-8') . 'assets/css/vendor/tom-select.css" rel="stylesheet">'
+];
 
 require_once '../includes/auth.php';
 requireAdmin();
@@ -346,6 +348,9 @@ include '../includes/header.php';
 </div>
 
 <?php
-$scripts = ['../assets/js/equipment-management.js?v=' . time()];
+$scripts = [
+    '../assets/js/vendor/tom-select.complete.min.js',
+    '../assets/js/equipment-management.js?v=' . time()
+];
 include '../includes/footer.php';
 ?>

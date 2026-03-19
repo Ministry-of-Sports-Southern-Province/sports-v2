@@ -6,6 +6,7 @@
 let currentClubId = null;
 let currentEquipmentData = [];
 let selectedYearFilter = "all";
+let clubSelectTom = null;
 const preselectedClubId = new URLSearchParams(window.location.search).get(
   "club_id",
 );
@@ -20,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Club selection event
   document.getElementById("clubSelect").addEventListener("change", function () {
+    if (clubSelectTom) {
+      return;
+    }
+
     currentClubId = this.value;
     if (currentClubId) {
       loadEquipmentHistory(currentClubId);
@@ -46,14 +51,53 @@ function loadClubs() {
           select.appendChild(opt);
         });
 
+        initializeClubSearch();
+
         if (preselectedClubId) {
           select.value = preselectedClubId;
           currentClubId = preselectedClubId;
+          if (clubSelectTom) {
+            clubSelectTom.setValue(preselectedClubId, true);
+          }
           loadEquipmentHistory(preselectedClubId);
         }
       }
     })
     .catch((err) => console.error("Error loading clubs:", err));
+}
+
+/**
+ * Initialize searchable club dropdown
+ */
+function initializeClubSearch() {
+  const selectElement = document.getElementById("clubSelect");
+
+  if (typeof TomSelect === "undefined" || !selectElement) {
+    return;
+  }
+
+  if (clubSelectTom) {
+    clubSelectTom.destroy();
+  }
+
+  clubSelectTom = new TomSelect(selectElement, {
+    create: false,
+    maxOptions: 500,
+    searchField: ["text"],
+    placeholder: window.i18n
+      ? window.i18n.t("form.select_club")
+      : "Select Club",
+    allowEmptyOption: true,
+  });
+
+  clubSelectTom.on("change", function (value) {
+    currentClubId = value;
+    if (currentClubId) {
+      loadEquipmentHistory(currentClubId);
+    } else {
+      resetEquipmentDisplay();
+    }
+  });
 }
 
 /**
