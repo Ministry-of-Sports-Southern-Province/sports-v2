@@ -190,13 +190,13 @@ try {
 
         if ($viewMode === 'aggregated') {
             $countSql = "SELECT COUNT(*) FROM (
-                        SELECT c.id, et.id
+                        SELECT c.id AS club_id, et.id AS equipment_type_id
                         " . $baseFrom . "
                         GROUP BY c.id, et.id
                     ) grouped_rows";
         } else {
             $countSql = "SELECT COUNT(*) FROM (
-                        SELECT c.id, et.id, YEAR(ce.created_at)
+                        SELECT c.id AS club_id, et.id AS equipment_type_id, YEAR(ce.created_at) AS equipment_year
                         " . $baseFrom . "
                         GROUP BY c.id, et.id, YEAR(ce.created_at)
                     ) grouped_rows";
