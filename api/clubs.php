@@ -228,9 +228,6 @@ function handleClubRegistration($pdo, $isUpdate = false)
                 'club_id' => $clubId
             ]);
 
-            // Delete existing equipment
-            $deleteEq = $pdo->prepare("DELETE FROM club_equipment WHERE club_id = :club_id");
-            $deleteEq->execute(['club_id' => $clubId]);
         } else {
             // Insert club
             $sql = "INSERT INTO clubs (
@@ -261,22 +258,6 @@ function handleClubRegistration($pdo, $isUpdate = false)
             ]);
 
             $clubId = $pdo->lastInsertId();
-        }
-
-        // Insert equipment if provided
-        if (is_array($equipment) && count($equipment) > 0) {
-            $equipmentSql = "INSERT INTO club_equipment (club_id, equipment_type_id, quantity) VALUES (:club_id, :equipment_type_id, :quantity)";
-            $equipmentStmt = $pdo->prepare($equipmentSql);
-
-            foreach ($equipment as $eq) {
-                if (isset($eq['equipment_type_id']) && isset($eq['quantity'])) {
-                    $equipmentStmt->execute([
-                        'club_id' => $clubId,
-                        'equipment_type_id' => $eq['equipment_type_id'],
-                        'quantity' => $eq['quantity']
-                    ]);
-                }
-            }
         }
 
         // Handle reorganization dates

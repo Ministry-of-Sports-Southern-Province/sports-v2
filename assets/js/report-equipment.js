@@ -1,6 +1,7 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
   loadDistricts();
   loadEquipmentTypes();
+  loadReportYears();
 
   // Real-time report generation (reset to page 1 when filters change)
   document.getElementById("equipment").addEventListener("change", function () {
@@ -14,17 +15,19 @@
     loadGSDivisions();
     generateReport(1);
   });
-  document
-    .getElementById("gsDivision")
-    ?.addEventListener("change", function () {
-      generateReport(1);
-    });
+  document.getElementById("gsDivision")?.addEventListener("change", function () {
+    generateReport(1);
+  });
+  document.getElementById("year")?.addEventListener("change", function () {
+    generateReport(1);
+  });
 });
 
 let currentPage = 1;
 let rowsPerPage = 10;
 let totalPages = 1;
 let totalRows = 0;
+let currentViewMode = "aggregated"; // "aggregated" or "yearwise"
 
 function buildReportQuery({
   page = 1,
@@ -35,13 +38,16 @@ function buildReportQuery({
   const district = document.getElementById("district").value;
   const division = document.getElementById("division")?.value || "";
   const gsDivision = document.getElementById("gsDivision")?.value || "";
+  const year = document.getElementById("year")?.value || "";
 
   const params = new URLSearchParams();
   params.append("type", "equipment");
   params.append("equipment", equipment);
   params.append("district", district);
+  params.append("view_mode", currentViewMode);
   if (division) params.append("division", division);
   if (gsDivision) params.append("gs_division", gsDivision);
+  if (year) params.append("year", year);
 
   if (printAll) {
     params.append("print_all", "1");
@@ -143,6 +149,57 @@ function loadEquipmentTypes() {
         generateReport();
       }
     });
+}
+
+/**
+ * Load available years from equipment records for filtering
+ */
+function loadReportYears() {
+  fetch("../api/reports.php?type=equipment&get_years=1")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success && data.years) {
+        const select = document.getElementById("year");
+        // Sort years in descending order
+        const years = data.years.sort((a, b) => parseInt(b) - parseInt(a));
+        years.forEach((year) => {
+          const opt = document.createElement("option");
+          opt.value = year;
+          opt.textContent = year;
+          select.appendChild(opt);
+        });
+      }
+    })
+    .catch((err) => console.error("Error loading years:", err));
+}
+
+/**
+ * Set view mode for equipment report (aggregated or yearwise)
+ */
+function setViewMode(mode) {
+  currentViewMode = mode;
+  
+  // Update button styling
+  document.getElementById("viewModeAggregated").classList.remove("active-mode");
+  document.getElementById("viewModeAggregated").style.backgroundColor = "#d1d5db";
+  document.getElementById("viewModeAggregated").style.color = "#374151";
+  
+  document.getElementById("viewModeYearwise").classList.remove("active-mode");
+  document.getElementById("viewModeYearwise").style.backgroundColor = "#d1d5db";
+  document.getElementById("viewModeYearwise").style.color = "#374151";
+  
+  if (mode === "aggregated") {
+    document.getElementById("viewModeAggregated").classList.add("active-mode");
+    document.getElementById("viewModeAggregated").style.backgroundColor = "#2563eb";
+    document.getElementById("viewModeAggregated").style.color = "white";
+  } else {
+    document.getElementById("viewModeYearwise").classList.add("active-mode");
+    document.getElementById("viewModeYearwise").style.backgroundColor = "#2563eb";
+    document.getElementById("viewModeYearwise").style.color = "white";
+  }
+  
+  // Regenerate report with new view mode
+  generateReport(1);
 }
 
 function generateReport() {
@@ -345,6 +402,9 @@ function displayReport(
       return (a.division || "").localeCompare(b.division || "");
     if (a.gs_division !== b.gs_division)
       return (a.gs_division || "").localeCompare(b.gs_division || "");
+    if (currentViewMode === "yearwise" && a.year !== b.year) {
+      return parseInt(b.year || 0) - parseInt(a.year || 0); // Newer years first
+    }
     return 0;
   });
 
@@ -359,6 +419,21 @@ function displayReport(
     "#f3e8ff", // light purple
     "#fecaca", // light red
   ];
+
+  // Build table header based on view mode
+  let tableHeader = `
+    <tr>
+      <th>#</th>
+      <th>Registration No</th>
+      <th>Club Name</th>
+      <th>District</th>
+      <th>Division</th>
+      <th>GS Division</th>
+      <th>Equipment</th>
+      ${currentViewMode === "yearwise" ? "<th>Year</th>" : ""}
+      <th class="text-right">Quantity</th>
+    </tr>
+  `;
 
   let tableRows = "";
   let currentGsDivisionKey = "";
@@ -384,6 +459,7 @@ function displayReport(
         <td class="text-slate-800">${row.division || "-"}</td>
         <td class="text-slate-800">${row.gs_division || "-"}</td>
         <td class="text-slate-800">${row.equipment}</td>
+        ${currentViewMode === "yearwise" ? `<td class="text-slate-800 font-medium">${row.year || "-"}</td>` : ""}
         <td class="text-right font-medium text-slate-900">${row.quantity}</td>
       </tr>`;
   });
@@ -536,16 +612,7 @@ function displayReport(
         
         <table class="report-table min-w-full border-collapse">
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Registration No</th>
-                    <th>Club Name</th>
-                    <th>District</th>
-                    <th>Division</th>
-                    <th>GS Division</th>
-                    <th>Equipment</th>
-                    <th class="text-right">Quantity</th>
-                </tr>
+                ${tableHeader}
             </thead>
             <tbody>
                 ${tableRows}

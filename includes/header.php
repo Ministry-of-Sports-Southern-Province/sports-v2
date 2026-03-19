@@ -741,6 +741,13 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
                         </li>
                         <?php if (isAdmin()): ?>
                             <li>
+                                <a href="<?php echo $basePath; ?>public/equipment-management.php"
+                                    class="<?php echo $activePage === 'equipment-management' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                    data-i18n="nav.equipment_management">උපකරණ කළමනාකරණය</a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (isAdmin()): ?>
+                            <li>
                                 <a href="<?php echo $basePath; ?>public/admin-settings.php"
                                     class="<?php echo $activePage === 'admin-settings' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
                                     data-i18n="nav.admin_settings">පරිපාලන සැකසීම්</a>

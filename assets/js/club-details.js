@@ -208,6 +208,9 @@ function displayClubDetails(club) {
         ${
           window.currentUserRole === "admin"
             ? `
+        <a href="equipment-management.php?club_id=${club.id}" class="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition mr-2">
+          <span data-i18n="button.manage_equipment">Manage Equipment</span>
+        </a>
         <button onclick="openReorgModal(${club.id})" class="px-4 py-2 ${club.reorg_status === "expired" ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"} text-white rounded transition">
           <span data-i18n="button.add_reorg">Add Reorganization</span>
         </button>

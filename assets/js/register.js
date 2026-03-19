@@ -170,45 +170,6 @@ function initializeTomSelect() {
     },
   });
 
-  // Equipment select - Load all equipment types (standard and non-standard)
-  window.tomSelectInstances.equipmentSelect = new TomSelect(
-    "#equipmentSelect",
-    {
-      create: true,
-      createOnBlur: true,
-      plugins: ["remove_button"],
-      maxOptions: null,
-      placeholder: window.i18n.t("placeholder.type_to_search"),
-      valueField: "id",
-      labelField: "name",
-      searchField: "name",
-      preload: "focus",
-      load: function (query, callback) {
-        // Load all equipment (no is_standard filter)
-        const url =
-          query.length > 0
-            ? `../api/equipment-types.php?search=${encodeURIComponent(query)}`
-            : `../api/equipment-types.php`;
-
-        fetch(url)
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              callback(data.data);
-            } else {
-              callback();
-            }
-          })
-          .catch(() => callback());
-      },
-      onCreate: function (input, callback) {
-        createNewEquipmentType(input, callback);
-      },
-      onChange: function (values) {
-        updateEquipmentList(values);
-      },
-    },
-  );
 }
 
 /**
@@ -335,166 +296,6 @@ function createNewLocation(type, name, parentId, callback) {
       alert(window.i18n.t("message.error"));
       callback(false);
     });
-}
-
-/**
- * Create new equipment type
- */
-function createNewEquipmentType(name, callback) {
-  const formData = new FormData();
-  formData.append("name", name);
-
-  fetch("../api/equipment-types.php", {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        const newEquipment = {
-          id: data.data.id,
-          name: data.data.name,
-        };
-
-        // Add to Tom Select options cache so it's available in future searches
-        const tomSelect = window.tomSelectInstances.equipmentSelect;
-        tomSelect.addOption(newEquipment);
-
-        // Call the callback to select the item
-        callback(newEquipment);
-      } else {
-        alert(data.message || window.i18n.t("validation.duplicate_entry"));
-        callback(false);
-      }
-    })
-    .catch((error) => {
-      console.error("Error creating equipment type:", error);
-      alert(window.i18n.t("message.error"));
-      callback(false);
-    });
-}
-
-/**
- * Add newly created equipment to standard equipment section
- */
-function addToStandardEquipmentSection(equipment) {
-  const container = document.getElementById("standardEquipment");
-
-  const div = document.createElement("div");
-  div.className = "flex items-center space-x-3";
-  div.innerHTML = `
-    <input type="checkbox" id="eq_${equipment.id}" name="equipment[]" value="${
-      equipment.id
-    }" class="equipment-checkbox">
-    <label for="eq_${equipment.id}" class="flex-grow text-gray-700">${
-      equipment.name
-    }</label>
-    <input type="number" id="eq_qty_${equipment.id}" name="equipment_qty[${
-      equipment.id
-    }]" min="1" disabled
-      class="w-20 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity"
-      placeholder="${window.i18n.t("form.quantity")}">
-  `;
-  container.appendChild(div);
-}
-
-/**
- * Update equipment list with quantity inputs (preserves existing quantities)
- */
-function updateEquipmentList(selectedIds) {
-  const container = document.getElementById("equipmentList");
-
-  // Store existing quantities before updating
-  const existingQuantities = {};
-  container.querySelectorAll(".equipment-quantity-input").forEach((input) => {
-    const eqId = input.dataset.equipmentId;
-    existingQuantities[eqId] = input.value;
-  });
-
-  container.innerHTML = "";
-
-  if (!selectedIds || selectedIds.length === 0) {
-    return;
-  }
-
-  const tomSelect = window.tomSelectInstances.equipmentSelect;
-
-  selectedIds.forEach((id) => {
-    const option = tomSelect.options[id];
-    if (!option) return;
-
-    const div = document.createElement("div");
-    div.className = "flex items-center space-x-3 p-2 bg-gray-50 rounded";
-    div.innerHTML = `
-      <label class="flex-grow text-gray-700">${option.name}</label>
-      <input type="number" 
-        id="eq_qty_${id}" 
-        data-equipment-id="${id}"
-        class="w-24 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity-input"
-        placeholder="${window.i18n.t("form.quantity")}"
-        min="1"
-        value="${existingQuantities[id] || "1"}"
-        required>
-    `;
-    container.appendChild(div);
-  });
-}
-
-/**
- * Load standard equipment items
- */
-function loadStandardEquipment() {
-  fetch("../api/equipment-types.php?is_standard=1")
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        const container = document.getElementById("standardEquipment");
-        data.data.forEach((equipment) => {
-          const div = document.createElement("div");
-          div.className = "flex items-center space-x-3";
-          div.innerHTML = `
-                        <input type="checkbox" id="eq_${
-                          equipment.id
-                        }" name="equipment[]" value="${
-                          equipment.id
-                        }" class="equipment-checkbox">
-                        <label for="eq_${
-                          equipment.id
-                        }" class="flex-grow text-gray-700">${
-                          equipment.name
-                        }</label>
-                        <input type="number" id="eq_qty_${
-                          equipment.id
-                        }" name="equipment_qty[${
-                          equipment.id
-                        }]" min="1" disabled
-                            class="w-20 border border-gray-300 rounded px-2 py-1 text-sm equipment-quantity"
-                            placeholder="${window.i18n.t("form.quantity")}">
-                    `;
-          container.appendChild(div);
-        });
-      }
-    });
-}
-
-/**
- * Setup equipment checkbox and quantity validation
- */
-function setupEquipmentValidation() {
-  document.addEventListener("change", function (e) {
-    if (e.target.classList.contains("equipment-checkbox")) {
-      const equipmentId = e.target.value;
-      const qtyInput = document.getElementById(`eq_qty_${equipmentId}`);
-      if (qtyInput) {
-        qtyInput.disabled = !e.target.checked;
-        if (e.target.checked) {
-          qtyInput.focus();
-        } else {
-          qtyInput.value = "";
-        }
-      }
-    }
-  });
 }
 
 /**
@@ -760,25 +561,6 @@ function setupFormSubmission() {
           document.getElementById("registrationDate").value,
         );
       }
-
-      // Equipment - Collect all selected equipment with quantities
-      const selectedEquipment = [];
-      const equipmentIds = window.tomSelectInstances.equipmentSelect.getValue();
-
-      if (equipmentIds.length > 0) {
-        equipmentIds.forEach((id) => {
-          const qtyInput = document.getElementById(`eq_qty_${id}`);
-          const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
-          if (quantity && quantity > 0) {
-            selectedEquipment.push({
-              equipment_type_id: id,
-              quantity: quantity,
-            });
-          }
-        });
-      }
-
-      formData.append("equipment", JSON.stringify(selectedEquipment));
 
       // Check if editing
       const clubId =
@@ -1054,25 +836,6 @@ function populateFormWithClubData(club) {
       });
     }
   }, 1000);
-
-  // Equipment
-  if (club.equipment && club.equipment.length > 0) {
-    setTimeout(() => {
-      // Set equipment IDs in the multi-select
-      const equipmentIds = club.equipment.map((e) => e.id);
-      if (window.tomSelectInstances.equipmentSelect) {
-        window.tomSelectInstances.equipmentSelect.setValue(equipmentIds);
-
-        // Set quantities
-        club.equipment.forEach((equip) => {
-          const qtyInput = document.getElementById(`eq_qty_${equip.id}`);
-          if (qtyInput) {
-            qtyInput.value = equip.quantity;
-          }
-        });
-      }
-    }, 1500);
-  }
 }
 
 

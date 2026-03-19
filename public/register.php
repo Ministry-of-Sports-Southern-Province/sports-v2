@@ -122,16 +122,12 @@ include '../includes/header.php';
             </div>
         </div>
 
-        <!-- Equipment Section -->
+        <!-- Equipment Section - Note Only -->
         <div class="section-card">
             <h2 class="section-heading" data-i18n="form.equipment_information">ක්‍රීඩා උපකරණ</h2>
-            <p class="text-sm text-slate-600 mb-4" data-i18n="form.equipment_note">සමාජයේ ඇති උපකරණ තෝරන්න (අත්‍යවශ්‍ය නොවේ)</p>
-            <div>
-                <label class="form-label" data-i18n="form.select_equipment">උපකරණ තෝරන්න</label>
-                <select id="equipmentSelect" name="equipment[]" multiple class="form-select" data-i18n-placeholder="placeholder.type_to_search">
-                </select>
+            <div class="p-4 bg-blue-50 border border-blue-200 rounded">
+                <p class="text-sm text-slate-700" data-i18n="form.equipment_managed_separately">Sports equipment is now managed separately through the Equipment Management section. After registering the club, you can add year-wise equipment records through the dedicated equipment management page.</p>
             </div>
-            <div id="equipmentList" class="mt-3 space-y-2"></div>
         </div>
 
         <!-- Registration Date Section -->
