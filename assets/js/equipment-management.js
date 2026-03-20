@@ -38,32 +38,67 @@ document.addEventListener("DOMContentLoaded", function () {
  * Load list of all clubs
  */
 function loadClubs() {
-  fetch("../api/clubs-list.php")
+  initializeClubSearch();
+
+  if (preselectedClubId) {
+    loadPreselectedClub(preselectedClubId);
+  }
+
+  // Fallback: if Tom Select is unavailable, load full list into native select.
+  if (!clubSelectTom) {
+    fetch("../api/clubs-list.php?print_all=1")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          const select = document.getElementById("clubSelect");
+          data.data.forEach((club) => {
+            const opt = document.createElement("option");
+            opt.value = club.id;
+            opt.textContent = `${club.name} (${club.reg_number})`;
+            select.appendChild(opt);
+          });
+        }
+      })
+      .catch((err) => console.error("Error loading clubs:", err));
+  }
+}
+
+/**
+ * Load and select club for deep-linking (?club_id=)
+ */
+function loadPreselectedClub(clubId) {
+  fetch(`../api/clubs.php?id=${encodeURIComponent(clubId)}`)
     .then((res) => res.json())
     .then((data) => {
-      if (data.success) {
-        const select = document.getElementById("clubSelect");
-        // Keep the default option
-        data.data.forEach((club) => {
-          const opt = document.createElement("option");
-          opt.value = club.id;
-          opt.textContent = `${club.name} (${club.reg_number})`;
-          select.appendChild(opt);
-        });
-
-        initializeClubSearch();
-
-        if (preselectedClubId) {
-          select.value = preselectedClubId;
-          currentClubId = preselectedClubId;
-          if (clubSelectTom) {
-            clubSelectTom.setValue(preselectedClubId, true);
-          }
-          loadEquipmentHistory(preselectedClubId);
-        }
+      if (!data.success || !data.data) {
+        return;
       }
+
+      const club = data.data;
+      const clubIdValue = String(club.id);
+      const clubText = `${club.name} (${club.reg_number})`;
+
+      if (clubSelectTom) {
+        clubSelectTom.addOption({ value: clubIdValue, text: clubText });
+        clubSelectTom.setValue(clubIdValue, true);
+      } else {
+        const select = document.getElementById("clubSelect");
+        const existing = Array.from(select.options).find(
+          (opt) => opt.value === clubIdValue,
+        );
+        if (!existing) {
+          const opt = document.createElement("option");
+          opt.value = clubIdValue;
+          opt.textContent = clubText;
+          select.appendChild(opt);
+        }
+        select.value = clubIdValue;
+      }
+
+      currentClubId = clubIdValue;
+      loadEquipmentHistory(clubIdValue);
     })
-    .catch((err) => console.error("Error loading clubs:", err));
+    .catch((err) => console.error("Error loading preselected club:", err));
 }
 
 /**
@@ -82,12 +117,45 @@ function initializeClubSearch() {
 
   clubSelectTom = new TomSelect(selectElement, {
     create: false,
-    maxOptions: 500,
+    maxOptions: 50,
+    loadThrottle: 300,
+    valueField: "value",
+    labelField: "text",
     searchField: ["text"],
     placeholder: window.i18n
-      ? window.i18n.t("form.select_club")
-      : "Select Club",
+      ? window.i18n.t("placeholder.type_to_search")
+      : "Type to search...",
     allowEmptyOption: true,
+    shouldLoad: function (query) {
+      return query.length >= 2;
+    },
+    load: function (query, callback) {
+      if (!query || query.length < 2) {
+        callback();
+        return;
+      }
+
+      fetch(
+        `../api/clubs-list.php?search=${encodeURIComponent(
+          query,
+        )}&page=1&limit=50`,
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.success || !Array.isArray(data.data)) {
+            callback();
+            return;
+          }
+
+          callback(
+            data.data.map((club) => ({
+              value: String(club.id),
+              text: `${club.name} (${club.reg_number})`,
+            })),
+          );
+        })
+        .catch(() => callback());
+    },
   });
 
   clubSelectTom.on("change", function (value) {
