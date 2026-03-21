@@ -6173,9 +6173,9 @@ ALTER TABLE `clubs`
 --
 ALTER TABLE `club_equipment`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_equipment_per_club` (`club_id`,`equipment_type_id`),
   ADD KEY `idx_equipment_club` (`club_id`),
-  ADD KEY `idx_equipment_type` (`equipment_type_id`);
+  ADD KEY `idx_equipment_type` (`equipment_type_id`),
+  ADD KEY `idx_equipment_created_at` (`created_at`);
 
 --
 -- Indexes for table `club_reorganizations`

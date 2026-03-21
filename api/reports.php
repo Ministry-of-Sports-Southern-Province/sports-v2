@@ -21,6 +21,17 @@ try {
     $data = [];
     $total = 0;
 
+    // Handle get_years action for equipment reports
+    if ($type === 'equipment' && isset($_GET['get_years']) && $_GET['get_years'] === '1') {
+        $sql = "SELECT DISTINCT YEAR(ce.created_at) as year 
+                FROM club_equipment ce
+                ORDER BY year DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $years = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        sendJSONResponse(true, null, '', 200, ['years' => $years]);
+    }
+
     // Handle get_years action for district statistics
     if ($type === 'district_statistics' && $action === 'get_years') {
         $sql = "SELECT DISTINCT YEAR(c.registration_date) as year 
@@ -138,6 +149,8 @@ try {
         $district = $_GET['district'] ?? '';
         $division = $_GET['division'] ?? '';
         $gsDivision = $_GET['gs_division'] ?? '';
+        $year = $_GET['year'] ?? '';
+        $viewMode = $_GET['view_mode'] ?? 'aggregated';
 
         $baseFrom = "FROM clubs c
                 LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
@@ -169,7 +182,25 @@ try {
             $params['gs_division'] = $gsDivision;
         }
 
-        $countSql = "SELECT COUNT(*) " . $baseFrom;
+        // Add year filter support
+        if ($year) {
+            $baseFrom .= " AND YEAR(ce.created_at) = :year";
+            $params['year'] = (int)$year;
+        }
+
+        if ($viewMode === 'aggregated') {
+            $countSql = "SELECT COUNT(*) FROM (
+                        SELECT c.id AS club_id, et.id AS equipment_type_id
+                        " . $baseFrom . "
+                        GROUP BY c.id, et.id
+                    ) grouped_rows";
+        } else {
+            $countSql = "SELECT COUNT(*) FROM (
+                        SELECT c.id AS club_id, et.id AS equipment_type_id, YEAR(ce.created_at) AS equipment_year
+                        " . $baseFrom . "
+                        GROUP BY c.id, et.id, YEAR(ce.created_at)
+                    ) grouped_rows";
+        }
         $countStmt = $pdo->prepare($countSql);
         $countStmt->execute($params);
         $total = (int)($countStmt->fetchColumn() ?: 0);
@@ -177,19 +208,17 @@ try {
             sendJSONResponse(false, null, 'Too many rows to print all. Please apply filters.', 400);
         }
 
-        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, ce.quantity
-                FROM clubs c
-                LEFT JOIN grama_niladhari_divisions gn ON c.gn_division_id = gn.id
-                LEFT JOIN divisions dv ON gn.division_id = dv.id
-                LEFT JOIN districts d ON dv.district_id = d.id
-                INNER JOIN club_equipment ce ON c.id = ce.club_id
-                INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
-                WHERE 1=1";
-
-        // Keep select + where identical to $baseFrom, for safety/clarity
-        $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, ce.quantity
+        if ($viewMode === 'aggregated') {
+            $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, SUM(ce.quantity) as quantity
                 " . $baseFrom . "
+                GROUP BY c.id, c.reg_number, c.name, d.name, dv.name, gn.name, et.id, et.name
                 ORDER BY d.name, dv.name, gn.name, c.name, et.name";
+        } else {
+            $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, YEAR(ce.created_at) as year, SUM(ce.quantity) as quantity
+                " . $baseFrom . "
+                GROUP BY c.id, c.reg_number, c.name, d.name, dv.name, gn.name, et.id, et.name, YEAR(ce.created_at)
+                ORDER BY d.name, dv.name, gn.name, c.name, YEAR(ce.created_at) DESC, et.name";
+        }
 
         if (!$printAll) {
             $sql .= " LIMIT :limit OFFSET :offset";

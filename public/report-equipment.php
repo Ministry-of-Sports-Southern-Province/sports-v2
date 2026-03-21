@@ -10,6 +10,8 @@ include '../includes/header.php';
 
     <div class="section-card mb-6 no-print">
         <h2 class="section-heading" data-i18n="report.type_equipment">උපකරණ ලැයිස්තුව වාර්තාව</h2>
+
+        <!-- Primary Filters -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>
                 <label class="form-label" data-i18n="report.select_equipment">උපකරණ වර්ගය</label>
@@ -36,6 +38,24 @@ include '../includes/header.php';
                 </select>
             </div>
         </div>
+
+        <!-- Secondary Filters: Year and View Mode -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label class="form-label" data-i18n="report.select_year">Select Year</label>
+                <select id="year" class="form-select">
+                    <option value="" data-i18n="report.all_years">All Years</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label" data-i18n="report.view_mode">View Mode</label>
+                <div class="flex gap-2">
+                    <button id="viewModeAggregated" onclick="setViewMode('aggregated')" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm active-mode" data-i18n="report.view_aggregated">Aggregated</button>
+                    <button id="viewModeYearwise" onclick="setViewMode('yearwise')" class="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition text-sm" data-i18n="report.view_yearwise">Year-wise</button>
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-wrap gap-3">
             <button onclick="generateReport()" class="btn btn-primary" data-i18n="button.generate_report">වාර්තාව උත්පාදනය කරන්න</button>
             <button onclick="printReportWithDate()" class="btn btn-success" data-i18n="button.print">මුද්‍රණය කරන්න</button>
