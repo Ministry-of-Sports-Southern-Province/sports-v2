@@ -23,7 +23,7 @@ try {
 
     // Handle get_years action for equipment reports
     if ($type === 'equipment' && isset($_GET['get_years']) && $_GET['get_years'] === '1') {
-        $sql = "SELECT DISTINCT YEAR(ce.created_at) as year 
+        $sql = "SELECT DISTINCT ce.year as year 
                 FROM club_equipment ce
                 ORDER BY year DESC";
         $stmt = $pdo->prepare($sql);
@@ -184,7 +184,7 @@ try {
 
         // Add year filter support
         if ($year) {
-            $baseFrom .= " AND YEAR(ce.created_at) = :year";
+            $baseFrom .= " AND ce.year = :year";
             $params['year'] = (int)$year;
         }
 
@@ -196,9 +196,9 @@ try {
                     ) grouped_rows";
         } else {
             $countSql = "SELECT COUNT(*) FROM (
-                        SELECT c.id AS club_id, et.id AS equipment_type_id, YEAR(ce.created_at) AS equipment_year
+                        SELECT c.id AS club_id, et.id AS equipment_type_id, ce.year AS equipment_year
                         " . $baseFrom . "
-                        GROUP BY c.id, et.id, YEAR(ce.created_at)
+                        GROUP BY c.id, et.id, ce.year
                     ) grouped_rows";
         }
         $countStmt = $pdo->prepare($countSql);
@@ -214,10 +214,10 @@ try {
                 GROUP BY c.id, c.reg_number, c.name, d.name, dv.name, gn.name, et.id, et.name
                 ORDER BY d.name, dv.name, gn.name, c.name, et.name";
         } else {
-            $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, YEAR(ce.created_at) as year, SUM(ce.quantity) as quantity
+            $sql = "SELECT c.reg_number, c.name, d.name as district, dv.name as division, gn.name as gs_division, et.name as equipment, ce.year as year, SUM(ce.quantity) as quantity
                 " . $baseFrom . "
-                GROUP BY c.id, c.reg_number, c.name, d.name, dv.name, gn.name, et.id, et.name, YEAR(ce.created_at)
-                ORDER BY d.name, dv.name, gn.name, c.name, YEAR(ce.created_at) DESC, et.name";
+                GROUP BY c.id, c.reg_number, c.name, d.name, dv.name, gn.name, et.id, et.name, ce.year
+                ORDER BY d.name, dv.name, gn.name, c.name, ce.year DESC, et.name";
         }
 
         if (!$printAll) {

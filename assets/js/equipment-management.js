@@ -7,17 +7,22 @@ let currentClubId = null;
 let currentEquipmentData = [];
 let selectedYearFilter = "all";
 let clubSelectTom = null;
+let equipmentTypeTom = null;
 const preselectedClubId = new URLSearchParams(window.location.search).get(
   "club_id",
 );
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Set today's date as default in date input
-  document.getElementById("dateInput").valueAsDate = new Date();
+  // Set current year as default in year input
+  document.getElementById("yearInput").value = new Date().getFullYear();
+
+  // Disable quantity/year until club/type selected
+  document.getElementById("quantityInput").disabled = true;
+  document.getElementById("yearInput").disabled = true;
 
   // Load initial data
   loadClubs();
-  loadEquipmentTypes();
+  initializeEquipmentTypeSelect();
 
   // Club selection event
   document.getElementById("clubSelect").addEventListener("change", function () {
@@ -97,6 +102,9 @@ function loadPreselectedClub(clubId) {
 
       currentClubId = clubIdValue;
       loadEquipmentHistory(clubIdValue);
+      handleEquipmentTypeChange(
+        equipmentTypeTom ? equipmentTypeTom.getValue() : null,
+      );
     })
     .catch((err) => console.error("Error loading preselected club:", err));
 }
@@ -165,27 +173,151 @@ function initializeClubSearch() {
     } else {
       resetEquipmentDisplay();
     }
+    handleEquipmentTypeChange(
+      equipmentTypeTom ? equipmentTypeTom.getValue() : null,
+    );
   });
 }
 
 /**
- * Load equipment types for the dropdown
+ * Initialize equipment type TomSelect dropdown with create support
  */
+function initializeEquipmentTypeSelect() {
+  const selectElement = document.getElementById("equipmentTypeSelect");
+  if (typeof TomSelect === "undefined" || !selectElement) {
+    return;
+  }
+
+  if (equipmentTypeTom) {
+    equipmentTypeTom.destroy();
+  }
+
+  equipmentTypeTom = new TomSelect(selectElement, {
+    create: true,
+    createOnBlur: true,
+    persist: false,
+    valueField: "value",
+    labelField: "text",
+    searchField: ["text"],
+    placeholder: window.i18n
+      ? window.i18n.t("placeholder.type_to_search")
+      : "Type to search...",
+    allowEmptyOption: true,
+    maxOptions: 100,
+    loadThrottle: 300,
+    shouldLoad: function (query) {
+      return query.length >= 0;
+    },
+    load: function (query, callback) {
+      const url = query
+        ? `../api/equipment-types.php?search=${encodeURIComponent(query)}`
+        : "../api/equipment-types.php";
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.success || !Array.isArray(data.data)) {
+            callback();
+            return;
+          }
+
+          callback(
+            data.data.map((eq) => ({
+              value: String(eq.id),
+              text: eq.name,
+            })),
+          );
+        })
+        .catch(() => callback());
+    },
+    onChange: function (value) {
+      handleEquipmentTypeChange(value);
+    },
+    onCreate: function (input, callback) {
+      // Create a new equipment type via API
+      fetch("../api/equipment-types.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: input.trim() }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data) {
+            callback({ value: String(data.data.id), text: data.data.name });
+          } else {
+            alert(
+              data.message ||
+                (window.i18n
+                  ? window.i18n.t("message.error_generic")
+                  : "Failed to create equipment type"),
+            );
+            callback();
+          }
+        })
+        .catch((err) => {
+          console.error("Error creating equipment type:", err);
+          alert(
+            window.i18n
+              ? window.i18n.t("message.error_generic")
+              : "Failed to create equipment type",
+          );
+          callback();
+        });
+    },
+  });
+
+  // Trigger initial state
+  handleEquipmentTypeChange(equipmentTypeTom.getValue());
+}
+
 function loadEquipmentTypes() {
+  // Kept for backward compatibility when using native select (if TomSelect fails)
   fetch("../api/equipment-types.php")
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
         const select = document.getElementById("equipmentTypeSelect");
+        const previousSelection = select.value;
+        select.innerHTML =
+          '<option value="" data-i18n="form.select_equipment">--- Select Equipment ---</option>';
+
         data.data.forEach((eq) => {
           const opt = document.createElement("option");
           opt.value = eq.id;
           opt.textContent = eq.name;
           select.appendChild(opt);
         });
+
+        if (previousSelection) {
+          select.value = previousSelection;
+        }
+
+        handleEquipmentTypeChange(select.value);
       }
     })
     .catch((err) => console.error("Error loading equipment types:", err));
+}
+
+/**
+ * Handle equipment type selection state
+ */
+function handleEquipmentTypeChange(value) {
+  const hasClub = !!currentClubId;
+  const hasType = !!value;
+  const quantityInput = document.getElementById("quantityInput");
+  const yearInput = document.getElementById("yearInput");
+
+  if (quantityInput && yearInput) {
+    if (hasClub && hasType) {
+      quantityInput.disabled = false;
+      yearInput.disabled = false;
+    } else {
+      quantityInput.disabled = true;
+      yearInput.disabled = true;
+    }
+  }
 }
 
 /**
@@ -290,7 +422,7 @@ function renderEquipmentHistory() {
         <td>${formatDate(eq.created_at)}</td>
         <td>
           <div class="equipment-item-actions">
-            <button class="btn-edit" onclick="openEditModal(${eq.id}, ${eq.quantity})" data-i18n="button.edit">Edit</button>
+            <button class="btn-edit" onclick="openEditModal(${eq.id}, ${eq.quantity}, ${eq.year})" data-i18n="button.edit">Edit</button>
             <button class="btn-delete" onclick="deleteEquipment(${eq.id})" data-i18n="button.delete">Delete</button>
           </div>
         </td>
@@ -337,12 +469,14 @@ function resetEquipmentDisplay() {
  */
 function addEquipment() {
   const clubId = document.getElementById("clubSelect").value;
-  const equipmentTypeId = document.getElementById("equipmentTypeSelect").value;
+  const equipmentTypeId = equipmentTypeTom
+    ? equipmentTypeTom.getValue()
+    : document.getElementById("equipmentTypeSelect").value;
   const quantity = document.getElementById("quantityInput").value;
-  const date = document.getElementById("dateInput").value;
+  const year = document.getElementById("yearInput").value;
 
   // Validate input
-  if (!clubId || !equipmentTypeId || !quantity) {
+  if (!clubId || !equipmentTypeId || !quantity || !year) {
     alert(
       window.i18n
         ? window.i18n.t("message.fill_all_fields")
@@ -360,9 +494,8 @@ function addEquipment() {
     return;
   }
 
-  // Format date to include time
-  const dateObj = new Date(date);
-  const formattedDate = dateObj.toISOString().split("T")[0] + " 12:00:00";
+  // Format date to include time for backward compatibility
+  const formattedDate = `${year}-01-01 12:00:00`;
 
   // Send request
   fetch("../api/equipment-management.php", {
@@ -372,6 +505,7 @@ function addEquipment() {
       club_id: clubId,
       equipment_type_id: equipmentTypeId,
       quantity: parseInt(quantity),
+      year: parseInt(year),
       date: formattedDate,
     }),
   })
@@ -380,8 +514,13 @@ function addEquipment() {
       if (data.success) {
         // Reset form
         document.getElementById("quantityInput").value = "1";
-        document.getElementById("dateInput").valueAsDate = new Date();
-        document.getElementById("equipmentTypeSelect").value = "";
+        document.getElementById("yearInput").value = new Date().getFullYear();
+        if (equipmentTypeTom) {
+          equipmentTypeTom.clear();
+        } else {
+          document.getElementById("equipmentTypeSelect").value = "";
+        }
+        handleEquipmentTypeChange(null);
 
         // Reload equipment history
         loadEquipmentHistory(clubId);
@@ -411,9 +550,10 @@ function addEquipment() {
  */
 let editingEquipmentId = null;
 
-function openEditModal(equipmentId, currentQuantity) {
+function openEditModal(equipmentId, currentQuantity, currentYear) {
   editingEquipmentId = equipmentId;
   document.getElementById("editQuantityInput").value = currentQuantity;
+  document.getElementById("editYearInput").value = currentYear;
   document.getElementById("editModal").classList.add("active");
 }
 
@@ -432,6 +572,7 @@ function saveEquipmentEdit() {
   if (!editingEquipmentId) return;
 
   const quantity = document.getElementById("editQuantityInput").value;
+  const year = document.getElementById("editYearInput").value;
 
   if (!quantity || quantity < 1) {
     alert(
@@ -442,12 +583,22 @@ function saveEquipmentEdit() {
     return;
   }
 
+  if (!year || year < 1900 || year > 2100) {
+    alert(
+      window.i18n
+        ? window.i18n.t("message.invalid_year")
+        : "Please enter a valid year",
+    );
+    return;
+  }
+
   fetch("../api/equipment-management.php", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       id: editingEquipmentId,
       quantity: parseInt(quantity),
+      year: parseInt(year),
     }),
   })
     .then((res) => res.json())
