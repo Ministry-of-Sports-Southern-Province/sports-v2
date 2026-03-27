@@ -75,7 +75,7 @@ function handleGetRequest($pdo)
             et.name as equipment_name,
             ce.quantity,
             ce.created_at,
-            YEAR(ce.created_at) as year
+            ce.year
         FROM club_equipment ce
         INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
         WHERE ce.club_id = :club_id
@@ -85,12 +85,12 @@ function handleGetRequest($pdo)
 
     // Filter by specific year if provided
     if ($year) {
-        $sql .= " AND YEAR(ce.created_at) = :year";
+        $sql .= " AND ce.year = :year";
         $params['year'] = intval($year);
     }
 
     // Order by year descending (newest first), then by created_at
-    $sql .= " ORDER BY YEAR(ce.created_at) DESC, ce.created_at DESC";
+    $sql .= " ORDER BY ce.year DESC, ce.created_at DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -124,6 +124,7 @@ function handlePostRequest($pdo)
     $clubId = $input['club_id'] ?? null;
     $equipmentTypeId = $input['equipment_type_id'] ?? null;
     $quantity = $input['quantity'] ?? null;
+    $year = $input['year'] ?? date('Y');
     $date = $input['date'] ?? date('Y-m-d H:i:s');
 
     // Validate input
@@ -159,14 +160,15 @@ function handlePostRequest($pdo)
 
     try {
         $sql = "
-            INSERT INTO club_equipment (club_id, equipment_type_id, quantity, created_at)
-            VALUES (:club_id, :equipment_type_id, :quantity, :created_at)
+            INSERT INTO club_equipment (club_id, equipment_type_id, quantity, year, created_at)
+            VALUES (:club_id, :equipment_type_id, :quantity, :year, :created_at)
         ";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             'club_id' => $clubId,
             'equipment_type_id' => $equipmentTypeId,
             'quantity' => $quantity,
+            'year' => $year,
             'created_at' => $date
         ]);
 
@@ -181,7 +183,7 @@ function handlePostRequest($pdo)
                 et.name as equipment_name,
                 ce.quantity,
                 ce.created_at,
-                YEAR(ce.created_at) as year
+                ce.year
             FROM club_equipment ce
             INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
             WHERE ce.id = :id
@@ -208,6 +210,7 @@ function handlePutRequest($pdo)
 
     $id = $input['id'] ?? null;
     $quantity = $input['quantity'] ?? null;
+    $year = $input['year'] ?? null;
 
     // Validate input
     if (!$id || !$quantity) {
@@ -226,12 +229,15 @@ function handlePutRequest($pdo)
     }
 
     try {
-        $sql = "UPDATE club_equipment SET quantity = :quantity WHERE id = :id";
+        $sql = "UPDATE club_equipment SET quantity = :quantity";
+        $params = ['id' => $id, 'quantity' => $quantity];
+        if ($year !== null) {
+            $sql .= ", year = :year";
+            $params['year'] = $year;
+        }
+        $sql .= " WHERE id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            'id' => $id,
-            'quantity' => $quantity
-        ]);
+        $stmt->execute($params);
 
         // Fetch updated equipment
         $stmt = $pdo->prepare("
@@ -242,7 +248,7 @@ function handlePutRequest($pdo)
                 et.name as equipment_name,
                 ce.quantity,
                 ce.created_at,
-                YEAR(ce.created_at) as year
+                ce.year
             FROM club_equipment ce
             INNER JOIN equipment_types et ON ce.equipment_type_id = et.id
             WHERE ce.id = :id

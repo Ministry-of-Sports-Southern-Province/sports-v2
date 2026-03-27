@@ -286,16 +286,17 @@ include '../includes/header.php';
                 <select id="equipmentTypeSelect" class="form-select" required>
                     <option value="" data-i18n="form.select_equipment">--- Select Equipment ---</option>
                 </select>
+                <p class="text-sm text-slate-500 mt-1" data-i18n="hint.create_equipment_type">Type new equipment and press Enter to add</p>
             </div>
 
             <div class="form-group">
                 <label data-i18n="form.quantity">Quantity</label>
-                <input type="number" id="quantityInput" min="1" value="1" required>
+                <input type="number" id="quantityInput" min="1" value="1" required disabled>
             </div>
 
             <div class="form-group">
                 <label data-i18n="form.year">Year</label>
-                <input type="date" id="dateInput" required>
+                <input type="number" id="yearInput" min="1900" max="2100" placeholder="YYYY" required disabled>
             </div>
 
             <button onclick="addEquipment()" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium" data-i18n="button.add">Add</button>
@@ -336,6 +337,10 @@ include '../includes/header.php';
 <div id="editModal" class="modal">
     <div class="modal-content">
         <h3 data-i18n="form.edit_equipment">Edit Equipment</h3>
+        <div class="form-group">
+            <label data-i18n="form.year">Year</label>
+            <input type="number" id="editYearInput" min="1900" max="2100" placeholder="YYYY" required>
+        </div>
         <div class="form-group">
             <label data-i18n="form.quantity">Quantity</label>
             <input type="number" id="editQuantityInput" min="1" value="1">

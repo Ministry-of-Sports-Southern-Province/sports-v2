@@ -69,7 +69,17 @@ function handleGetRequest($pdo)
  */
 function handlePostRequest($pdo)
 {
-    $name = trim($_POST['name'] ?? '');
+    // Handle both JSON and form-data requests
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+    if (strpos($contentType, 'application/json') !== false) {
+        // Parse JSON body
+        $input = json_decode(file_get_contents('php://input'), true);
+        $name = trim($input['name'] ?? '');
+    } else {
+        // Parse form data
+        $name = trim($_POST['name'] ?? '');
+    }
 
     // Validate name
     if (empty($name)) {
