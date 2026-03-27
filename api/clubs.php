@@ -259,6 +259,29 @@ function handleClubRegistration($pdo, $isUpdate = false)
             $clubId = $pdo->lastInsertId();
         }
 
+        // Handle equipment
+        if ($isUpdate) {
+            // Delete existing equipment
+            $deleteEquip = $pdo->prepare("DELETE FROM club_equipment WHERE club_id = :club_id");
+            $deleteEquip->execute(['club_id' => $clubId]);
+        }
+
+        // Insert equipment if provided
+        if (is_array($equipment) && count($equipment) > 0) {
+            $equipSql = "INSERT INTO club_equipment (club_id, equipment_type_id, quantity) VALUES (:club_id, :equipment_type_id, :quantity)";
+            $equipStmt = $pdo->prepare($equipSql);
+
+            foreach ($equipment as $eq) {
+                if (isset($eq['equipment_type_id']) && isset($eq['quantity']) && $eq['quantity'] >= 1) {
+                    $equipStmt->execute([
+                        'club_id' => $clubId,
+                        'equipment_type_id' => $eq['equipment_type_id'],
+                        'quantity' => $eq['quantity']
+                    ]);
+                }
+            }
+        }
+
         // Handle reorganization dates
         if ($isUpdate) {
             // Delete existing reorganization dates

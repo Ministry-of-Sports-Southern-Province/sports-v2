@@ -101,18 +101,19 @@ CREATE TABLE equipment_types (
 -- ====================
 -- Note: UNIQUE constraint removed to allow year-wise equipment tracking
 -- Each club can now have multiple entries for the same equipment type (one per year)
--- Year is extracted from the created_at timestamp
 CREATE TABLE club_equipment (
     id INT AUTO_INCREMENT PRIMARY KEY,
     club_id INT NOT NULL,
     equipment_type_id INT NOT NULL,
     quantity INT NOT NULL CHECK (quantity >= 1) COMMENT 'Must be at least 1',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Year extracted from this timestamp for year-wise tracking',
+    year INT NOT NULL COMMENT 'Year for equipment tracking',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when equipment was added',
     
     FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_equipment_club (club_id),
     INDEX idx_equipment_type (equipment_type_id),
+    INDEX idx_equipment_year (year),
     INDEX idx_equipment_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

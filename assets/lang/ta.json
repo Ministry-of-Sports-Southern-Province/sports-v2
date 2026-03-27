@@ -351,3 +351,23 @@
   "nav.public_directory": "பொது அட்டவணை",
   "button.next": "அடுத்து"
 }
+,
+  "tab.club_equipment": "கழக உபகரணம்",
+  "tab.equipment_types": "உபகரண வகைகள்",
+  "form.add_equipment_type": "உபகரண வகையைச் சேர்க்கவும்",
+  "form.equipment_type_name": "உபகரண வகை பெயர்",
+  "form.equipment_types_list": "உபகரண வகைகள் பட்டியல்",
+  "form.edit_equipment_type": "உபகரண வகையைத் திருத்தவும்",
+  "button.add_type": "வகையைச் சேர்க்கவும்",
+  "table.name": "பெயர்",
+  "table.type": "வகை",
+  "message.no_equipment": "உபகரணம் இல்லை",
+  "message.equipment_type_added_success": "உபகரண வகை வெற்றிகரமாக சேர்க்கப்பட்டது",
+  "message.equipment_type_updated_success": "உபகரண வகை வெற்றிகரமாக புதுப்பிக்கப்பட்டது",
+  "message.equipment_type_deleted_success": "உபகரண வகை வெற்றிகரமாக நீக்கப்பட்டது",
+  "message.confirm_delete_equipment_type": "இந்த உபகரண வகையை நிச்சயமாக நீக்க விரும்புகிறீர்களா? இது தொடர்புடைய அனைத்து உபகரண பதிவுகளையும் நீக்கும்.",
+  "message.equipment_type_name_required": "தயவுசெய்து உபகரண வகை பெயரை உள்ளிடவும்",
+  "type.standard": "நிலையான",
+  "type.custom": "தனிப்பயன்",
+  "placeholder.search_equipment_types": "உபகரண வகைகளைத் தேடுங்கள்...",
+  "message.invalid_year": "தயவுசெய்து சரியான ஆண்டை உள்ளிடவும்"

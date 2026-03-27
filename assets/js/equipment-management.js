@@ -8,6 +8,8 @@ let currentEquipmentData = [];
 let selectedYearFilter = "all";
 let clubSelectTom = null;
 let equipmentTypeTom = null;
+let allEquipmentTypes = [];
+let editingEquipmentTypeId = null;
 const preselectedClubId = new URLSearchParams(window.location.search).get(
   "club_id",
 );
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Load initial data
   loadClubs();
   initializeEquipmentTypeSelect();
+  loadAllEquipmentTypes();
 
   // Club selection event
   document.getElementById("clubSelect").addEventListener("change", function () {
@@ -180,7 +183,7 @@ function initializeClubSearch() {
 }
 
 /**
- * Initialize equipment type TomSelect dropdown with create support
+ * Initialize equipment type TomSelect dropdown (no create support)
  */
 function initializeEquipmentTypeSelect() {
   const selectElement = document.getElementById("equipmentTypeSelect");
@@ -193,9 +196,7 @@ function initializeEquipmentTypeSelect() {
   }
 
   equipmentTypeTom = new TomSelect(selectElement, {
-    create: true,
-    createOnBlur: true,
-    persist: false,
+    create: false,
     valueField: "value",
     labelField: "text",
     searchField: ["text"],
@@ -232,39 +233,6 @@ function initializeEquipmentTypeSelect() {
     },
     onChange: function (value) {
       handleEquipmentTypeChange(value);
-    },
-    onCreate: function (input, callback) {
-      // Create a new equipment type via API
-      fetch("../api/equipment-types.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: input.trim() }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success && data.data) {
-            callback({ value: String(data.data.id), text: data.data.name });
-          } else {
-            alert(
-              data.message ||
-                (window.i18n
-                  ? window.i18n.t("message.error_generic")
-                  : "Failed to create equipment type"),
-            );
-            callback();
-          }
-        })
-        .catch((err) => {
-          console.error("Error creating equipment type:", err);
-          alert(
-            window.i18n
-              ? window.i18n.t("message.error_generic")
-              : "Failed to create equipment type",
-          );
-          callback();
-        });
     },
   });
 
@@ -469,14 +437,14 @@ function resetEquipmentDisplay() {
  */
 function addEquipment() {
   const clubId = document.getElementById("clubSelect").value;
-  const equipmentTypeId = equipmentTypeTom
+  const equipmentTypeValue = equipmentTypeTom
     ? equipmentTypeTom.getValue()
     : document.getElementById("equipmentTypeSelect").value;
   const quantity = document.getElementById("quantityInput").value;
   const year = document.getElementById("yearInput").value;
 
   // Validate input
-  if (!clubId || !equipmentTypeId || !quantity || !year) {
+  if (!clubId || !equipmentTypeValue || !quantity || !year) {
     alert(
       window.i18n
         ? window.i18n.t("message.fill_all_fields")
@@ -494,20 +462,21 @@ function addEquipment() {
     return;
   }
 
-  // Format date to include time for backward compatibility
   const formattedDate = `${year}-01-01 12:00:00`;
+
+  const requestBody = {
+    club_id: clubId,
+    equipment_type_id: equipmentTypeValue,
+    quantity: parseInt(quantity),
+    year: parseInt(year),
+    date: formattedDate,
+  };
 
   // Send request
   fetch("../api/equipment-management.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      club_id: clubId,
-      equipment_type_id: equipmentTypeId,
-      quantity: parseInt(quantity),
-      year: parseInt(year),
-      date: formattedDate,
-    }),
+    body: JSON.stringify(requestBody),
   })
     .then((res) => res.json())
     .then((data) => {
@@ -688,4 +657,224 @@ function escapeHtml(text) {
     "'": "&#039;",
   };
   return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
+}
+
+/**
+ * Tab switching
+ */
+function switchTab(tabName) {
+  // Hide all tab contents
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+    tab.style.display = 'none';
+  });
+  
+  // Remove active class from all tab buttons
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected tab content
+  if (tabName === 'club-equipment') {
+    const tabContent = document.getElementById('tabContentClubEquipment');
+    tabContent.classList.add('active');
+    tabContent.style.display = 'block';
+    document.getElementById('tabClubEquipment').classList.add('active');
+  } else if (tabName === 'equipment-types') {
+    const tabContent = document.getElementById('tabContentEquipmentTypes');
+    tabContent.classList.add('active');
+    tabContent.style.display = 'block';
+    document.getElementById('tabEquipmentTypes').classList.add('active');
+    loadAllEquipmentTypes();
+  }
+}
+
+/**
+ * Load all equipment types
+ */
+function loadAllEquipmentTypes() {
+  fetch('../api/equipment-types.php')
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        allEquipmentTypes = data.data;
+        renderEquipmentTypes(allEquipmentTypes);
+      }
+    })
+    .catch(err => console.error('Error loading equipment types:', err));
+}
+
+/**
+ * Render equipment types table
+ */
+function renderEquipmentTypes(types) {
+  const tbody = document.getElementById('equipmentTypesTableBody');
+  
+  if (types.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-gray-500 py-4">No equipment types found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = types.map(type => `
+    <tr>
+      <td>${escapeHtml(type.name)}</td>
+      <td>
+        <span class="px-2 py-1 text-xs rounded ${type.is_standard ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
+          ${type.is_standard ? 'Standard' : 'Custom'}
+        </span>
+      </td>
+      <td>
+        <div class="equipment-item-actions">
+          <button class="btn-edit" onclick="openEditEquipmentTypeModal(${type.id}, '${escapeHtml(type.name).replace(/'/g, "\\'")}')">Edit</button>
+          ${!type.is_standard ? `<button class="btn-delete" onclick="deleteEquipmentType(${type.id})">Delete</button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/**
+ * Search equipment types
+ */
+function searchEquipmentTypes() {
+  const searchTerm = document.getElementById('searchEquipmentTypes').value.toLowerCase();
+  const filtered = allEquipmentTypes.filter(type => 
+    type.name.toLowerCase().includes(searchTerm)
+  );
+  renderEquipmentTypes(filtered);
+}
+
+/**
+ * Add equipment type
+ */
+function addEquipmentType() {
+  const name = document.getElementById('equipmentTypeNameInput').value.trim();
+  
+  if (!name) {
+    alert('Please enter equipment type name');
+    return;
+  }
+  
+  fetch('../api/equipment-types.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('equipmentTypeNameInput').value = '';
+        loadAllEquipmentTypes();
+        
+        // Refresh the equipment type dropdown in club equipment tab
+        if (equipmentTypeTom) {
+          equipmentTypeTom.addOption({
+            value: String(data.data.id),
+            text: data.data.name
+          });
+        }
+        
+        alert('Equipment type added successfully');
+      } else {
+        alert(data.message || 'Failed to add equipment type');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('An error occurred');
+    });
+}
+
+/**
+ * Open edit equipment type modal
+ */
+function openEditEquipmentTypeModal(id, name) {
+  editingEquipmentTypeId = id;
+  document.getElementById('editEquipmentTypeNameInput').value = name;
+  document.getElementById('editEquipmentTypeModal').classList.add('active');
+}
+
+/**
+ * Close edit equipment type modal
+ */
+function closeEquipmentTypeEditModal() {
+  document.getElementById('editEquipmentTypeModal').classList.remove('active');
+  editingEquipmentTypeId = null;
+}
+
+/**
+ * Save equipment type edit
+ */
+function saveEquipmentTypeEdit() {
+  if (!editingEquipmentTypeId) return;
+  
+  const name = document.getElementById('editEquipmentTypeNameInput').value.trim();
+  
+  if (!name) {
+    alert('Please enter equipment type name');
+    return;
+  }
+  
+  fetch('../api/equipment-types.php', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: editingEquipmentTypeId, name: name })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        closeEquipmentTypeEditModal();
+        loadAllEquipmentTypes();
+        
+        // Update the equipment type dropdown in club equipment tab
+        if (equipmentTypeTom) {
+          equipmentTypeTom.updateOption(String(editingEquipmentTypeId), {
+            value: String(editingEquipmentTypeId),
+            text: name
+          });
+        }
+        
+        alert('Equipment type updated successfully');
+      } else {
+        alert(data.message || 'Failed to update equipment type');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('An error occurred');
+    });
+}
+
+/**
+ * Delete equipment type
+ */
+function deleteEquipmentType(id) {
+  if (!confirm('Are you sure you want to delete this equipment type? This will also remove all associated equipment records.')) {
+    return;
+  }
+  
+  fetch('../api/equipment-types.php', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: id })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        loadAllEquipmentTypes();
+        
+        // Remove from equipment type dropdown in club equipment tab
+        if (equipmentTypeTom) {
+          equipmentTypeTom.removeOption(String(id));
+        }
+        
+        alert('Equipment type deleted successfully');
+      } else {
+        alert(data.message || 'Failed to delete equipment type');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('An error occurred');
+    });
 }

@@ -121,15 +121,26 @@ function handlePostRequest($pdo)
 {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $clubId = $input['club_id'] ?? null;
-    $equipmentTypeId = $input['equipment_type_id'] ?? null;
+    // Debug: check if JSON was decoded
+    if ($input === null) {
+        sendJSONResponse(false, null, 'Invalid JSON in request body', 400);
+    }
+
+    $clubId = isset($input['club_id']) ? (int)$input['club_id'] : null;
+    $equipmentTypeId = isset($input['equipment_type_id']) ? (int)$input['equipment_type_id'] : null;
     $quantity = $input['quantity'] ?? null;
     $year = $input['year'] ?? date('Y');
     $date = $input['date'] ?? date('Y-m-d H:i:s');
 
-    // Validate input
-    if (!$clubId || !$equipmentTypeId || $quantity === null || $quantity === '') {
-        sendJSONResponse(false, null, 'club_id, equipment_type_id, and quantity are required', 400);
+    // Validate input - provide specific error messages
+    if (!$clubId) {
+        sendJSONResponse(false, null, 'club_id is required and must be a valid number', 400);
+    }
+    if (!$equipmentTypeId) {
+        sendJSONResponse(false, null, 'equipment_type_id is required and must be a valid number', 400);
+    }
+    if ($quantity === null || $quantity === '') {
+        sendJSONResponse(false, null, 'quantity is required', 400);
     }
 
     if (!is_numeric($quantity) || $quantity < 1) {
@@ -208,7 +219,7 @@ function handlePutRequest($pdo)
 {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $id = $input['id'] ?? null;
+    $id = isset($input['id']) ? (int)$input['id'] : null;
     $quantity = $input['quantity'] ?? null;
     $year = $input['year'] ?? null;
 
@@ -272,7 +283,7 @@ function handleDeleteRequest($pdo)
 {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $id = $input['id'] ?? null;
+    $id = isset($input['id']) ? (int)$input['id'] : null;
 
     if (!$id) {
         sendJSONResponse(false, null, 'id is required', 400);
