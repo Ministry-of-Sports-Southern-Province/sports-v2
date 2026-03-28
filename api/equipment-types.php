@@ -21,10 +21,24 @@ try {
         requireAdmin();
     }
 
+    // Restrict PUT (update) to admins only
+    if ($method === 'PUT') {
+        requireAdmin();
+    }
+
+    // Restrict DELETE to admins only
+    if ($method === 'DELETE') {
+        requireAdmin();
+    }
+
     if ($method === 'GET') {
         handleGetRequest($pdo);
     } elseif ($method === 'POST') {
         handlePostRequest($pdo);
+    } elseif ($method === 'PUT') {
+        handlePutRequest($pdo);
+    } elseif ($method === 'DELETE') {
+        handleDeleteRequest($pdo);
     } else {
         sendJSONResponse(false, null, 'Invalid request method', 405);
     }
@@ -112,5 +126,89 @@ function handlePostRequest($pdo)
             sendJSONResponse(false, null, 'Equipment type already exists', 409);
         }
         throw $e;
+    }
+}
+
+/**
+ * Handle PUT request - Update equipment type
+ */
+function handlePutRequest($pdo)
+{
+    $input = json_decode(file_get_contents('php://input'), true);
+    $id = isset($input['id']) ? (int)$input['id'] : null;
+    $name = trim($input['name'] ?? '');
+
+    // Validate input
+    if (!$id || empty($name)) {
+        sendJSONResponse(false, null, 'ID and name are required', 400);
+    }
+
+    try {
+        // Check if equipment type exists
+        $stmt = $pdo->prepare("SELECT id, is_standard FROM equipment_types WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $equipmentType = $stmt->fetch();
+
+        if (!$equipmentType) {
+            sendJSONResponse(false, null, 'Equipment type not found', 404);
+        }
+
+        // Check if name already exists (excluding current record)
+        $stmt = $pdo->prepare("SELECT id FROM equipment_types WHERE name = :name AND id != :id");
+        $stmt->execute(['name' => $name, 'id' => $id]);
+        if ($stmt->fetch()) {
+            sendJSONResponse(false, null, 'Equipment type name already exists', 409);
+        }
+
+        // Update equipment type
+        $stmt = $pdo->prepare("UPDATE equipment_types SET name = :name WHERE id = :id");
+        $stmt->execute(['name' => $name, 'id' => $id]);
+
+        $result = [
+            'id' => $id,
+            'name' => $name,
+            'is_standard' => (bool)$equipmentType['is_standard']
+        ];
+
+        sendJSONResponse(true, $result, 'Equipment type updated successfully');
+    } catch (PDOException $e) {
+        sendJSONResponse(false, null, 'Failed to update equipment type: ' . $e->getMessage(), 400);
+    }
+}
+
+/**
+ * Handle DELETE request - Delete equipment type
+ */
+function handleDeleteRequest($pdo)
+{
+    $input = json_decode(file_get_contents('php://input'), true);
+    $id = isset($input['id']) ? (int)$input['id'] : null;
+
+    if (!$id) {
+        sendJSONResponse(false, null, 'ID is required', 400);
+    }
+
+    try {
+        // Check if equipment type exists
+        $stmt = $pdo->prepare("SELECT id, is_standard FROM equipment_types WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $equipmentType = $stmt->fetch();
+
+        if (!$equipmentType) {
+            sendJSONResponse(false, null, 'Equipment type not found', 404);
+        }
+
+        // Prevent deletion of standard equipment types
+        if ($equipmentType['is_standard']) {
+            sendJSONResponse(false, null, 'Cannot delete standard equipment types', 403);
+        }
+
+        // Delete equipment type (CASCADE will delete associated club_equipment records)
+        $stmt = $pdo->prepare("DELETE FROM equipment_types WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+
+        sendJSONResponse(true, ['id' => $id], 'Equipment type deleted successfully');
+    } catch (PDOException $e) {
+        sendJSONResponse(false, null, 'Failed to delete equipment type: ' . $e->getMessage(), 400);
     }
 }

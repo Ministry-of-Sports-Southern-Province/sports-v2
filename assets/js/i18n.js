@@ -14,6 +14,7 @@ const i18n = {
   init() {
     // Get saved language from localStorage or default to Sinhala
     this.currentLanguage = localStorage.getItem("language") || "si";
+    document.documentElement.lang = this.currentLanguage;
     this.loadTranslations(this.currentLanguage);
     this.setupLanguageSwitcher();
   },
@@ -30,10 +31,13 @@ const i18n = {
 
     // Build candidate URLs
     const candidates = [];
+    const cacheBuster = Date.now();
 
     // Primary: Use the detected script-based path (most reliable)
     // This works because we know exactly where the script is and can deduce where assets are
-    candidates.push(`${basePathFromScript}/assets/lang/${lang}.json`);
+    candidates.push(
+      `${basePathFromScript}/assets/lang/${lang}.json?v=${cacheBuster}`,
+    );
 
     console.debug(
       "i18n: Loading",
@@ -59,8 +63,9 @@ const i18n = {
         console.debug("✓ i18n: Loaded translations from:", url);
         this.translations = await response.json();
         this.currentLanguage = lang;
+        document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
-        this.updatePageTranslations();
+        this.applyTranslations();
         this.updateLanguageSwitcher(lang);
         // Call all registered language change callbacks
         this.languageChangeCallbacks.forEach((callback) => {
@@ -178,6 +183,21 @@ const i18n = {
 
     // Update Tom Select placeholders if they exist
     this.updateTomSelectPlaceholders();
+  },
+
+  /**
+   * Canonical method to apply translations to the current page.
+   * Kept as a public API for page scripts with dynamic content.
+   */
+  applyTranslations() {
+    this.updatePageTranslations();
+  },
+
+  /**
+   * Backward-compatible alias for older page scripts.
+   */
+  updateContent() {
+    this.applyTranslations();
   },
 
   /**

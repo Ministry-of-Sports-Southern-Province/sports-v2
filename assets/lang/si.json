@@ -1,4 +1,4 @@
-﻿{
+{
   "nav.register": "සමාජ ලියාපදිංචි කිරීම",
   "nav.dashboard": "පාලක පුවරුව",
   "nav.edit_club": "සමාජය සංස්කරණය කරන්න",
@@ -354,5 +354,24 @@
   "message.reorganize_error": "සමාජය ප්‍රතිසංවිධානය කිරීමට අසමත් විය",
   "message.error_reorganizing_club": "සමාජය ප්‍රතිසංවිධානය කිරීමේ දී දෝෂයක් ඇතිවිය",
   "message.reorganize_deleted_success": "ප්‍රතිසංවිධානය සාර්ථකව මකා දමන ලදී!",
-  "message.reorganize_delete_error": "ප්‍රතිසංවිධානය මකා දැමීමට අසමත් විය"
+  "message.reorganize_delete_error": "ප්‍රතිසංවිධානය මකා දැමීමට අසමත් විය",
+  "tab.club_equipment": "සමාජ උපකරණ",
+  "tab.equipment_types": "උපකරණ වර්ග",
+  "form.add_equipment_type": "උපකරණ වර්ගයක් එක් කරන්න",
+  "form.equipment_type_name": "උපකරණ වර්ගයේ නම",
+  "form.equipment_types_list": "උපකරණ වර්ග ලැයිස්තුව",
+  "form.edit_equipment_type": "උපකරණ වර්ගය සංස්කරණය කරන්න",
+  "button.add_type": "වර්ගය එක් කරන්න",
+  "table.name": "නම",
+  "table.type": "වර්ගය",
+  "message.no_equipment": "උපකරණ හමු නොවුණි",
+  "message.equipment_type_added_success": "උපකරණ වර්ගය සාර්ථකව එක් කරන ලදී",
+  "message.equipment_type_updated_success": "උපකරණ වර්ගය සාර්ථකව යාවත්කාලීන කරන ලදී",
+  "message.equipment_type_deleted_success": "උපකරණ වර්ගය සාර්ථකව මකා දමන ලදී",
+  "message.confirm_delete_equipment_type": "ඔබට මෙම උපකරණ වර්ගය මකා දැමීමට අවශ්යද? මෙය සම්බන්ධිත සියලුම උපකරණ වාර්තා ද ඉවත් කරනු ඇත.",
+  "message.equipment_type_name_required": "කරුණාකර උපකරණ වර්ගයේ නම ඇතුළත් කරන්න",
+  "type.standard": "සම්මත",
+  "type.custom": "අභිරුචි",
+  "placeholder.search_equipment_types": "උපකරණ වර්ග සොයන්න...",
+  "message.invalid_year": "කරුණාකර වලංගු වර්ෂයක් ඇතුළත් කරන්න"
 }
