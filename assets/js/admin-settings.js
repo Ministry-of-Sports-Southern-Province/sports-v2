@@ -31,8 +31,8 @@ function displayUsers(users) {
   if (users.length === 0) {
     tbody.innerHTML =
       '<tr><td colspan="7" class="py-8 text-center text-slate-500"><span data-i18n="table.no_data">No data available</span></td></tr>';
-    if (window.i18n && typeof window.i18n.updateContent === "function") {
-      window.i18n.updateContent();
+    if (window.i18n && typeof window.i18n.applyTranslations === "function") {
+      window.i18n.applyTranslations();
     }
     return;
   }
@@ -101,8 +101,8 @@ function displayUsers(users) {
     .join("");
 
   // Update translations for dynamically added content
-  if (window.i18n && typeof window.i18n.updateContent === "function") {
-    window.i18n.updateContent();
+  if (window.i18n && typeof window.i18n.applyTranslations === "function") {
+    window.i18n.applyTranslations();
   }
 }
 

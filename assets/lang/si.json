@@ -1,4 +1,4 @@
-﻿{
+{
   "nav.register": "සමාජ ලියාපදිංචි කිරීම",
   "nav.dashboard": "පාලක පුවරුව",
   "nav.edit_club": "සමාජය සංස්කරණය කරන්න",
@@ -354,9 +354,7 @@
   "message.reorganize_error": "සමාජය ප්‍රතිසංවිධානය කිරීමට අසමත් විය",
   "message.error_reorganizing_club": "සමාජය ප්‍රතිසංවිධානය කිරීමේ දී දෝෂයක් ඇතිවිය",
   "message.reorganize_deleted_success": "ප්‍රතිසංවිධානය සාර්ථකව මකා දමන ලදී!",
-  "message.reorganize_delete_error": "ප්‍රතිසංවිධානය මකා දැමීමට අසමත් විය"
-}
-,
+  "message.reorganize_delete_error": "ප්‍රතිසංවිධානය මකා දැමීමට අසමත් විය",
   "tab.club_equipment": "සමාජ උපකරණ",
   "tab.equipment_types": "උපකරණ වර්ග",
   "form.add_equipment_type": "උපකරණ වර්ගයක් එක් කරන්න",
@@ -376,3 +374,4 @@
   "type.custom": "අභිරුචි",
   "placeholder.search_equipment_types": "උපකරණ වර්ග සොයන්න...",
   "message.invalid_year": "කරුණාකර වලංගු වර්ෂයක් ඇතුළත් කරන්න"
+}

@@ -1,4 +1,4 @@
-﻿{
+{
   "nav.register": "கழகத்தை பதிவு செய்க",
   "nav.dashboard": "முகப்பு பலகை",
   "nav.edit_club": "கழகத்தை திருத்து",
@@ -349,9 +349,7 @@
   "public.reorg_status": "மறுசீரமைப்பு நிலை",
   "public.public_view_badge": "பொது காட்சி",
   "nav.public_directory": "பொது அட்டவணை",
-  "button.next": "அடுத்து"
-}
-,
+  "button.next": "அடுத்து",
   "tab.club_equipment": "கழக உபகரணம்",
   "tab.equipment_types": "உபகரண வகைகள்",
   "form.add_equipment_type": "உபகரண வகையைச் சேர்க்கவும்",
@@ -371,3 +369,4 @@
   "type.custom": "தனிப்பயன்",
   "placeholder.search_equipment_types": "உபகரண வகைகளைத் தேடுங்கள்...",
   "message.invalid_year": "தயவுசெய்து சரியான ஆண்டை உள்ளிடவும்"
+}
