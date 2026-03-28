@@ -27,6 +27,7 @@ $customStyles = $customStyles ?? '';
 $additionalLinks = $additionalLinks ?? [];
 $basePath = $basePath ?? '../';
 $isPublicPage = $isPublicPage ?? false;
+$showFullHeader = $showFullHeader ?? true;
 $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
 ?>
 <!DOCTYPE html>
@@ -633,131 +634,133 @@ $currentAdmin = $isPublicPage ? null : getCurrentAdmin();
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    <!-- Header -->
-    <header class="gov-header text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4">
-            <!-- Top row: Logo, Title and User Info -->
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-4">
-                    <!-- Site Logo -->
-                    <img src="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" alt="Southern Province Sports" class="w-12 h-12 object-contain" />
-                    <div>
-                        <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්‍රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
-                        <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</p>
+    <?php if ($showFullHeader): ?>
+        <!-- Header -->
+        <header class="gov-header text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <!-- Top row: Logo, Title and User Info -->
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <!-- Site Logo -->
+                        <img src="<?php echo htmlspecialchars($basePath); ?>assets/img/logo.svg" alt="Southern Province Sports" class="w-12 h-12 object-contain" />
+                        <div>
+                            <h1 class="text-2xl font-bold" data-i18n="<?php echo htmlspecialchars($pageHeading); ?>">ක්‍රීඩා සමාජ කළමනාකරණ පද්ධතිය</h1>
+                            <p class="text-sm text-blue-100" data-i18n="page.welcome_subtitle">දකුණු පළාත් ක්‍රීඩා දෙපාර්තමේන්තුව</p>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Right side: Language Switcher above User Info & Logout -->
-                <div class="flex flex-col items-end space-y-3">
-                    <!-- Language Switcher -->
-                    <div class="flex space-x-2 items-center">
-                        <button data-language="en" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
-                            EN
-                        </button>
-                        <button data-language="si" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
-                            සිං
-                        </button>
-                        <button data-language="ta" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
-                            தமிழ்
-                        </button>
-                        <!-- Login button (public pages only) -->
+                    <!-- Right side: Language Switcher above User Info & Logout -->
+                    <div class="flex flex-col items-end space-y-3">
+                        <!-- Language Switcher -->
+                        <div class="flex space-x-2 items-center">
+                            <button data-language="en" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+                                EN
+                            </button>
+                            <button data-language="si" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+                                සිං
+                            </button>
+                            <button data-language="ta" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+                                தமிழ்
+                            </button>
+                            <!-- Login button (public pages only) -->
+                            <?php if ($isPublicPage): ?>
+                                <a href="<?php echo htmlspecialchars($basePath); ?>login.php" class="px-4 py-1.5 rounded text-sm font-semibold text-blue-600 bg-white hover:bg-blue-50 transition ml-2" data-i18n="button.login">Login</a>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- User Info & Logout (hidden on public pages) -->
                         <?php if ($isPublicPage): ?>
-                            <a href="<?php echo htmlspecialchars($basePath); ?>login.php" class="px-4 py-1.5 rounded text-sm font-semibold text-blue-600 bg-white hover:bg-blue-50 transition ml-2" data-i18n="button.login">Login</a>
+                            <div class="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                                <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+                                </svg>
+                                <span class="text-sm font-semibold text-white" data-i18n="public.public_view_badge">Public View</span>
+                            </div>
+                        <?php else: ?>
+                            <div class="flex items-center space-x-3 bg-white/10 rounded-lg px-4 py-2">
+                                <!-- User Avatar Icon -->
+                                <div class="bg-white/20 rounded-full p-2">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+
+                                <!-- User Info -->
+                                <div class="text-left border-r border-white/20 pr-4">
+                                    <div class="text-sm font-semibold text-white leading-tight"><?php echo htmlspecialchars($currentAdmin['full_name']); ?></div>
+                                    <div class="text-xs text-blue-100 mt-0.5"><?php echo htmlspecialchars($currentAdmin['username']); ?></div>
+                                </div>
+
+                                <!-- Logout Button -->
+                                <a href="<?php echo $basePath; ?>api/logout.php"
+                                    class="flex items-center space-x-2 px-3 py-1.5 bg-white/10 hover:bg-red-500 rounded-md transition-all duration-200 group"
+                                    title="Logout">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span class="text-sm font-medium text-white">Logout</span>
+                                </a>
+                            </div>
                         <?php endif; ?>
                     </div>
-
-                    <!-- User Info & Logout (hidden on public pages) -->
-                    <?php if ($isPublicPage): ?>
-                        <div class="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2">
-                            <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-                            </svg>
-                            <span class="text-sm font-semibold text-white" data-i18n="public.public_view_badge">Public View</span>
-                        </div>
-                    <?php else: ?>
-                        <div class="flex items-center space-x-3 bg-white/10 rounded-lg px-4 py-2">
-                            <!-- User Avatar Icon -->
-                            <div class="bg-white/20 rounded-full p-2">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-
-                            <!-- User Info -->
-                            <div class="text-left border-r border-white/20 pr-4">
-                                <div class="text-sm font-semibold text-white leading-tight"><?php echo htmlspecialchars($currentAdmin['full_name']); ?></div>
-                                <div class="text-xs text-blue-100 mt-0.5"><?php echo htmlspecialchars($currentAdmin['username']); ?></div>
-                            </div>
-
-                            <!-- Logout Button -->
-                            <a href="<?php echo $basePath; ?>api/logout.php"
-                                class="flex items-center space-x-2 px-3 py-1.5 bg-white/10 hover:bg-red-500 rounded-md transition-all duration-200 group"
-                                title="Logout">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                <span class="text-sm font-medium text-white">Logout</span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
                 </div>
-            </div>
 
-            <!-- Navigation -->
-            <nav>
-                <?php if ($isPublicPage): ?>
-                    <!-- Public page: only show current page indicator, no other links -->
-                    <ul class="flex space-x-6">
-                        <li><span class="font-semibold border-b-2 border-white pb-1" data-i18n="nav.public_directory">Public Directory</span></li>
-                    </ul>
-                <?php else: ?>
-                    <ul class="flex space-x-6">
-                        <li>
-                            <a href="<?php echo $basePath; ?>public/dashboard.php"
-                                class="<?php echo $activePage === 'dashboard' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                data-i18n="nav.dashboard">උපකරණ පුවරුව</a>
-                        </li>
-                        <?php if (isAdmin()): ?>
+                <!-- Navigation -->
+                <nav>
+                    <?php if ($isPublicPage): ?>
+                        <!-- Public page: only show current page indicator, no other links -->
+                        <ul class="flex space-x-6">
+                            <li><span class="font-semibold border-b-2 border-white pb-1" data-i18n="nav.public_directory">Public Directory</span></li>
+                        </ul>
+                    <?php else: ?>
+                        <ul class="flex space-x-6">
                             <li>
-                                <a href="<?php echo $basePath; ?>public/register.php"
-                                    class="<?php echo $activePage === 'register' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                    data-i18n="nav.register">සමාජය ලියාපදිංචි කරන්න</a>
+                                <a href="<?php echo $basePath; ?>public/dashboard.php"
+                                    class="<?php echo $activePage === 'dashboard' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                    data-i18n="nav.dashboard">උපකරණ පුවරුව</a>
                             </li>
-                        <?php endif; ?>
-                        <li>
-                            <a href="<?php echo $basePath; ?>public/reorganizations.php"
-                                class="<?php echo $activePage === 'reorganizations' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                data-i18n="nav.reorganizations">ප්‍රතිසංවිධාන</a>
-                        </li>
-                        <li>
-                            <a href="<?php echo $basePath; ?>public/summary.php"
-                                class="<?php echo $activePage === 'summary' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                data-i18n="nav.summary">සාරාංශය</a>
-                        </li>
-                        <li>
-                            <a href="<?php echo $basePath; ?>public/reports.php"
-                                class="<?php echo $activePage === 'reports' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                data-i18n="nav.reports">වාර්තා</a>
-                        </li>
-                        <?php if (isAdmin()): ?>
+                            <?php if (isAdmin()): ?>
+                                <li>
+                                    <a href="<?php echo $basePath; ?>public/register.php"
+                                        class="<?php echo $activePage === 'register' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                        data-i18n="nav.register">සමාජය ලියාපදිංචි කරන්න</a>
+                                </li>
+                            <?php endif; ?>
                             <li>
-                                <a href="<?php echo $basePath; ?>public/equipment-management.php"
-                                    class="<?php echo $activePage === 'equipment-management' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                    data-i18n="nav.equipment_management">උපකරණ කළමනාකරණය</a>
+                                <a href="<?php echo $basePath; ?>public/reorganizations.php"
+                                    class="<?php echo $activePage === 'reorganizations' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                    data-i18n="nav.reorganizations">ප්‍රතිසංවිධාන</a>
                             </li>
-                        <?php endif; ?>
-                        <?php if (isAdmin()): ?>
                             <li>
-                                <a href="<?php echo $basePath; ?>public/admin-settings.php"
-                                    class="<?php echo $activePage === 'admin-settings' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
-                                    data-i18n="nav.admin_settings">පරිපාලන සැකසීම්</a>
+                                <a href="<?php echo $basePath; ?>public/summary.php"
+                                    class="<?php echo $activePage === 'summary' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                    data-i18n="nav.summary">සාරාංශය</a>
                             </li>
-                        <?php endif; ?>
-                    </ul>
-                <?php endif; ?>
-            </nav>
-        </div>
-    </header>
+                            <li>
+                                <a href="<?php echo $basePath; ?>public/reports.php"
+                                    class="<?php echo $activePage === 'reports' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                    data-i18n="nav.reports">වාර්තා</a>
+                            </li>
+                            <?php if (isAdmin()): ?>
+                                <li>
+                                    <a href="<?php echo $basePath; ?>public/equipment-management.php"
+                                        class="<?php echo $activePage === 'equipment-management' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                        data-i18n="nav.equipment_management">උපකරණ කළමනාකරණය</a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if (isAdmin()): ?>
+                                <li>
+                                    <a href="<?php echo $basePath; ?>public/admin-settings.php"
+                                        class="<?php echo $activePage === 'admin-settings' ? 'font-semibold border-b-2 border-white pb-1' : 'hover:text-blue-200 transition'; ?>"
+                                        data-i18n="nav.admin_settings">පරිපාලන සැකසීම්</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    <?php endif; ?>
+                </nav>
+            </div>
+        </header>
+    <?php endif; ?>
 
     <!-- Global Accessibility Widget -->
     <div class="accessibility-fab" id="accessibilityFab" onclick="toggleAccessibilityPanel()" title="Accessibility Options" aria-label="Open accessibility options">

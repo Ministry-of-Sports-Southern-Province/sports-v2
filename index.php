@@ -9,6 +9,8 @@
 $pageTitle = 'page.dashboard_title';
 $pageHeading = 'page.dashboard_title';
 $activePage = 'dashboard';
+$isPublicPage = true;
+$showFullHeader = false;
 
 // Custom styles for index/landing page
 $customStyles = '
@@ -54,6 +56,11 @@ $customStyles = '
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
+        .landing-topbar {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+        }
 ';
 
 // No additional links needed
@@ -65,6 +72,24 @@ $basePath = '';
 // Include header
 include 'includes/header.php';
 ?>
+
+<!-- Minimal Top Bar (Language Switcher + Login) -->
+<div class="landing-topbar">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-end gap-2">
+        <button data-language="en" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+            EN
+        </button>
+        <button data-language="si" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+            සිං
+        </button>
+        <button data-language="ta" class="px-3 py-1 rounded text-sm font-medium transition bg-white/10 text-white hover:bg-white/20">
+            தமிழ்
+        </button>
+        <a href="login.php" class="px-4 py-1.5 rounded text-sm font-semibold text-blue-700 bg-white hover:bg-blue-50 transition ml-2" data-i18n="button.login">
+            Login
+        </a>
+    </div>
+</div>
 
 <!-- Hero Section -->
 <div class="hero-section">
@@ -82,7 +107,7 @@ include 'includes/header.php';
             <a href="public/register.php" class="action-button" data-i18n="button.register_new_club">
                 නව සමාජයක් ලියාපදිංචි කරන්න
             </a>
-            <a href="public/dashboard.php" class="action-button" data-i18n="button.view_clubs">
+            <a href="public/clubs-public.php" class="action-button" data-i18n="button.view_clubs">
                 සමාජ බලන්න
             </a>
         </div>

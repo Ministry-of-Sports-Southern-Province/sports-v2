@@ -65,7 +65,10 @@ function loadClubs(page = 1) {
         displayClubs(data.data);
         renderPagination(data.pagination || null);
 
-        if (window.i18n && typeof window.i18n.applyTranslations === "function") {
+        if (
+          window.i18n &&
+          typeof window.i18n.applyTranslations === "function"
+        ) {
           window.i18n.applyTranslations();
         }
       } else {

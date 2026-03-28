@@ -40,9 +40,7 @@ function displayUsers(users) {
   tbody.innerHTML = users
     .map((user) => {
       const roleClass = user.role === "admin" ? "role-admin" : "role-viewer";
-      const statusClass = user.is_active
-        ? "status-active"
-        : "status-inactive";
+      const statusClass = user.is_active ? "status-active" : "status-inactive";
       const statusText = user.is_active ? "Active" : "Inactive";
       const lastLogin = user.last_login
         ? new Date(user.last_login).toLocaleDateString()
@@ -52,18 +50,18 @@ function displayUsers(users) {
       return `
             <tr>
                 <td class="whitespace-nowrap font-medium text-slate-900">${escapeHtml(
-                  user.username
+                  user.username,
                 )}</td>
                 <td class="whitespace-nowrap text-slate-900">${escapeHtml(
-                  user.full_name
+                  user.full_name,
                 )}</td>
                 <td class="whitespace-nowrap text-slate-700">${escapeHtml(
-                  user.email || "-"
+                  user.email || "-",
                 )}</td>
                 <td class="whitespace-nowrap">
                     <span class="role-badge ${roleClass}">${escapeHtml(
-        user.role
-      )}</span>
+                      user.role,
+                    )}</span>
                 </td>
                 <td class="whitespace-nowrap">
                     <span class="status-badge ${statusClass}">${statusText}</span>
@@ -82,8 +80,8 @@ function displayUsers(users) {
                           !isCurrentUser
                             ? `
                         <button onclick="deleteUser(${user.id}, '${escapeHtml(
-                              user.username
-                            ).replace(/'/g, "\\'")}')" 
+                          user.username,
+                        ).replace(/'/g, "\\'")}')" 
                                 class="text-red-600 hover:text-red-800 transition" 
                                 title="Delete">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,9 +278,7 @@ function setupFormSubmission() {
           closeUserModal();
           loadUsers();
           showSuccess(
-            isEdit
-              ? "User updated successfully"
-              : "User created successfully"
+            isEdit ? "User updated successfully" : "User created successfully",
           );
         } else {
           showError(data.message || "Operation failed");
