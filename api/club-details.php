@@ -75,8 +75,8 @@ try {
             // After June: valid until Jan 1 of year after next
             $reorgDueDate = ($reorgYear + 2) . '-01-01';
         } else {
-            // Before or in June: valid for 1 year
-            $reorgDueDate = date('Y-m-d', strtotime($lastReorgDate . ' +1 year'));
+            // Before or in June: valid until Jan 1 of next year
+            $reorgDueDate = ($reorgYear + 1) . '-01-01';
         }
     } else {
         $reorgDueDate = null;

@@ -759,8 +759,10 @@ function displayClubs(clubs) {
         nextMonth = 1;
         nextDay = 1;
       } else {
-        // If reorg is Jan-June, next due is 1 year later, same month/day
+        // If reorg is Jan-June, next due is 1 year later, January 1st
         nextYear = lastYear + 1;
+        nextMonth = 1;
+        nextDay = 1;
       }
 
       nextReorgDate = formatDate(

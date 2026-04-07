@@ -126,11 +126,11 @@ try {
     if ($hasReorgTable && $reorgStatus === 'active') {
         $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0"
             . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01'))"
-            . " ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+            . " ELSE (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+1, '-01-01')) END) = 1";
     } elseif ($hasReorgTable && $reorgStatus === 'expired') {
         $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 1"
             . " WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01'))"
-            . " ELSE (CURDATE() >= DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+            . " ELSE (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+1, '-01-01')) END) = 1";
     } elseif (!$hasReorgTable && $reorgStatus === 'active') {
         // Without reorganization history support, no records can be classified as active.
         sendJSONResponse(true, [], 'Clubs loaded successfully', 200, [
@@ -213,7 +213,7 @@ try {
 
             $club['reorg_due_date'] = ($month > 6)
                 ? ($year + 2) . '-01-01'
-                : date('Y-m-d', strtotime($club['last_reorg_date'] . ' +1 year'));
+                : ($year + 1) . '-01-01';
 
             $club['reorg_status'] = ($club['reorg_due_date'] <= date('Y-m-d')) ? 'expired' : 'active';
         } else {

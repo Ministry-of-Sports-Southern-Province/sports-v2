@@ -77,9 +77,9 @@ try {
     // HAVING for reorg_status (active = due date in future, expired = due date past or no reorg)
     $having = '';
     if ($reorgStatus === 'active') {
-        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() < DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 0 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() < CONCAT(YEAR(MAX(cr.reorg_date))+1, '-01-01')) END) = 1";
     } elseif ($reorgStatus === 'expired') {
-        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 1 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() >= DATE_ADD(MAX(cr.reorg_date), INTERVAL 1 YEAR)) END) = 1";
+        $having = " HAVING (CASE WHEN MAX(cr.reorg_date) IS NULL THEN 1 WHEN MONTH(MAX(cr.reorg_date)) > 6 THEN (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+2, '-01-01')) ELSE (CURDATE() >= CONCAT(YEAR(MAX(cr.reorg_date))+1, '-01-01')) END) = 1";
     }
 
     // Total count (distinct clubs) for pagination
@@ -147,7 +147,7 @@ try {
             if ($reorgMonth > 6) {
                 $club['reorg_due_date'] = ($reorgYear + 2) . '-01-01';
             } else {
-                $club['reorg_due_date'] = date('Y-m-d', strtotime($club['last_reorg_date'] . ' +1 year'));
+                $club['reorg_due_date'] = ($reorgYear + 1) . '-01-01';
             }
 
             $club['reorg_status'] = ($club['reorg_due_date'] <= date('Y-m-d')) ? 'expired' : 'active';
